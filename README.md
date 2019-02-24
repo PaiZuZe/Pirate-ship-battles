@@ -1,8 +1,9 @@
-# Code name: Pirate-ship-battles
+# Code name: PSB2: Eletric Boogaloo
 
 [![Code Climate](https://codeclimate.com/github/mezuro/prezento/badges/gpa.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles)[![Test Coverage](https://codeclimate.com/github/Herez/Pirate-ship-battles/badges/coverage.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles/progress/coverage)[![Build Status](https://travis-ci.org/uspgamedev/Pirate-ship-battles.svg?branch=dev)](https://travis-ci.org/uspgamedev/Pirate-ship-battles)
 
-Online multiplayer game about pirates for USPGameDev
+We will take Pirate Ship Battles to space!!!!
+The orignal game was a project from USPgameDev, that later went be a project from one class, and now in it's third development cycle, alot of changes will happen. 
 
 ## Summary
 
@@ -33,6 +34,8 @@ Or you can install [node.js](https://nodejs.org/en/download/package-manager/) an
     ```sh
     sudo docker run -p <any open port on your pc>:2000 -d <image name>
     ```
+    
+    Writing all of that takes to much time, so there will be a script to that. Yes I'm very lazy.
 
 2. If you installed node.js and yarn.
     1. This command will get the server up and run a bash script to minify the client .js files, thus getting a better load time.
@@ -99,5 +102,7 @@ yarn test
 ```
 
 And all our automated unit tests should run and help you see if something broke. We use [Jest](https://jestjs.io/) as our test API.
+
+Note: This may not work with docker.
 
 Any questions, please contact -[@GuilhermeVieira](https://github.com/GuilhermeVieira).
