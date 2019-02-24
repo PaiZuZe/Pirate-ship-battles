@@ -1,7 +1,5 @@
 # Code name: PSB2: Eletric Boogaloo
 
-[![Code Climate](https://codeclimate.com/github/mezuro/prezento/badges/gpa.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles)[![Test Coverage](https://codeclimate.com/github/Herez/Pirate-ship-battles/badges/coverage.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles/progress/coverage)[![Build Status](https://travis-ci.org/uspgamedev/Pirate-ship-battles.svg?branch=dev)](https://travis-ci.org/uspgamedev/Pirate-ship-battles)
-
 We will take Pirate Ship Battles to space!!!!
 The orignal game was a project from USPgameDev, that later went be a project from one class, and now in it's third development cycle, alot of changes will happen. 
 
