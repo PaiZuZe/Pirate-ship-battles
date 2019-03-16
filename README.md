@@ -19,40 +19,13 @@ Or you can install [node.js](https://nodejs.org/en/download/package-manager/) an
 
 ## 2. Run server <a name="run-server"></a>
 
-1. If you have docker isntalled
+1. Install docker and docker-compose:
 
-    1. Build an image.
-
-    ```sh
-    sudo docker build . -t <image name>
-    ```
-
-    2. Run the image.
+2. Build an run:
 
     ```sh
-    sudo docker run -p <any open port on your pc>:2000 -d <image name>
+    sudo docker-compose up
     ```
-    
-    Writing all of that takes to much time, so there will be a script to that. Yes I'm very lazy.
-
-2. If you installed node.js and yarn.
-    1. This command will get the server up and run a bash script to minify the client .js files, thus getting a better load time.
-
-        ```sh
-        yarn serve
-        ```
-
-    2. Will do the same as the previous command with the change that a python3 script will be used to minify, note the bash script is preferred.
-
-        ```sh
-        yarn servep
-        ```
-
-    3. This command is for the developers only, not changing anything about any file, just getting the server up.
-
-        ```sh
-        yarn up
-        ```
 
 ## 3. Server on the cloud <a name="server-on-the-cloud"></a>
 
