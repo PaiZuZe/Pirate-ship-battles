@@ -24,8 +24,27 @@ Or you can install [node.js](https://nodejs.org/en/download/package-manager/) an
 2. Build an run:
 
     ```sh
+    sudo docker-compose build
     sudo docker-compose up
     ```
+
+    Use the flag -d when putting the containers up so they are in background.
+
+    Be sure that postgres is not running on the host machine.
+
+    ```sh
+    sudo service postgres stop
+    ```
+
+    Remember to end the containers and remove their images.
+
+    ```sh
+    sudo docker-compose kill
+    sudo docker-compose rm
+    ```
+
+    Note: A folder named pgdata will be create the first time you build the images, remember to delete it if you want to reset your database.
+
 
 ## 3. Server on the cloud <a name="server-on-the-cloud"></a>
 
