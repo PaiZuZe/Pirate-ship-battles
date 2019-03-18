@@ -105,18 +105,18 @@ module.exports = class Player {
       console.log(`SHOOT! bullets left: ${this.bullets}`);
       let side = (rightSide ? 1 : -1);
       let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
-      let bullets = [new Bullet(this.x + offx, this.y + offy, 10,
+      let bullets = [new Bullet(this.x + offx, this.y + offy, 
                                 this.angle + 3 * side * Math.PI / 8,
                                 this.id, 100)];
       if (numShots >= 2) {
         [offx, offy] = aux.rotate(this.angle, 20 * side, 0);
-        bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
+        bullets.push(new Bullet(this.x + offx, this.y + offy,
                                 this.angle + 4 * side * Math.PI / 8,
                                 this.id, 100));
       }
       if (numShots == 3) {
         [offx, offy] = aux.rotate(this.angle, 20 * side, 10);
-        bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
+        bullets.push(new Bullet(this.x + offx, this.y + offy,
                                 this.angle + 5 * side * Math.PI / 8,
                                 this.id, 100));
       }

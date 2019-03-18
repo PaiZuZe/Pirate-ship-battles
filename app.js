@@ -31,7 +31,7 @@ serv.listen({
 console.log("Server started.");
 
 const UPDATE_TIME = 0.06; // sec
-const BULLET_LIFETIME = 1000; // ms
+const BULLET_LIFETIME = 5000; // ms
 
 const game = new GameObj();
 
@@ -85,8 +85,7 @@ function updateGame () {
     let bullet = game.bulletList[kb];
     bullet.updatePos(UPDATE_TIME);
 
-    //if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
-    if (bullet.z <= 0) {
+    if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
       delete game.bulletList[bullet.id];
       io.in('game').emit('bullet_remove', bullet);
     }
