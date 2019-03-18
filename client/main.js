@@ -14,44 +14,6 @@ let countExplosion = 0;
 let signalExplosion = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Safe Zone Shader                                                           //
-////////////////////////////////////////////////////////////////////////////////
-var CustomPipeline2 = new Phaser.Class({
-  Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline,
-
-  initialize:
-
-  function CustomPipeline2 (game) {
-    Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, {
-      game: game,
-      renderer: game.renderer,
-      fragShader: `
-      precision mediump float;
-
-      uniform sampler2D uMainSampler;
-
-      uniform vec2 viewport;
-      uniform vec2 ellipse_pos;
-      uniform vec2 ellipse_size;
-
-      varying vec2 outTexCoord;
-      varying vec4 outTint;
-
-      void main() {
-  	    vec2 pos = gl_FragCoord.xy;
-        vec2 world_pos = vec2(viewport.x + pos.x, viewport.y - pos.y);
-        float k = pow((world_pos.x-ellipse_pos.x)/ellipse_size.x, 2.0) + pow((world_pos.y-ellipse_pos.y)/ellipse_size.y, 2.0);
-        gl_FragColor = texture2D(uMainSampler, outTexCoord);
-        if (k > 1.0) {
-          gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
-        }
-       }
-      `
-    });
-  }
-});
-
-////////////////////////////////////////////////////////////////////////////////
 function onSocketConnected (data) {
   console.log("connected to server");
   if (!gameProperties.inGame) {
@@ -129,7 +91,6 @@ class Main extends Phaser.Scene {
     socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
 
-    this.customPipeline = null;
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
     this.blink_timer = 2;
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
@@ -197,15 +158,6 @@ class Main extends Phaser.Scene {
     let a = new Phaser.Geom.Point(1000, toIsometric(1000));
     safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
 
-    // Add Safe Zone shader to the game camera
-    if (this.customPipeline == null) {
-      this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
-    }
-    this.cameras.main.setRenderToTexture(this.customPipeline);
-    this.customPipeline.setFloat2('viewport', camera.midPoint.x - camera.width/2, camera.midPoint.y - camera.height/2);
-    this.customPipeline.setFloat2('ellipse_pos', 1000, toIsometric(1000));
-    this.customPipeline.setFloat2('ellipse_size', 1000, toIsometric(1000));
-
     // Mini Map
     if (!this.mobileMode) {
       this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
@@ -223,7 +175,6 @@ class Main extends Phaser.Scene {
   //////////////////////////////////////////////////////////////////////////////
   update (dt) {
     if (gameProperties.inGame) {
-      this.customPipeline.setFloat2('viewport', this.cameras.main.midPoint.x - this.cameras.main.width/2, this.cameras.main.midPoint.y + this.cameras.main.height/2);
 
       if (hud) {
         // Update inputs
@@ -271,10 +222,8 @@ class Main extends Phaser.Scene {
             signalExplosion = 1;
           }
           this.explosion.alpha = countExplosion;
-          //this.customPipeline.setInt1('is_blinking', 1);
         }
         else {
-          //this.customPipeline.setInt1('is_blinking', 0);
           this.blink_timer = 2;
           this.player_life = player.life;
         }
