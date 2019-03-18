@@ -7,7 +7,7 @@
 entername.onclick = function () {
   if (!gameProperties.inGame) {
     console.log(`Player ${socket.id} entered name`);
-    socket.emit('enter_name', {username: signdivusername.value, config: config});
+    socket.emit('enter_name', {username: signdivusername.value, config: config, password: signdivupassword.value});
   }
 }
 

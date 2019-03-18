@@ -6,8 +6,7 @@
 
 var enemies = {};
 var player = null;
-const IMAGE_OFFSET = 0;
-const LABEL_DIFF = IMAGE_OFFSET + 45;
+const LABEL_DIFF = 45;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Ship                                                                       //
@@ -29,7 +28,7 @@ class Ship {
   updatePredictive (delta) {
     this.text.x = this.body.x;
     this.text.y = this.body.y - LABEL_DIFF;
-    this.text.setDepth(this.body.y + IMAGE_OFFSET);
+    this.text.setDepth(this.body.y);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +47,7 @@ class Player extends Ship {
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
     let sprite = "ship_up";
-    this.body = scene.physics.add.sprite(x, y - IMAGE_OFFSET, sprite, 0);
+    this.body = scene.physics.add.sprite(x, y, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
@@ -90,7 +89,7 @@ class Enemy extends Ship {
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
     let sprite = "ship_up";
-    this.body = scene.physics.add.sprite(x, y - IMAGE_OFFSET, sprite, 0);
+    this.body = scene.physics.add.sprite(x, y, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
