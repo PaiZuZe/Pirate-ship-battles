@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 html, body {
-  background: #00BCD4;
+  background: #000000;
   margin: 0px;
   overflow: hidden;
   font-family: "Roboto","Helvetica","Arial",sans-serif;
@@ -12,16 +12,16 @@ html, body {
 , auto;
 }
 ::selection {
-  background: #00BCD4;
+  background: #000000;
   color: #FFFFFF;
 }
 ::-moz-selection {
-  background: #00BCD4;
+  background: #000000;
   color: #FFFFFF;
 }
 
 #signDiv {
-  background-image: url("../assets/water.gif");
+  /*background-image: url("../assets/water.gif");*/
   height: 100%;
   width: 100%;
   text-align: center;
@@ -36,14 +36,14 @@ html, body {
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
 }
 .signDiv-content h1 {
-  color: #00BCD4;
+  color: #000000;
 }
 .signDiv-content input[type=text] {
   height: 30px;
   padding: 2px 0 0 8px;
 }
 .signDiv-content button {
-  background-color: #00BCD4;
+  background-color: #000000;
   color: white;
   padding: 9px 32px;
   border: none;
@@ -83,7 +83,7 @@ html, body {
 }
 .howto span {
   background: #E0F7FA;
-  color: #00BCD4;
+  color: #000000;
 }
 
 /******************************************************************************/

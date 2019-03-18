@@ -10,10 +10,6 @@ let gameProperties = {
   inGame: false,
 }
 
-let background = [];
-const BG_MARGIN = 700;
-const TILE_H = 144;
-const TILE_W = 328;
 let countExplosion = 0;
 let signalExplosion = 1;
 
@@ -91,7 +87,6 @@ function resetObjects () {
   bulletList = {};
   islandList = {};
   stoneList = {};
-  background = [];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,24 +188,6 @@ class Main extends Phaser.Scene {
     if (mobileMode)
       this.input.addPointer(1);
 
-    // Create background animation
-    let frameNames = this.anims.generateFrameNames('ocean', {
-      start: 1, end: 21, zeroPad: 2,
-      prefix: 'ocean', suffix: '.png'
-    });
-    this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-
-    // Create background tiles
-    this.heightTiles = Math.ceil((camera.height + 2*BG_MARGIN)/TILE_H);
-    this.widthTiles = Math.ceil((camera.width + 2*BG_MARGIN)/TILE_W);
-    for (let i = 0; i < this.widthTiles; i++) {
-      for (let j = 0; j < this.heightTiles; j++) {
-        let tmp = this.add.sprite(TILE_W*i, TILE_H*j, 'ocean');
-        tmp.anims.play('ocean');
-        background.push(tmp);
-      }
-    }
-
     let safe_zone = this.add.graphics();
     let color = 0xff0000;
     let thickness = 4;
@@ -276,21 +253,6 @@ class Main extends Phaser.Scene {
     if (player) {
       // Scroll camera to player's position (Phaser is a little buggy when doing this)
       this.cameras.main.setScroll(player.body.x, player.body.y);
-
-      // Wrap background tiles
-      let cameraPos = clampRect(player.body.x, player.body.y, this.screenRect);
-      let cameraCornerX = cameraPos[0] - this.cameras.main.width/2 - BG_MARGIN;
-      let cameraCornerY = cameraPos[1] - this.cameras.main.height/2 - BG_MARGIN;
-      for (let tile of background) {
-        if (tile.x < cameraCornerX - TILE_W)
-          tile.x += this.widthTiles*TILE_W;
-        else if (tile.x > cameraCornerX + this.widthTiles*TILE_W)
-          tile.x -= this.widthTiles*TILE_W;
-        else if (tile.y < cameraCornerY - TILE_H)
-          tile.y += this.heightTiles*TILE_H;
-        else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
-          tile.y -= this.heightTiles*TILE_H;
-      }
 
       // Make screen blink if player takes damage
       if (player.life < this.player_life) {
