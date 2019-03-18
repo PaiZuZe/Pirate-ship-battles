@@ -306,27 +306,8 @@ function collidePlayers (p1, p2) {
     || p1.dead || p2.dead)
     return;
   if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
-    if (SAT.testPolygonPolygon(p1.prowLine, p2.poly)) {
-      if (SAT.testPolygonPolygon(p1.poly, p2.prowLine)) {
         playerKilled(p1);
         playerKilled(p2);
-      } else {
-        playerKilled(p2);
-      }
-    } else if (SAT.testPolygonPolygon(p1.poly, p2.prowLine)) {
-      playerKilled(p1);
-    } else if (SAT.testPolygonPolygon(p1.middleLine, p2.poly)) {
-      if (SAT.testPolygonPolygon(p1.poly, p2.middleLine)) {
-        playerKilled(p1);
-        playerKilled(p2);
-      } else {
-        playerKilled(p2);
-      }
-    } else if (SAT.testPolygonPolygon(p1.poly, p2.middleLine)) {
-      playerKilled(p1);
-    } else {
-      console.log("Could not threat the collision D:");
-    }
   }
 }
 
