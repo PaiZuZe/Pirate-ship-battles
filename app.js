@@ -197,6 +197,7 @@ function addStones () {
 // Called after the player entered its name
 function onEntername (data) {
   console.log(`Received joinning request from ${this.id}, size: ${data.config.width}:${data.config.height}`);
+  console.log(`Name: ${data.username}, password: ${data.password}`);
   if (data.username.length > 0 && data.username.length < 15)
     this.emit('join_game', {username: data.username, id: this.id});
   else if (data.username.length <= 0)

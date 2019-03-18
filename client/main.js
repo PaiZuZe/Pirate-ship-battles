@@ -155,8 +155,8 @@ class Main extends Phaser.Scene {
     let alpha = 1;
     let smoothness = 64;
     safe_zone.lineStyle(thickness, color, alpha);
-    let a = new Phaser.Geom.Point(1000, toIsometric(1000));
-    safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
+    let a = new Phaser.Geom.Point(1000, 1000);
+    safe_zone.strokeEllipse(a.x, a.y, 1000*2, 1000*2, smoothness);
 
     // Mini Map
     if (!this.mobileMode) {
