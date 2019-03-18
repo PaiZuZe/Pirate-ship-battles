@@ -4,7 +4,7 @@
 //                               Client - Util                                //
 ////////////////////////////////////////////////////////////////////////////////
 
-const ISOMETRIC = true;
+const ISOMETRIC = false;
 const ISO_ANGLE = (ISOMETRIC)? 0.61540852 /* 35.2603 degrees */ : Math.PI/2;
 const ISO_SIN = Math.sin(ISO_ANGLE);
 const ISO_COS = Math.cos(ISO_ANGLE);

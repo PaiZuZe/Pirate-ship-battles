@@ -6,7 +6,7 @@
 
 var enemies = {};
 var player = null;
-const IMAGE_OFFSET = (ISOMETRIC)? 20 : 0;
+const IMAGE_OFFSET = 0;
 const LABEL_DIFF = IMAGE_OFFSET + 45;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,14 +18,11 @@ class Ship {
   //////////////////////////////////////////////////////////////////////////////
   update (data) {
     this.body.x = data.x;
-    this.body.y = toIsometric(data.y) - IMAGE_OFFSET;
-    this.body.setVelocity(Math.sin(data.angle) * data.speed, -toIsometric(Math.cos(data.angle) * data.speed));
-    if (ISOMETRIC)
-      this.body.setFrame(mapFloatToInt(fmod(data.angle - HALF_FRAME, 2*Math.PI), 0, 2*Math.PI, 0, 16));
-    else
-      this.body.angle = data.angle * 180 / Math.PI;
-    this.body.setDepth(toIsometric(data.y));
-    this.text.setDepth(toIsometric(data.y));
+    this.body.y = data.y;
+    this.body.setVelocity(Math.sin(data.angle) * data.speed, -(Math.cos(data.angle) * data.speed));
+    this.body.angle = data.angle * 180 / Math.PI;
+    this.body.setDepth(data.y);
+    this.text.setDepth(data.y);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -48,10 +45,10 @@ class Ship {
 class Player extends Ship {
   constructor (scene, x, y, username) {
     super();
-    this.text = scene.add.text(x, toIsometric(y) - LABEL_DIFF, username, {fill: "white"});
+    this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-    let sprite = (ISOMETRIC)? "ship" : "ship_up";
-    this.body = scene.physics.add.sprite(x, toIsometric(y) - IMAGE_OFFSET, sprite, 0);
+    let sprite = "ship_up";
+    this.body = scene.physics.add.sprite(x, y - IMAGE_OFFSET, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
@@ -91,9 +88,9 @@ class Enemy extends Ship {
   constructor (scene, id, x, y, username) {
     super();
     this.id = id;
-    this.text = scene.add.text(x, toIsometric(y) - LABEL_DIFF, username, {fill: "darkGray"});
-    let sprite = (ISOMETRIC)? "ship" : "ship_up";
-    this.body = scene.physics.add.sprite(x, toIsometric(y) - IMAGE_OFFSET, sprite, 0);
+    this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
+    let sprite = "ship_up";
+    this.body = scene.physics.add.sprite(x, y - IMAGE_OFFSET, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
