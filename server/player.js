@@ -66,8 +66,6 @@ module.exports = class Player {
       shootLeft: false,
       shootRight: false
     };
-    this.leftHoldStart = 0;
-    this.rightHoldStart = 0;
     this.lastShootTimeLeft = 0;
     this.lastShootTimeRight = 0;
   }
@@ -84,48 +82,27 @@ module.exports = class Player {
       return [];
 
     let canShoot = false;
-    let numShots = 1;
 
     if (rightSide) {
       if (this.canShoot(true)) {
         canShoot = true;
         this.lastShootTimeRight = Date.now();
-        if (this.bullets >= 3 && Date.now() - this.rightHoldStart > TBHT)
-          numShots = 3;
-        else if (this.bullets >= 2 && Date.now() - this.rightHoldStart > DBHT)
-          numShots = 2;
       }
     } else {
       if (this.canShoot(false)) {
         canShoot = true;
         this.lastShootTimeLeft = Date.now();
-        if (this.bullets >= 3 && Date.now() - this.leftHoldStart > TBHT)
-          numShots = 3;
-        else if (this.bullets >= 2 && Date.now() - this.leftHoldStart > DBHT)
-          numShots = 2;
       }
     }
 
     if (canShoot) {
-      this.bullets -= numShots;
+      this.bullets -= 1;
       console.log(`SHOOT! bullets left: ${this.bullets}`);
       let side = (rightSide ? 1 : -1);
       let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
       let bullets = [new Bullet(this.x + offx, this.y + offy,
                                 this.angle + 3 * side * Math.PI / 8,
                                 this.id, 100)];
-      if (numShots >= 2) {
-        [offx, offy] = aux.rotate(this.angle, 20 * side, 0);
-        bullets.push(new Bullet(this.x + offx, this.y + offy,
-                                this.angle + 4 * side * Math.PI / 8,
-                                this.id, 100));
-      }
-      if (numShots == 3) {
-        [offx, offy] = aux.rotate(this.angle, 20 * side, 10);
-        bullets.push(new Bullet(this.x + offx, this.y + offy,
-                                this.angle + 5 * side * Math.PI / 8,
-                                this.id, 100));
-      }
       return bullets;
     } else {
       return [];
