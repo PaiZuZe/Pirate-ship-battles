@@ -48,26 +48,19 @@ function updateGame () {
     let p = game.playerList[k];
     p.updatePos(UPDATE_TIME);
 
-    if (p.inputs.shootLeft && !p.leftHoldStart && p.canShoot(false))
-      p.leftHoldStart = Date.now();
-    if (p.inputs.shootRight && !p.rightHoldStart && p.canShoot(true))
-      p.rightHoldStart = Date.now();
-
-    if (!p.inputs.shootLeft && p.leftHoldStart) {
+    if (p.inputs.shootLeft) {
       let newBullets = p.tryToShoot(false);
       for (const b of newBullets) {
         game.bulletList[b.id] = b;
         io.in('game').emit("bullet_create", b);
       }
-      p.leftHoldStart = 0;
     }
-    if (!p.inputs.shootRight && p.rightHoldStart) {
+    if (p.inputs.shootRight) {
       let newBullets = p.tryToShoot(true);
       for (const b of newBullets) {
         game.bulletList[b.id] = b;
         io.in('game').emit("bullet_create", b);
       }
-      p.rightHoldStart = 0;
     }
     //checking if outside safe-zone
     if (!circle.in_circle(p)) {
