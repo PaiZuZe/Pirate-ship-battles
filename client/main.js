@@ -111,7 +111,8 @@ class Main extends Phaser.Scene {
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
-    this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
+    //this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
+    this.load.image("stars", "client/assets/black.png")
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
@@ -151,6 +152,7 @@ class Main extends Phaser.Scene {
     if (mobileMode)
       this.input.addPointer(1);
 
+    // Safe zone boundaries
     let safe_zone = this.add.graphics();
     let color = 0xff0000;
     let thickness = 4;
@@ -166,7 +168,7 @@ class Main extends Phaser.Scene {
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
-      var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
+      var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201); // Thicker border = larger rectangle
       var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } });
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);

@@ -75,8 +75,7 @@ class Player extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createPlayer (data) {
   if (!player) {
-    console.log("Data " + data.x + " " + data.y)
-    player = new Player(this, data.x, data.y, data.username);
+    player = new Player(this, data.x, data.y, data.username); // calling constructor with data.x and data.y undefined
     hud = new HUD(this);
 
     /* Confirming collision shape -- dumb way

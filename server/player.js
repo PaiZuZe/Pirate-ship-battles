@@ -101,7 +101,7 @@ module.exports = class Player {
       let side = (rightSide ? 1 : -1);
       let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
       let bullets = [new Bullet(this.x + offx, this.y + offy,
-                                this.angle + 3 * side * Math.PI / 8,
+                                this.angle,
                                 this.id, 100)];
       return bullets;
     } else {
