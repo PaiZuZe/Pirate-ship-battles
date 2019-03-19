@@ -14,17 +14,18 @@ var stoneList = {}; // Stones list
 ////////////////////////////////////////////////////////////////////////////////
 // Client bullet class
 class Bullet {
-  constructor (scene, id, creator, x, y, z, speed) {
-    this.sizeX = 10;
-    this.sizeY = 10;
+  constructor (scene, id, creator, x, y, angle, speed) {
+    this.sizeX = 9;
+    this.sizeY = 54;
     this.creator = creator;
     this.id = id;
     this.speed = speed;
-    this.z = z;
-    this.zVelocity = 0;
-    this.shadow = scene.physics.add.image(x, y, "bullet_shadow");
+    //this.z = z;
+    //this.zVelocity = 0;
+    //this.shadow = scene.physics.add.image(x, y, "bullet_shadow");
     this.item = scene.physics.add.image(x, y, "bullet");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
+    this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
   }
 
@@ -32,13 +33,13 @@ class Bullet {
   update (data) {
     this.item.x = data.x;
     this.item.y = data.y;
-    this.z = data.z;
+    //this.z = data.z;
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    this.shadow.x = data.x;
+    /*this.shadow.x = data.x;
     this.shadow.y = data.y;
     this.shadow.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
-    this.shadow.setDepth(data.y);
+    this.shadow.setDepth(data.y);*/
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -167,7 +168,7 @@ function onCreateStone (data) {
 // Function called when new bullet is added at the server.
 function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
-    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.z, data.speed);
+    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed);
     bulletList[data.id] = newBullet;
   }
 }
