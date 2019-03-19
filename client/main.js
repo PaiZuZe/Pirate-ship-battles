@@ -168,12 +168,12 @@ class Main extends Phaser.Scene {
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
-      var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201); // Thicker border = larger rectangle
-      var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } });
+      var border = new Phaser.Geom.Rectangle(camera.width-202, 0, 202, 202); // Thicker border = larger rectangle
+      var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } }).setDepth(5150);
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
     }
-    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100);
+    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100).setAlpha(0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -213,6 +213,8 @@ class Main extends Phaser.Scene {
       if (player.life < this.player_life) {
         if (this.blink_timer > 0) {
           this.blink_timer -= 0.05;
+          if (this.explosion.alpha == 0)
+            this.explosion.setAlpha(1);
           this.explosion.x = player.body.x;
           this.explosion.y = player.body.y;
           if (signalExplosion == 1) {
