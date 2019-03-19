@@ -228,7 +228,7 @@ function onNewPlayer (data) {
   }
   let newPlayer = new Player(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
                  aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
-                 Math.PI / 2, this.id, data.username);
+                 0, this.id, data.username);
 
   while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
     newPlayer.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
@@ -330,7 +330,7 @@ function collidePlayerAndBullet (p1, bullet) {
   if (!(p1.id in game.playerList) || !(bullet.id in game.bulletList) || bullet.creator == p1.id)
     return;
 
-  if (SAT.testPolygonCircle(p1.poly, bullet.poly)) {
+  if (SAT.testPolygonPolygon(p1.poly, bullet.poly)) {
     game.score_board.update_score(bullet.creator);
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);

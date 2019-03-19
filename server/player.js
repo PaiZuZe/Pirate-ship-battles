@@ -51,14 +51,14 @@ module.exports = class Player {
       new SAT.Vector(-37, 1),
       new SAT.Vector(-13, -13)
     ]);
-    this.prowLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
+    /*this.prowLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(48, -1),
       new SAT.Vector(48, 1)
     ]);
     this.middleLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(24, -18),
       new SAT.Vector(24, 18)
-    ]);
+    ]);*/
     this.inputs = {
    			up: false,
       left: false,
@@ -121,9 +121,10 @@ module.exports = class Player {
   //////////////////////////////////////////////////////////////////////////////
   addAngle (angle) {
     this.angle += angle;
-    this.poly.setAngle(this.angle-Math.PI/2);
-    this.prowLine.setAngle(this.angle-Math.PI/2);
-    this.middleLine.setAngle(this.angle-Math.PI/2);
+    //this.poly.setAngle(this.angle-Math.PI/2);
+    this.poly.setAngle(this.angle);
+    //this.prowLine.setAngle(this.angle-Math.PI/2);
+    //this.middleLine.setAngle(this.angle-Math.PI/2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -132,10 +133,10 @@ module.exports = class Player {
     this.y += y;
     this.poly.pos.x = this.x;
     this.poly.pos.y = this.y;
-    this.prowLine.pos.x = this.x;
+    /*this.prowLine.pos.x = this.x;
     this.prowLine.pos.y = this.y;
     this.middleLine.pos.x = this.x;
-    this.middleLine.pos.y = this.y;
+    this.middleLine.pos.y = this.y;*/
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -144,10 +145,10 @@ module.exports = class Player {
     this.y = y;
     this.poly.pos.x = this.x;
     this.poly.pos.y = this.y;
-    this.prowLine.pos.x = this.x;
+    /*this.prowLine.pos.x = this.x;
     this.prowLine.pos.y = this.y;
     this.middleLine.pos.x = this.x;
-    this.middleLine.pos.y = this.y;
+    this.middleLine.pos.y = this.y;*/
   }
 
   //////////////////////////////////////////////////////////////////////////////
