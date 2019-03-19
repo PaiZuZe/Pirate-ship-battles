@@ -157,7 +157,7 @@ function addIslands () {
       }
     }
 
-    let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
+    let islandentity = new Island(temp_x, temp_y, 85, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
   }
@@ -186,7 +186,7 @@ function addStones () {
       }
     }
 
-    let stoneentity = new Stone(temp_x, temp_y, 65, game.canvasWidth, game.canvasHeight);
+    let stoneentity = new Stone(temp_x, temp_y, 50, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
   }
@@ -243,6 +243,7 @@ function onNewPlayer (data) {
   }
   console.log("Created new player with id " + this.id);
 
+  //this.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
   this.emit('create_player', data);
 
   let current_info = {
@@ -397,8 +398,11 @@ function collidePlayerAndIslandRestore (p1, isl) {
 function collidePlayerAndStone (p1, stn) {
   if (!(p1.id in game.playerList) || !(stn.id in game.stoneList))
     return;
-
+  /*
   if (SAT.testPolygonCircle(p1.poly, stn.collision_poly)) {
+    playerKilled(p1);
+  }*/
+  if (SAT.testPolygonPolygon(p1.poly, stn.collision_poly)) {
     playerKilled(p1);
   }
 }

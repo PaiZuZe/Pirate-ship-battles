@@ -6,7 +6,7 @@
 
 var enemies = {};
 var player = null;
-const LABEL_DIFF = 45;
+const LABEL_DIFF = 70;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Ship                                                                       //
@@ -46,7 +46,7 @@ class Player extends Ship {
     super();
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-    let sprite = "ship_up";
+    let sprite = "ship";
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
@@ -75,8 +75,30 @@ class Player extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createPlayer (data) {
   if (!player) {
+    console.log("Data " + data.x + " " + data.y)
     player = new Player(this, data.x, data.y, data.username);
     hud = new HUD(this);
+
+    /* Confirming collision shape -- dumb way
+    let colpoly = this.add.graphics();
+    let color = 0xff0000;
+    let thickness = 4;
+    let alpha = 0.5;
+    let smoothness = 64;
+    colpoly.lineStyle(thickness, color, alpha);
+
+    points = new Array();
+    for (let i = 0; i < data.poly.points.length; i++) {
+      points[2*i] = data.x + data.poly.points[i].x;
+      points[2*i + 1] = data.y + data.poly.points[i].y;
+    }
+    console.log(points);
+    let poly = new Phaser.Geom.Polygon(points);
+    colpoly.strokePoints(poly.points, true);
+
+    colpoly.fillStyle(color, alpha);
+    colpoly.fillPoints(poly.points, true);
+    */
   }
 }
 
@@ -88,7 +110,7 @@ class Enemy extends Ship {
     super();
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
-    let sprite = "ship_up";
+    let sprite = "ship";
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);

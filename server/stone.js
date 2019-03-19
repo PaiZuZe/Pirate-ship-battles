@@ -19,7 +19,16 @@ module.exports = class Stone {
       this.y = y;
       this.radius = radius;
       this.id = unique.v4();
-      this.collision_poly = new SAT.Circle(new SAT.Vector(this.x, this.y), radius);
+      this.collision_poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
+        new SAT.Vector(-34, -41),
+        new SAT.Vector(24, -41),
+        new SAT.Vector(50, -2),
+        new SAT.Vector(34, 31),
+        new SAT.Vector(10, 27),
+        new SAT.Vector(-22, 40),
+        new SAT.Vector(-50, 9),
+      ]);
+      //this.collision_poly = new SAT.Circle(new SAT.Vector(this.x, this.y), radius);
     } catch(err) {
       console.log("Stone constructor: " + err);
     }

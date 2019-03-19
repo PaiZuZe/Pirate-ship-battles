@@ -36,14 +36,20 @@ module.exports = class Player {
     this.life_counter = 0;
     this.anchored_timer = 0;
     this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-      new SAT.Vector(-47, -4),
-      new SAT.Vector(-33, -19),
-      new SAT.Vector(24, -18),
-      new SAT.Vector(48, -1),
-      new SAT.Vector(48, 1),
-      new SAT.Vector(24, 18),
-      new SAT.Vector(-33, 19),
-      new SAT.Vector(-47, 4)
+      new SAT.Vector(-9, -38),
+      new SAT.Vector(1, -38),
+      new SAT.Vector(11, -13),
+      new SAT.Vector(35, 1),
+      new SAT.Vector(48, -7),
+      new SAT.Vector(43, 21),
+      new SAT.Vector(13, 26),
+      new SAT.Vector(6, 36),
+      new SAT.Vector(-8, 36),
+      new SAT.Vector(-16, 26),
+      new SAT.Vector(-45, 21),
+      new SAT.Vector(-50, -7),
+      new SAT.Vector(-37, 1),
+      new SAT.Vector(-13, -13)
     ]);
     this.prowLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(48, -1),
@@ -105,7 +111,7 @@ module.exports = class Player {
       console.log(`SHOOT! bullets left: ${this.bullets}`);
       let side = (rightSide ? 1 : -1);
       let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
-      let bullets = [new Bullet(this.x + offx, this.y + offy, 
+      let bullets = [new Bullet(this.x + offx, this.y + offy,
                                 this.angle + 3 * side * Math.PI / 8,
                                 this.id, 100)];
       if (numShots >= 2) {

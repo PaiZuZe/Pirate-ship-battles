@@ -84,6 +84,7 @@ class Main extends Phaser.Scene {
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('stone_create', onCreateStone.bind(this));
+    //socket.on('stone_shape', drawCollisionPoly.bind(this)); // Checking collision shape
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
@@ -98,16 +99,17 @@ class Main extends Phaser.Scene {
 
   //////////////////////////////////////////////////////////////////////////////
   preload () {
-    this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
+    //this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
     this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
-    this.load.image("ship_up", "client/assets/up_ship.png");
-    this.load.image("bullet", "client/assets/cannon_ball.png");
+    this.load.image("ship", "client/assets/spaceship.png");
+    this.load.image("ship-alt", "client/assets/spaceship-alt.png");
+    this.load.image("bullet", "client/assets/laser.png");
     this.load.image("big_bullet", "client/assets/big_bullet.png");
     this.load.image("heart", "client/assets/heart.png");
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
     this.load.image("barrel", "client/assets/barrel.png");
-    this.load.image("island", "client/assets/island.png");
-    this.load.image("stone", "client/assets/stone.png");
+    this.load.image("station", "client/assets/station.png");
+    this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
     this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     this.load.image('base_controller', 'client/assets/base_controller.png');
@@ -165,7 +167,7 @@ class Main extends Phaser.Scene {
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
       var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
-      var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+      var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } });
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
     }

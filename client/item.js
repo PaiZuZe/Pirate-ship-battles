@@ -76,9 +76,9 @@ class Box {
 class Island {
   constructor (scene, id, x, y, r) {
     this.sizeX = 172;
-    this.sizeY = 131;
+    this.sizeY = 172;
     this.id = id;
-    this.island = scene.add.image(x, y, "island");
+    this.island = scene.add.image(x, y, "station");
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
     this.island.par_obj = this; // Just to associate this id with the image
@@ -96,12 +96,17 @@ class Island {
 // Client Stone class
 class Stone {
   constructor (scene, id, x, y, r) {
-    this.sizeX = 100; //111;
-    this.sizeY = 100; //145;
+    this.sizeX = 101; //111;
+    this.sizeY = 84; //145;
     this.id = id;
-    this.stone = scene.add.image(x, y, "stone");
+    this.stone = scene.add.image(x, y, "asteroid");
     this.stone.setDisplaySize(this.sizeX, this.sizeY);
     this.stone.setSize(this.sizeX, this.sizeY);
+
+    /* Scalable sprites would be better but would require scalable collision shapes
+    this.stone = scene.add.sprite(x, y, "asteroid");
+    this.stone.setScale(0.75, 0.75);
+    */
     this.stone.par_obj = this; // Just to associate this id with the image
   }
 
@@ -143,7 +148,7 @@ function onItemRemove (data) {
 function onCreateIsland (data) {
   if (!(data.id in islandList)) {
     console.log(`Criando ilha ${data.id}`);
-    let newIsland = new Island(this, data.id, data.x, data.y, data.r);
+    let newIsland = new Island(this, data.id, data.x, data.y, data.radius);
     islandList[data.id] = newIsland;
   }
 }
@@ -153,7 +158,7 @@ function onCreateIsland (data) {
 function onCreateStone (data) {
   if (!(data.id in stoneList)) {
     console.log(`Criando pedra ${data.id}`);
-    let newStone = new Stone(this, data.id, data.x, data.y, data.r);
+    let newStone = new Stone(this, data.id, data.x, data.y, data.radius);
     stoneList[data.id] = newStone;
   }
 }
