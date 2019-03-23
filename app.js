@@ -92,19 +92,29 @@ function updateGame () {
       if (p2.id < p1.id)
         collidePlayers(p1, p2);
     }
-    for (const kb in game.boxList)
+    for (const kb in game.boxList) {
       collidePlayerAndBox(p1, game.boxList[kb]);
+    }
 
-    for (const kb in game.bulletList)
+    for (const kb in game.bulletList) {
       collidePlayerAndBullet(p1, game.bulletList[kb]);
-
-      for (const kb in game.islandList) {
-        collidePlayerAndIslandRestore(p1, game.islandList[kb]);
+    }
+    /*Find a better way to do this*/ 
+    let in_island = false;
+    for (const kb in game.islandList) {
+      collidePlayerAndIsland(p1, game.islandList[kb]);
+      if (collidePlayerAndIslandRestore(p1, game.islandList[kb])) {
+        in_island = true;
       }
-
-      for (const kb in game.stoneList) {
-        collidePlayerAndStone(p1, game.stoneList[kb]);
+    }
+    if (in_island == false) {
+      if (p1.anchored_timer > 0) {
+        p1.anchored_timer -= 1;
       }
+    }
+    for (const kb in game.stoneList) {
+      collidePlayerAndStone(p1, game.stoneList[kb]);
+    }
   }
 
   io.in('game').emit("update_game", {playerList:  game.playerList,
@@ -344,57 +354,36 @@ function collidePlayerAndBullet (p1, bullet) {
 ////////////////////////////////////////////////////////////////////////////////
 // Called to verify player is in island restore area
 function collidePlayerAndIslandRestore (p1, isl) {
-  if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
-    return;
+  if (!(p1.id in game.playerList) || !(isl.id in game.islandList)) {
+    return false;
+  }
 
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
-
-    // Player has touched island area, and is waiting
     if (p1.anchored_timer < 180) {
-      io.to(p1.id).emit("disable_inputs");
-      p1.speed = 0;
-      p1.accel = 0;
       p1.anchored_timer += 1;
     }
 
-    // Player is ready to be freed
     else {
-      // Move player on server and client
-      del_x = p1.x - isl.x;
-      del_y = p1.y - isl.y;
-      theta = Math.atan2(del_y, del_x);
-      // Setting anchored_timer to zero here may cause issues, because
-      // the player is still in contact with the island's restore poly.
-      // We should make this state known to the game (something like, moving_away).
-      p1.angle = theta + Math.PI/2;
-
-      if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
-        //Waiting for player to move out of the area
-        p1.addPos(Math.sign(Math.cos(theta)) * 0.5, Math.sign(Math.sin(theta)) * 0.5);
-
-        t_p1_poly = JSON.parse(JSON.stringify(p1.poly));
-        t_p1_poly.pos.x = p1.x;
-        t_p1_poly.pos.y = p2.y;
-
-        // Player left the area after this movement
-        if (!SAT.testPolygonCircle(t_p1_poly, isl.restore_poly)) {
-          p1.gainResource(game.delta, game.mod, isl.type);
-          p1.anchored_timer = 0;
-        }
-      }
+      p1.gainResource(game.delta, game.mod, isl.type);
+      p1.anchored_timer = 0;
     }
+    return true;
   }
+  return false;
 }
 
+function collidePlayerAndIsland (p1, isl) {
+  if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
+    return false;
+  if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
+    playerKilled(p1);
+  }
+}
 
 // Called to verify player is in stone area
 function collidePlayerAndStone (p1, stn) {
   if (!(p1.id in game.playerList) || !(stn.id in game.stoneList))
     return;
-  /*
-  if (SAT.testPolygonCircle(p1.poly, stn.collision_poly)) {
-    playerKilled(p1);
-  }*/
   if (SAT.testPolygonPolygon(p1.poly, stn.collision_poly)) {
     playerKilled(p1);
   }
