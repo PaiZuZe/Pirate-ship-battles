@@ -6,6 +6,7 @@
   "author": "USPGameDev",
   "license": "ISC",
   "dependencies": {
+    "typescript": "^3.4.4",
     "express": "^4.15.2",
     "node-uuid": "^1.4.8",
     "nodemon": "^1.17.5",
@@ -16,7 +17,7 @@
   "scripts": {
     "start": "node app.js",
     "serve": "bash concat.sh client/target.js && npx nodemon app.js",
-    "up": "npx nodemon app.js",
+    "up": "tsc app.ts && npx nodemon app.js",
     "clienttest": "npx nodemon client_test.js",
     "test": "jest"
   },
