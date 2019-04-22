@@ -8,11 +8,11 @@ const SAT = require('sat');
 const Bullet = require('./bullet.js');
 const aux = require('./_aux.js');
 
-const MAX_ACCEL = 50;
+const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;
-const ANGULAR_VEL = 0.5;
+const ANGULAR_VEL = 1;
 const DRAG_POWER = 1.5;
-const BULLET_COOLDOWN = 1000; // ms
+const BULLET_COOLDOWN = 500; // ms
 const DBHT = 500; // ms  // Double bullet hold time
 const TBHT = 1000; // ms  // Triple bullet hold time
 
@@ -94,7 +94,7 @@ module.exports = class Player {
       let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
       let bullets = [new Bullet(this.x + offx, this.y + offy,
                                 this.angle,
-                                this.id, 100)];
+                                this.id, 1000)];
       return bullets;
     } else {
       return [];
@@ -141,8 +141,8 @@ module.exports = class Player {
       this.speed = 0;
     this.addPos(Math.sin(this.angle)*this.speed*dt, -Math.cos(this.angle)*this.speed*dt);
     let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
-    this.addAngle((this.inputs.right)? ratio*ANGULAR_VEL*dt : 0);
-    this.addAngle((this.inputs.left)? -ratio*ANGULAR_VEL*dt : 0);
+    this.addAngle((this.inputs.right)? ANGULAR_VEL*dt : 0);
+    this.addAngle((this.inputs.left)? -1*ANGULAR_VEL*dt : 0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
