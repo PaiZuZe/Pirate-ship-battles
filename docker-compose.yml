@@ -6,6 +6,7 @@ services:
       - postgres
     ports:
       - "2000:2000"
+    command: sh -c 'while ! nc -z postgres 5432; do sleep 1; done; yarn up'
 
   postgres:
     image: postgres:11-alpine
