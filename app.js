@@ -13,6 +13,7 @@ const Stone = require('./server/stone.js');
 const ScoreBoard = require('./server/score_board.js');
 const aux = require('./server/_aux.js');
 const GameObj = require('./server/game.js');
+const { Pool, Client } = require('pg')
 
 let app = express();
 let serv = require('http').Server(app);
@@ -29,6 +30,17 @@ serv.listen({
 });
 
 console.log("Server started.");
+
+function creat_pool() {
+  const pool = new Pool({
+    user: 'postgres',
+    host: 'postgres',
+    database: 'ssb',
+    password: 'postgress',
+    port: 5432,
+  })
+  return pool;
+}
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
@@ -199,9 +211,13 @@ function addStones () {
 // Called after the player entered its name
 function onEntername (data) {
   console.log(`Received joinning request from ${this.id}, size: ${data.config.width}:${data.config.height}`);
-  console.log(`Name: ${data.username}, password: ${data.password}`);
-  if (data.username.length > 0 && data.username.length < 15)
-    this.emit('join_game', {username: data.username, id: this.id});
+  if (data.username.length > 0 && data.username.length < 15) {
+    let pool = creat_pool();
+    pool.query('INSERT INTO players(name, password) VALUES($1, $2)', [data.username, data.password])
+      .then((res) => this.emit('join_game', {username: data.username, id: this.id, password: data.password}))
+      .catch(err => this.emit('throw_error', {message: "Player already existis or wrong password"}))
+      .finally(() => pool.end())
+  }
   else if (data.username.length <= 0)
     this.emit('throw_error', {message: "Name can't be null"});
   else if (data.username.length >= 15)
