@@ -40,6 +40,13 @@ function onRemovePlayer (data) {
 	console.log('Player not found: ', data.id);
 }
 
+function onRemoveStone (data) {
+  var removeStone = stoneList[data.id];
+  removeStone.destroy();
+  delete stoneList[data.id];
+  return;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 function resetObjects () {
   enemies = {};
@@ -81,6 +88,7 @@ class Main extends Phaser.Scene {
     socket.on("create_player", createPlayer.bind(this));
     socket.on("new_enemyPlayer", createEnemy.bind(this));
     socket.on('remove_player', onRemovePlayer.bind(this));
+    socket.on('remove_stone', onRemoveStone.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('stone_create', onCreateStone.bind(this));

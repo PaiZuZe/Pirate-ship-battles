@@ -89,6 +89,9 @@ function updateGame () {
       continue;
     let bullet = game.bulletList[kb];
     bullet.updatePos(UPDATE_TIME);
+    for (const kt in game.stoneList) {
+      collideBulletAndStone(bullet, game.stoneList[kt]);
+    }
 
     if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
       delete game.bulletList[bullet.id];
@@ -350,6 +353,21 @@ function collidePlayerAndBox (p1, bx) {
   }
 }
 
+function collideBulletAndStone (bullet, stone) {
+  if (!(stone.id in game.stoneList) || !(bullet.id in game.bulletList))
+    return;
+  if (SAT.testPolygonPolygon(stone.collision_poly, bullet.poly)) {
+    delete game.bulletList[bullet.id];
+    io.in('game').emit('bullet_remove', bullet);
+    console.log(`Bullet hit ${stone.id}`);
+    stone.hp--;
+    if (stone.hp <= 0) {
+      game.score_board.update_score(bullet.creator);
+      stoneDestroyed(stone);
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Called to verify if a bullet collide with a player
 function collidePlayerAndBullet (p1, bullet) {
@@ -357,13 +375,14 @@ function collidePlayerAndBullet (p1, bullet) {
     return;
 
   if (SAT.testPolygonPolygon(p1.poly, bullet.poly)) {
-    game.score_board.update_score(bullet.creator);
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);
     console.log(`Bullet hit ${p1.username}`);
     p1.life--;
-    if (p1.life <= 0)
+    if (p1.life <= 0) {
+      game.score_board.update_score(bullet.creator);
       playerKilled(p1);
+    }
   }
 }
 
@@ -419,6 +438,14 @@ function playerKilled (player) {
   }
 
   player.dead = true;
+}
+
+function stoneDestroyed (stone) {
+  if (stone.id in game.stoneList) {
+    console.log(`${stone.id} was removed`);
+    delete game.stoneList[stone.id];
+    io.in('game').emit('remove_stone', stone);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

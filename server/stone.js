@@ -17,6 +17,7 @@ module.exports = class Stone {
 
       this.x = x;
       this.y = y;
+      this.hp = 7;
       this.radius = radius;
       this.id = unique.v4();
       this.collision_poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
