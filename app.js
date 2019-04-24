@@ -163,13 +163,13 @@ function addIslands () {
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
 
       for (let k in game.stoneList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
+        if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.stoneList[k]) < Math.sqrt(40)) {
           bad = true;
         }
       }
 
       for (let k in game.islandList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 3000 && Math.abs(temp_y - k.y) < 3000) {
+        if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.islandList[k]) < Math.sqrt(40)) {
           bad = true;
         }
       }
@@ -190,20 +190,20 @@ function addStones () {
       bad = false;
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
-
+       
       for (let k in game.stoneList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 300 && Math.abs(temp_y - k.y) < 300) {
+        if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.stoneList[k]) < Math.sqrt(40)) {
           bad = true;
         }
       }
 
       for (let k in game.islandList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
+        if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.islandList[k]) < Math.sqrt(40)) {
           bad = true;
         }
       }
     }
-
+    
     let stoneentity = new Stone(temp_x, temp_y, 50, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
@@ -229,9 +229,9 @@ function onEntername (data) {
 
 ////////////////////////////////////////////////////////////////////////////////
 function colliding (newPlayer) {
-  let minPlayerDist = 130*130;
-  let minIslandDist = 300*300;
-  let minStoneDist = 200*200;
+  let minPlayerDist = 200*200;
+  let minIslandDist = 500*500;
+  let minStoneDist = 500*500;
   // Check for players
   for (const k in game.playerList) {
     if (aux.distSq(newPlayer, game.playerList[k]) < minPlayerDist)
@@ -364,6 +364,7 @@ function collideBulletAndStone (bullet, stone) {
     if (stone.hp <= 0) {
       game.score_board.update_score(bullet.creator);
       stoneDestroyed(stone);
+      addStones();
     }
   }
 }
