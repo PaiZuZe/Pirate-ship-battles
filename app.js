@@ -114,7 +114,7 @@ function updateGame () {
     for (const kb in game.bulletList) {
       collidePlayerAndBullet(p1, game.bulletList[kb]);
     }
-    /*Find a better way to do this*/ 
+    /*Find a better way to do this*/
     let in_island = false;
     for (const kb in game.islandList) {
       collidePlayerAndIsland(p1, game.islandList[kb]);
@@ -190,7 +190,7 @@ function addStones () {
       bad = false;
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
-       
+
       for (let k in game.stoneList) {
         if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.stoneList[k]) < 100*50) {
           bad = true;
@@ -203,7 +203,7 @@ function addStones () {
         }
       }
     }
-    
+
     let stoneentity = new Stone(temp_x, temp_y, 50, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
@@ -218,8 +218,16 @@ function onEntername (data) {
     let pool = creat_pool();
     pool.query('INSERT INTO players(name, password) VALUES($1, $2)', [data.username, data.password])
       .then((res) => this.emit('join_game', {username: data.username, id: this.id, password: data.password}))
-      .catch(err => this.emit('throw_error', {message: "Player already existis or wrong password"}))
-      .finally(() => pool.end())
+      .catch(err => {
+        pool.query('SELECT password FROM players WHERE name = $1', [data.username])
+          .then((res) => {
+            if (res.rows[0].password == data.password)
+              this.emit('join_game', {username: data.username, id: this.id, password: data.password});
+            else this.emit('throw_error', {message: "Player already exists or wrong password"});
+          });
+      })
+      //.catch(err => this.emit('throw_error', {message: "Player already exists or wrong password"}))
+      .finally(() => pool.end());
   }
   else if (data.username.length <= 0)
     this.emit('throw_error', {message: "Name can't be null"});
