@@ -40,7 +40,7 @@ class HUD {
     }
     this.bulletImage = scene.add.image(70, 125, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
-    this.bullets = scene.add.text(100, 110, `${player.bullets}`, {color: "white", fontSize: 25, strokeThickness: 2});
+    this.bullets = scene.add.text(100, 110, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
     this.bullets.setScrollFactor(0).setDepth(5000);
     this.leftBulletBar = [];
     for (let i = 0; i < 3; i++) {
