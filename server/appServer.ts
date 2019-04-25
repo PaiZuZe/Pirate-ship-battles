@@ -7,6 +7,7 @@
 import { createServer, Server } from 'http';
 import * as express from 'express';
 import * as socketIO from 'socket.io';
+import * as path from 'path';
 
 export class AppServer {
   private app: express.Application; 
@@ -32,9 +33,9 @@ export class AppServer {
 
   private setClient(): void {
     this.app.get('/', function (req, res) {
-      res.sendFile(__dirname + '/index.html');
+      res.sendFile(path.normalize(__dirname + "/..") + '/index.html');
     });
-    this.app.use('/client', express.static(__dirname + '/client'));
+    this.app.use('/client', express.static(path.normalize(__dirname + "/..") + '/client'));
   }
 
   private sockets(): void {
