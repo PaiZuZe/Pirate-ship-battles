@@ -16,8 +16,9 @@ export class AppServer {
 
   constructor() {
     this.createApp();
-    this.createServer(); //let serv = new http.Server(app);
-    this.sockets(); //let io = require('socket.io')(serv,{});
+    this.createServer(); 
+    this.setClient();
+    this.sockets(); 
     this.listen();   
   }
 
@@ -27,6 +28,13 @@ export class AppServer {
 
   private createServer(): void {
     this.server = createServer(this.app);
+  }
+
+  private setClient(): void {
+    this.app.get('/', function (req, res) {
+      res.sendFile(__dirname + '/index.html');
+    });
+    this.app.use('/client', express.static(__dirname + '/client'));
   }
 
   private sockets(): void {
