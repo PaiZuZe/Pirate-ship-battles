@@ -21,6 +21,7 @@ class HUD {
     else {
       this.JS_ALL_SCALE = config.height / 540;
     }
+    this,scene = scene;
     this.JS_MARGIN = 120 * this.JS_ALL_SCALE;
     this.JS_RAD = 75;
     this.JS_X = this.JS_MARGIN;
@@ -105,7 +106,7 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   update () {
     // Update bullets
-    this.bullets.setText(`${player.bullets}`);
+    //this.bullets.setText(`${player.bullets}`);
 
     // Update life bar
     if (player.life < this.hearts.length) {
@@ -115,7 +116,7 @@ class HUD {
     } else if (player.life > this.hearts.length) {
       let beg = 70 + this.hearts.length*50;
       for (let i = 0; i < player.life - this.hearts.length; i++) {
-        let heart = scene.add.image(beg + 50*i, 110, "heart");
+        let heart = this.scene.add.image(beg + 50*i, 70, "heart");
         heart.setScrollFactor(0).setDepth(5000);
         this.hearts.push(heart);
       }

@@ -112,7 +112,7 @@ class Main extends Phaser.Scene {
     this.load.image("ship", "client/assets/spaceship.png");
     this.load.image("ship-alt", "client/assets/spaceship-alt.png");
     this.load.image("bullet", "client/assets/laser.png");
-    this.load.image("big_bullet", "client/assets/big_bullet.png");
+    this.load.image("big_bullet", "client/assets/laser.png");
     this.load.image("heart", "client/assets/heart.png");
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
     this.load.image("barrel", "client/assets/barrel.png");
