@@ -8,6 +8,8 @@ var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
 var stoneList = {}; // Stones list
+var botList = {}; // Stones list
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
@@ -48,6 +50,33 @@ class Bullet {
     this.shadow.destroy();
   }
 };
+
+class Bot {
+  constructor (scene, id, x, y, angle, speed) {
+    this.sizeX = 9;
+    this.sizeY = 54;
+    this.id = id;
+    this.speed = speed;
+    this.item = scene.physics.add.image(x, y, "ship");
+    this.item.setDisplaySize(this.sizeX, this.sizeY);
+    this.item.setAngle(angle * 180 / Math.PI);
+    this.item.par_obj = this; // Just to associate this id with the image
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  update (data) {
+    this.item.x = data.x;
+    this.item.y = data.y;
+    this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
+    this.item.setDepth(data.y);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.item.destroy();
+  }
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Box                                                                        //
@@ -170,6 +199,15 @@ function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
     let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed);
     bulletList[data.id] = newBullet;
+  }
+}
+
+function onCreateBot (data) {
+  console.log("Imma create a mofo named " + data.username + " ?");
+  if (!(data.id in botList)) {
+    console.log("Imma create a mofo named " + data.username + " !");
+    let newBot = new Bot(this, data.id, data.x, data.y, data.angle, 0);
+    botList[data.id] = newBot;
   }
 }
 

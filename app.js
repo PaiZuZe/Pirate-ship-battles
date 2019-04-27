@@ -9,6 +9,9 @@ const Player = require('./server/player.js');
 const Box = require('./server/box.js');
 const SafeZone = require('./server/safe_zone.js');
 const Island = require('./server/island.js');
+
+const Enemy = require('./server/enemy.js');
+
 const Stone = require('./server/stone.js');
 const ScoreBoard = require('./server/score_board.js');
 const aux = require('./server/_aux.js');
@@ -97,6 +100,14 @@ function updateGame () {
       delete game.bulletList[bullet.id];
       io.in('game').emit('bullet_remove', bullet);
     }
+  }
+
+  // Update bots
+  for (const kb in game.botList) {
+    if (!(kb in game.botList))
+      continue;
+    let bot = game.botList[kb];
+    bot.takeAction(game.playerList);
   }
 
   // Do collisions
@@ -471,6 +482,35 @@ function onClientDisconnect () {
   this.broadcast.emit('remove_player', {id: this.id});
 }
 
+function addEnemy () {
+  let id = Math.random();
+  let newEnemy = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+  aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
+  0, id);
+  
+  while (colliding(newEnemy) && !circle.in_circle(newEnemy)) {
+    newEnemy.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+    aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
+  }
+  
+  newEnemy.setPos(1000, 1000);
+
+  game.botList[newEnemy.id] = newEnemy;
+  
+  let current_info = {
+    id: newEnemy.id,
+    x: newEnemy.x,
+    y: newEnemy.y,
+    angle: newEnemy.angle,
+    username: "blob",
+  };
+  console.log("Created new Enemy with id " + id);
+  //send message to every connected client except the sender ?
+  io.in('game').emit("new_bot", current_info);
+  console.log("Created new Enemy with x, y " + newEnemy.x + " " + newEnemy.y);
+}
+
+
 let io = require('socket.io')(serv,{});
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -494,5 +534,7 @@ addBox();
 addIslands();
 // Prepare the stones
 addStones();
+
+addEnemy();
 
 ////////////////////////////////////////////////////////////////////////////////

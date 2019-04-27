@@ -15,6 +15,12 @@ module.exports = class Game {
     else {
       this.playerList = {};
     }
+    if (typeof dict == "object" && "botList" in dict) {
+      this.botList = dict["botList"];
+    }
+    else {
+      this.botList = {};
+    }
     /** @type Bullet{}*/
     if (typeof dict == "object" && "bulletList" in dict) {
       this.bulletList = dict["bulletList"];
