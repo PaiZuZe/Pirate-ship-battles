@@ -54,7 +54,7 @@ export class AppServer {
 
     this.io.on('connect', (socket: any) => {
       socket.join('login');
-      socket.on('enter_name', this.onEntername);
+      socket.on('enter_name', this.onEntername.bind(this, socket));
       socket.on('logged_in', function(data) {
         this.emit('enter_game', {username: data.username});
         socket.leave('login');
@@ -82,27 +82,29 @@ export class AppServer {
 
   ////////////////////////////////////////////////////////////////////////////////
   // Called after the player entered its name
-  private onEntername (data): void {
-    console.log(`Received joinning request from ${this.id}, size: ${data.config.width}:${data.config.height}`);
+  private onEntername (socket, data): void {
+    console.log(socket);
+    console.log(data);
+    console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
     if (data.username.length > 0 && data.username.length < 15) {
       let pool = this.createPool();
       pool.query('INSERT INTO players(name, password) VALUES($1, $2)', [data.username, data.password])
-        .then((res) => this.emit('join_game', {username: data.username, id: this.id, password: data.password}))
+        .then((res) => socket.emit('join_game', {username: data.username, id: socket.id, password: data.password}))
         .catch(err => {
           pool.query('SELECT password FROM players WHERE name = $1', [data.username])
             .then((res) => {
               if (res.rows[0].password == data.password)
-                this.emit('join_game', {username: data.username, id: this.id, password: data.password});
-              else this.emit('throw_error', {message: "Player already exists or wrong password"});
+                socket.emit('join_game', {username: data.username, id: socket.id, password: data.password});
+              else socket.emit('throw_error', {message: "Player already exists or wrong password"});
             });
         })
         //.catch(err => this.emit('throw_error', {message: "Player already exists or wrong password"}))
         .finally(() => pool.end());
     }
     else if (data.username.length <= 0)
-      this.emit('throw_error', {message: "Name can't be null"});
+      this.io.emit('throw_error', {message: "Name can't be null"});
     else if (data.username.length >= 15)
-      this.emit('throw_error', {message: "Name is too long"});
+      this.io.emit('throw_error', {message: "Name is too long"});
   }
   
   public getApp(): express.Application {
