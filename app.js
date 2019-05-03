@@ -86,6 +86,18 @@ function updateGame () {
     }
   }
 
+    // Update bots
+    for (const b in game.botList) {
+      if (!(b in game.botList)) 
+        continue;
+      let bot = game.botList[b];
+      let newBullets = bot.takeAction(game.playerList);
+      for (const b of newBullets) {
+        game.bulletList[b.id] = b;
+        io.in('game').emit("bullet_create", b);
+      }
+    }
+
   // Update bullets
   for (const kb in game.bulletList) {
     if (!(kb in game.bulletList))
@@ -102,18 +114,7 @@ function updateGame () {
     }
   }
 
-  // Update bots
-  for (const b in game.botList) {
-    if (!(b in game.botList)) 
-      continue;
-    let bot = game.botList[b];
-    bot.takeAction(game.playerList);
-    for (const kb in game.bulletList) {
-      collideBotAndBullet(bot, game.bulletList[kb]);
-    }
-  }
-
-  // Do collisions
+  // Do player collisions
   for (const k1 in game.playerList) {
     let p1 = game.playerList[k1];
     for (const k2 in game.playerList) {
@@ -143,13 +144,20 @@ function updateGame () {
     }
     for (const kb in game.stoneList) {
       collidePlayerAndStone(p1, game.stoneList[kb]);
+    } 
+  }
+
+  // Do bot collisions
+  for (const b in game.botList) {
+    let bot = game.botList[b];
+    for (const kb in game.bulletList) {
+      collideBotAndBullet(bot, game.bulletList[kb]);
     }
   }
 
-  io.in('game').emit("update_game", { playerList:  game.playerList,
+  io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
                                       bulletList:  game.bulletList,
-                                      score_board: game.score_board,
-                                      botList: game.botList});
+                                      score_board: game.score_board});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

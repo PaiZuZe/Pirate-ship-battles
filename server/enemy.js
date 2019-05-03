@@ -39,7 +39,7 @@ module.exports = class Enemy {
         new SAT.Vector(-37, 1),
         new SAT.Vector(-13, -13)
       ]);
-      this.agro = new SAT.Circle(new SAT.Vector(this.x, this.y), 100);
+      this.agro = new SAT.Circle(new SAT.Vector(this.x, this.y), 500);
       this.inputs = {
                  up: false,
         left: false,
@@ -51,48 +51,49 @@ module.exports = class Enemy {
     }
 
     takeAction(playerList) {
-      let playersToConsider = [];
+      var playersToConsider = [];
       for (const k in playerList) {
         let p = playerList[k];
-         /*
-        if (SAT.testPolygonPolygon(p.poly, this.agro)) {
+        if (SAT.testPolygonCircle(p.poly, this.agro)) {
           playersToConsider.push(p);
         }
-        */
       }
-      if (playersToConsider.lenth > 0) {
-        let player_index = Math.floor(Math.random() * playersToConsider.lenth);
+
+      if (playersToConsider.length > 0) {
+        let player_index = Math.floor(Math.random() * playersToConsider.length);
         this.allign_with(playersToConsider[player_index]);
+        let bullets = this.tryToShoot();
+        return bullets;
       }
+      return [];
     }
 
-    allign_with(object) {
-      del_x = this.x - object.x;
-      del_y = this.y - object.y;
-      theta = Math.atan2(del_y, del_x); 
-      this.angle = theta + Math.PI/2;
+    allign_with(target) {
+      var del_x = this.x - target.x;
+      var del_y = this.y - target.y;
+      var theta = Math.atan2(del_y, del_x); 
+      this.angle = theta - Math.PI/2;
     }
   
     //////////////////////////////////////////////////////////////////////////////
     /**
      * Attempts to shoot a bullet in the provided direction  taking  into  account
      * the last time it shot in the same direction.
-     * @param {Boolean} rightSide whether the ship is shooting from the right side
      * @returns {Bullet} The bullet just created, or null if it can not shoot
      */
-    tryToShoot (rightSide) {
+    tryToShoot () {
       let canShoot = false;
       if (this.canShoot()) {
           canShoot = true;
           this.lastShootTime = Date.now();
       }
       if (canShoot) {
-        console.log(`SHOOT! bullets left: ${this.bullets}`);
-        let side = (rightSide ? 1 : -1);
-        let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
-        let bullets = [new Bullet(this.x + offx, this.y + offy,
-                                  this.angle,
-                                  this.id, 1000)];
+        console.log(`Blob SHOOT!`);
+        let [offx1, offy1] = aux.rotate(this.angle, 20, -10);
+        let [offx2, offy2] = aux.rotate(this.angle, -20, -10);
+
+        let bullets = [ new Bullet(this.x + offx1, this.y + offy1, this.angle, this.id, 1000), 
+                        new Bullet(this.x + offx2, this.y + offy2, this.angle, this.id, 1000)];
         return bullets;
       } else {
         return [];
