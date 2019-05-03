@@ -15,6 +15,7 @@ module.exports = class Enemy {
       this.id = id;
       this.x = x;
       this.y = y;
+      this.username = "blob";
       this.angle = angle;
       this.speed = 0;
       this.accel = 0;

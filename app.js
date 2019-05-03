@@ -103,11 +103,14 @@ function updateGame () {
   }
 
   // Update bots
-  for (const kb in game.botList) {
-    if (!(kb in game.botList))
+  for (const b in game.botList) {
+    if (!(b in game.botList)) 
       continue;
-    let bot = game.botList[kb];
+    let bot = game.botList[b];
     bot.takeAction(game.playerList);
+    for (const kb in game.bulletList) {
+      collideBotAndBullet(bot, game.bulletList[kb]);
+    }
   }
 
   // Do collisions
@@ -143,9 +146,10 @@ function updateGame () {
     }
   }
 
-  io.in('game').emit("update_game", {playerList:  game.playerList,
-                                     bulletList:  game.bulletList,
-                                     score_board: game.score_board});
+  io.in('game').emit("update_game", { playerList:  game.playerList,
+                                      bulletList:  game.bulletList,
+                                      score_board: game.score_board,
+                                      botList: game.botList});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -318,6 +322,9 @@ function onNewPlayer (data) {
 
   for (let k in game.islandList)
     this.emit('island_create', game.islandList[k]);
+  
+  for (let k in game.botList)
+    this.emit('new_enemyPlayer', game.botList[k]);
 
   for (let k in game.stoneList)
     this.emit('stone_create', game.stoneList[k]);
@@ -406,6 +413,22 @@ function collidePlayerAndBullet (p1, bullet) {
   }
 }
 
+function collideBotAndBullet (bot, bullet) {
+  if (!(bot.id in game.botList) || !(bullet.id in game.bulletList) || bullet.creator == bot.id)
+    return;
+
+  if (SAT.testPolygonPolygon(bot.poly, bullet.poly)) {
+    delete game.bulletList[bullet.id];
+    io.in('game').emit('bullet_remove', bullet);
+    console.log(`Bullet hit the bot ${bot.id}`);
+    bot.life--;
+    if (bot.life <= 0) {
+      game.score_board.update_score(bullet.creator);
+      botKilled(bot);
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Called to verify player is in island restore area
 function collidePlayerAndIslandRestore (p1, isl) {
@@ -460,6 +483,17 @@ function playerKilled (player) {
   player.dead = true;
 }
 
+function botKilled (bot) {
+  console.log(`${bot.username} died!`);
+  if (bot.id in game.botList) {
+    console.log(`${bot.id} was killed :(`);
+    delete game.botList[bot.id];
+    io.in('game').emit('remove_player', bot);
+  }
+  bot.dead = true;
+  addBot();
+}
+
 function stoneDestroyed (stone) {
   if (stone.id in game.stoneList) {
     console.log(`${stone.id} was removed`);
@@ -482,34 +516,22 @@ function onClientDisconnect () {
   this.broadcast.emit('remove_player', {id: this.id});
 }
 
-function addEnemy () {
+function addBot () {
   let id = Math.random();
-  let newEnemy = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+  let newBot = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
   aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
   0, id);
   
-  while (colliding(newEnemy) && !circle.in_circle(newEnemy)) {
-    newEnemy.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+  while (colliding(newBot) && !circle.in_circle(newBot)) {
+    newBot.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
     aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
   }
   
-  newEnemy.setPos(1000, 1000);
-
-  game.botList[newEnemy.id] = newEnemy;
+  game.botList[newBot.id] = newBot;
   
-  let current_info = {
-    id: newEnemy.id,
-    x: newEnemy.x,
-    y: newEnemy.y,
-    angle: newEnemy.angle,
-    username: "blob",
-  };
-  console.log("Created new Enemy with id " + id);
   //send message to every connected client except the sender ?
-  io.in('game').emit("new_bot", current_info);
-  console.log("Created new Enemy with x, y " + newEnemy.x + " " + newEnemy.y);
+  io.in('game').emit("new_enemyPlayer", newBot);
 }
-
 
 let io = require('socket.io')(serv,{});
 
@@ -535,6 +557,6 @@ addIslands();
 // Prepare the stones
 addStones();
 
-addEnemy();
+addBot();
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -88,7 +88,6 @@ class Main extends Phaser.Scene {
     socket.on('enter_game', onSocketConnected);
     socket.on("create_player", createPlayer.bind(this));
     socket.on("new_enemyPlayer", createEnemy.bind(this));
-    socket.on("new_bot", onCreateBot.bind(this));
     socket.on('remove_player', onRemovePlayer.bind(this));
     socket.on('remove_stone', onRemoveStone.bind(this));
     socket.on('item_remove', onItemRemove);
