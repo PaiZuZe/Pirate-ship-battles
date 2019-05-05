@@ -13,7 +13,6 @@ entername.onclick = function () {
 
 ////////////////////////////////////////////////////////////////////////////////
 function throwError (data) {
-  //let errorLog = document.getElementById("errorLog");
   errorLog.textContent = data.message;
 }
 
