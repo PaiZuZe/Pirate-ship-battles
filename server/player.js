@@ -66,35 +66,25 @@ module.exports = class Player {
   /**
    * Attempts to shoot a bullet in the provided direction  taking  into  account
    * the last time it shot in the same direction.
-   * @param {Boolean} rightSide whether the ship is shooting from the right side
    * @returns {Bullet} The bullet just created, or null if it can not shoot
    */
-  tryToShoot (rightSide) {
+  tryToShoot () {
     if (this.bullets <= 0)
       return [];
 
     let canShoot = false;
 
-    if (rightSide) {
-      if (this.canShoot(true)) {
-        canShoot = true;
-        this.lastShootTimeRight = Date.now();
-      }
-    } else {
-      if (this.canShoot(false)) {
-        canShoot = true;
-        this.lastShootTimeLeft = Date.now();
-      }
+    if (this.canShoot(true)) {
+      canShoot = true;
+      this.lastShootTimeRight = Date.now();
     }
 
     if (canShoot) {
-      this.bullets -= 1;
-      console.log(`SHOOT! bullets left: ${this.bullets}`);
-      let side = (rightSide ? 1 : -1);
-      let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
-      let bullets = [new Bullet(this.x + offx, this.y + offy,
-                                this.angle,
-                                this.id, 1000)];
+      console.log(`SHOOT! fire from: ${this.username}`);
+      let [offx, offy] = aux.rotate(this.angle, 20, -10);
+      let [offx1, offy1] = aux.rotate(this.angle, -20, -10);
+      let bullets = [ new Bullet(this.x + offx, this.y + offy, this.angle, this.id, 1000),
+                      new Bullet(this.x + offx1, this.y + offy1, this.angle, this.id, 1000)];
       return bullets;
     } else {
       return [];

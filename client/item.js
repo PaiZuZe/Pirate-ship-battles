@@ -21,9 +21,6 @@ class Bullet {
     this.creator = creator;
     this.id = id;
     this.speed = speed;
-    //this.z = z;
-    //this.zVelocity = 0;
-    //this.shadow = scene.physics.add.image(x, y, "bullet_shadow");
     this.item = scene.physics.add.image(x, y, "bullet");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
@@ -34,19 +31,14 @@ class Bullet {
   update (data) {
     this.item.x = data.x;
     this.item.y = data.y;
-    //this.z = data.z;
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    /*this.shadow.x = data.x;
-    this.shadow.y = data.y;
-    this.shadow.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
-    this.shadow.setDepth(data.y);*/
+
   }
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
-    //this.shadow.destroy();
   }
 };
 
@@ -99,17 +91,12 @@ class Island {
 // Client Stone class
 class Stone {
   constructor (scene, id, x, y, r) {
-    this.sizeX = 101; //111;
-    this.sizeY = 84; //145;
+    this.sizeX = 101;
+    this.sizeY = 84;
     this.id = id;
     this.stone = scene.add.image(x, y, "asteroid");
     this.stone.setDisplaySize(this.sizeX, this.sizeY);
     this.stone.setSize(this.sizeX, this.sizeY);
-
-    /* Scalable sprites would be better but would require scalable collision shapes
-    this.stone = scene.add.sprite(x, y, "asteroid");
-    this.stone.setScale(0.75, 0.75);
-    */
     this.stone.par_obj = this; // Just to associate this id with the image
   }
 
@@ -187,10 +174,8 @@ function onItemRemove (data) {
     console.log("Could not find box to remove");
     return;
   }
-
   //destroy the phaser object
   boxList[data.id].destroy();
-
   delete boxList[data.id];
 }
 
@@ -240,10 +225,8 @@ function onBulletRemove (data) {
     console.log("Could not find bullet to remove");
     return;
   }
-
   //destroy the phaser object
   bulletList[data.id].destroy();
-
   delete bulletList[data.id];
 }
 

@@ -114,7 +114,6 @@ class Main extends Phaser.Scene {
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
-    //this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     this.load.image("stars", "client/assets/black.png")
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');

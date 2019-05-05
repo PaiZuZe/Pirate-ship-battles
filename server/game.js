@@ -70,6 +70,13 @@ module.exports = class Game {
     else {
       this.numOfBoxes = 0;
     }
+    if (typeof dict == "object" && "botMax" in dict) {
+      this.botMax = dict["botMax"];
+    }
+    else {
+      this.botMax = 1;
+    }
+
     // The max number of islands in the game
     if (typeof dict == "object" && "islandMax" in dict) {
       this.islandMax = dict["islandMax"];
