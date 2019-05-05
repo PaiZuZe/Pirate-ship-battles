@@ -82,9 +82,7 @@ export class AppServer {
 
   ////////////////////////////////////////////////////////////////////////////////
   // Called after the player entered its name
-  private onEntername (socket, data): void {
-    console.log(socket);
-    console.log(data);
+  private onEntername (socket: any, data: any): void {                        
     console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
     if (data.username.length > 0 && data.username.length < 15) {
       let pool = this.createPool();
