@@ -155,6 +155,10 @@ function updateGame () {
     }
   }
 
+  //change max number of bots
+  game.botMax = Math.max(1, Math.ceil(Object.keys(game.playerList).length / 2));
+  addBot();
+
   io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
                                       bulletList:  game.bulletList,
                                       score_board: game.score_board});
@@ -182,8 +186,8 @@ function addIslands () {
     let bad = true;
     while (bad) {
       bad = false;
-      var temp_x = aux.getRndInteger(0, game.canvasWidth);
-      var temp_y = aux.getRndInteger(0, game.canvasHeight);
+      var temp_x = aux.getRndInteger(0, game.canvasWidth - 1);
+      var temp_y = aux.getRndInteger(0, game.canvasHeight - 1);
 
       for (let k in game.stoneList) {
         if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.stoneList[k]) < 100*100) {
@@ -211,8 +215,8 @@ function addStones () {
     let bad = true;
     while (bad) {
       bad = false;
-      var temp_x = aux.getRndInteger(0, game.canvasWidth);
-      var temp_y = aux.getRndInteger(0, game.canvasHeight);
+      var temp_x = aux.getRndInteger(0, game.canvasWidth - 1);
+      var temp_y = aux.getRndInteger(0, game.canvasHeight - 1);
 
       for (let k in game.stoneList) {
         if (bad == false && aux.distSq({x: temp_x, y: temp_y}, game.stoneList[k]) < 100*50) {
@@ -531,20 +535,23 @@ function onClientDisconnect () {
 }
 
 function addBot () {
-  let id = Math.random();
-  let newBot = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-  aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
-  0, id);
-  
-  while (colliding(newBot) && !circle.in_circle(newBot)) {
-    newBot.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-    aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
+  let n = game.botMax - Object.keys(game.botList).length;
+  for (let i = 0; i < n; i++) {
+    let id = Math.random();
+    let newBot = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+    aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
+    0, id);
+    
+    while (colliding(newBot) && !circle.in_circle(newBot)) {
+      newBot.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+      aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
+    }
+
+    game.botList[newBot.id] = newBot;
+
+    //send message to every connected client except the sender ?
+    io.in('game').emit("new_enemyPlayer", newBot);
   }
-  
-  game.botList[newBot.id] = newBot;
-  
-  //send message to every connected client except the sender ?
-  io.in('game').emit("new_enemyPlayer", newBot);
 }
 
 let io = require('socket.io')(serv,{});
@@ -564,8 +571,8 @@ io.sockets.on('connection', function(socket) {
   socket.on("input_fired", onInputFired);
 });
 
-// Prepare the boxes
-addBox();
+// Prepare the boxes. they do nothing now.
+//addBox();
 // Prepare the islands
 addIslands();
 // Prepare the stones
