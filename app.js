@@ -398,6 +398,9 @@ function collideBulletAndStone (bullet, stone) {
       stoneDestroyed(stone);
       addStones();
     }
+    else {
+      io.in('game').emit('stone_hit', stone);
+    }
   }
 }
 
@@ -418,6 +421,9 @@ function collidePlayerAndBullet (p1, bullet) {
       }
       playerKilled(p1);
     }
+    else {
+      io.in('game').emit('player_hit', p1);
+    }
   }
 }
 
@@ -435,6 +441,9 @@ function collideBotAndBullet (bot, bullet) {
         game.score_board.update_score(bullet.creator);
       }
       botKilled(bot);
+    }
+    else {
+      io.in('game').emit('player_hit', bot);
     }
   }
 }

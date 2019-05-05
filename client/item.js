@@ -201,6 +201,12 @@ function onCreateStone (data) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function called when stone needs to be removed at the client.
+function onStoneHit (data) {
+  let stoneExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when stone needs to be removed at the client.
 function onRemoveStone (data) {
   let stoneExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
   var removeStone = stoneList[data.id];

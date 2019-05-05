@@ -102,6 +102,30 @@ function createPlayer (data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+function onPlayerHit (data) {
+  let playerExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function onRemovePlayer (data) {
+	if (data.id in enemies) {
+    let playerExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+		var removePlayer = enemies[data.id];
+		removePlayer.destroy();
+		delete enemies[data.id];
+		return;
+	}
+	if (data.id == socket.id) {
+    resetObjects();
+    this.disableInputs();
+    game.scene.stop('Main');
+		game.scene.start('Login');
+		return;
+	}
+	console.log('Player not found: ', data.id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Enemy                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Enemy extends Ship {

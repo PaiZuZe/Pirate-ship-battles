@@ -23,25 +23,6 @@ function onSocketConnected (data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function onRemovePlayer (data) {
-	if (data.id in enemies) {
-    let stoneExplosion = new Explosion(this, data.x, data.y, 1, 50, 450);
-		var removePlayer = enemies[data.id];
-		removePlayer.destroy();
-		delete enemies[data.id];
-		return;
-	}
-	if (data.id == socket.id) {
-    resetObjects();
-    this.disableInputs();
-    game.scene.stop('Main');
-		game.scene.start('Login');
-		return;
-	}
-	console.log('Player not found: ', data.id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 function resetObjects () {
   enemies = {};
   hud = null;
@@ -83,10 +64,12 @@ class Main extends Phaser.Scene {
     socket.on("create_player", createPlayer.bind(this));
     socket.on("new_enemyPlayer", createEnemy.bind(this));
     socket.on('remove_player', onRemovePlayer.bind(this));
+    socket.on('player_hit', onPlayerHit.bind(this));
     socket.on('remove_stone', onRemoveStone.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('stone_create', onCreateStone.bind(this));
+    socket.on('stone_hit', onStoneHit.bind(this));
     //socket.on('stone_shape', drawCollisionPoly.bind(this)); // Checking collision shape
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('bullet_remove', onBulletRemove);
@@ -210,34 +193,6 @@ class Main extends Phaser.Scene {
     if (player) {
       // Scroll camera to player's position (Phaser is a little buggy when doing this)
       this.cameras.main.setScroll(player.body.x, player.body.y);
-
-      // Make screen blink if player takes damage
-      /*
-      if (player.life < this.player_life) {
-        if (this.blink_timer > 0) {
-          this.blink_timer -= 0.05;
-          if (this.explosion.alpha == 0)
-            this.explosion.setAlpha(1);
-          this.explosion.x = player.body.x;
-          this.explosion.y = player.body.y;
-          if (signalExplosion == 1) {
-            countExplosion += 0.05;
-          } else {
-            countExplosion -= 0.05;
-          }
-          if (countExplosion > 1) {
-            signalExplosion = -1;
-          } else if (countExplosion < 0) {
-            signalExplosion = 1;
-          }
-          this.explosion.alpha = countExplosion;
-        }
-        else {
-          this.blink_timer = 2;
-          this.player_life = player.life;
-        }
-      }
-      */
 
       // Mini Map
       if (!this.mobileMode) {

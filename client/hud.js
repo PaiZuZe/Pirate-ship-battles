@@ -33,12 +33,8 @@ class HUD {
     this.BULLET_FILL_X = 30 * this.JS_ALL_SCALE;
     this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
-    this.hearts = [];
-    for (let i = 0; i < 3; i++) {
-      let heart = scene.add.image(70 + 50*i, 70, "heart");
-      heart.setScrollFactor(0).setDepth(5000);
-      this.hearts.push(heart);
-    }
+    this.health = scene.add.text(56, 56, `🛠 100`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.health.setScrollFactor(0).setDepth(5000);
     this.bulletImage = scene.add.image(70, 125, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
     this.bullets = scene.add.text(100, 110, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
@@ -109,18 +105,7 @@ class HUD {
     //this.bullets.setText(`${player.bullets}`);
 
     // Update life bar
-    if (player.life < this.hearts.length) {
-      let removed = this.hearts.splice(player.life, this.hearts.length - player.life);
-      for (let heart of removed)
-        heart.destroy();
-    } else if (player.life > this.hearts.length) {
-      let beg = 70 + this.hearts.length*50;
-      for (let i = 0; i < player.life - this.hearts.length; i++) {
-        let heart = this.scene.add.image(beg + 50*i, 70, "heart");
-        heart.setScrollFactor(0).setDepth(5000);
-        this.hearts.push(heart);
-      }
-    }
+    this.health.setText(`🛠 ${player.life}`);
 
     // Update bullet charge bar
     if (player.bullets != 0) {
@@ -222,10 +207,7 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   getGameObjects () {
     let objs = [];
-    objs.push(this.bulletImage, this.bullets, this.scoreBoard);
-    for (let i = 0; i < this.hearts.length; i++) {
-      objs.push(this.hearts[i]);
-    }
+    objs.push(this.health, this.bulletImage, this.bullets, this.scoreBoard);
     for (let i = 0; i < this.leftBulletBar.length; i++) {
       objs.push(this.leftBulletBar[i]);
     }
@@ -243,8 +225,7 @@ class HUD {
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
-    for (let i = 0; i < this.hearts.length; i++)
-      this.hearts[i].destroy();
+    this.health.destroy();
     this.bulletImage.destroy();
     this.bullets.destroy();
     if (this.mobileMode) {
