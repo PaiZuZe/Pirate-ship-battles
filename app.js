@@ -396,7 +396,9 @@ function collideBulletAndStone (bullet, stone) {
     console.log(`Bullet hit ${stone.id}`);
     stone.hp--;
     if (stone.hp <= 0) {
-      game.score_board.update_score(bullet.creator);
+      if (isNaN(bullet.creator)) {
+        game.score_board.update_score(bullet.creator);
+      }
       stoneDestroyed(stone);
       addStones();
     }
@@ -415,7 +417,9 @@ function collidePlayerAndBullet (p1, bullet) {
     console.log(`Bullet hit ${p1.username}`);
     p1.life--;
     if (p1.life <= 0) {
-      game.score_board.update_score(bullet.creator);
+      if (isNaN(bullet.creator)) {
+        game.score_board.update_score(bullet.creator);
+      }
       playerKilled(p1);
     }
   }
@@ -431,7 +435,9 @@ function collideBotAndBullet (bot, bullet) {
     console.log(`Bullet hit the bot ${bot.id}`);
     bot.life--;
     if (bot.life <= 0) {
-      game.score_board.update_score(bullet.creator);
+      if (isNaN(bullet.creator)) {
+        game.score_board.update_score(bullet.creator);
+      }
       botKilled(bot);
     }
   }

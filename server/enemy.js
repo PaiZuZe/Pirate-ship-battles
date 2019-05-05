@@ -6,7 +6,7 @@ const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;
 const ANGULAR_VEL = 1;
 const DRAG_POWER = 1.5;
-const BULLET_COOLDOWN = 500; // ms
+const BULLET_COOLDOWN = 1500; // ms
 
 
 
@@ -39,7 +39,7 @@ module.exports = class Enemy {
         new SAT.Vector(-37, 1),
         new SAT.Vector(-13, -13)
       ]);
-      this.agro = new SAT.Circle(new SAT.Vector(this.x, this.y), 500);
+      this.agro = new SAT.Circle(new SAT.Vector(this.x, this.y), 600);
       this.inputs = {
                  up: false,
         left: false,
@@ -61,9 +61,13 @@ module.exports = class Enemy {
 
       if (playersToConsider.length > 0) {
         let player_index = Math.floor(Math.random() * playersToConsider.length);
-        this.allign_with(playersToConsider[player_index]);
-        let bullets = this.tryToShoot();
-        return bullets;
+        var target_angle = this.allign_with(playersToConsider[player_index]);
+        this.addAngle((target_angle - this.angle) / 10);
+        this.addPos(Math.sin(this.angle)*4, -Math.cos(this.angle)*4);
+        if (aux.distSq(playersToConsider[player_index], this) < 400*400) {
+          let bullets = this.tryToShoot();
+          return bullets;
+        }
       }
       return [];
     }
@@ -72,7 +76,7 @@ module.exports = class Enemy {
       var del_x = this.x - target.x;
       var del_y = this.y - target.y;
       var theta = Math.atan2(del_y, del_x); 
-      this.angle = theta - Math.PI/2;
+      return theta - Math.PI/2;
     }
   
     //////////////////////////////////////////////////////////////////////////////
