@@ -25,6 +25,7 @@ function onSocketConnected (data) {
 ////////////////////////////////////////////////////////////////////////////////
 function onRemovePlayer (data) {
 	if (data.id in enemies) {
+    let stoneExplosion = new Explosion(this, data.x, data.y, 1, 50, 450);
 		var removePlayer = enemies[data.id];
 		removePlayer.destroy();
 		delete enemies[data.id];
@@ -38,13 +39,6 @@ function onRemovePlayer (data) {
 		return;
 	}
 	console.log('Player not found: ', data.id);
-}
-
-function onRemoveStone (data) {
-  var removeStone = stoneList[data.id];
-  removeStone.destroy();
-  delete stoneList[data.id];
-  return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +213,7 @@ class Main extends Phaser.Scene {
       this.cameras.main.setScroll(player.body.x, player.body.y);
 
       // Make screen blink if player takes damage
+      /*
       if (player.life < this.player_life) {
         if (this.blink_timer > 0) {
           this.blink_timer -= 0.05;
@@ -243,6 +238,7 @@ class Main extends Phaser.Scene {
           this.player_life = player.life;
         }
       }
+      */
 
       // Mini Map
       if (!this.mobileMode) {

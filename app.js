@@ -88,7 +88,7 @@ function updateGame () {
 
     // Update bots
     for (const b in game.botList) {
-      if (!(b in game.botList)) 
+      if (!(b in game.botList))
         continue;
       let bot = game.botList[b];
       let newBullets = bot.takeAction(game.playerList);
@@ -144,7 +144,7 @@ function updateGame () {
     }
     for (const kb in game.stoneList) {
       collidePlayerAndStone(p1, game.stoneList[kb]);
-    } 
+    }
   }
 
   // Do bot collisions
@@ -249,7 +249,6 @@ function onEntername (data) {
             else this.emit('throw_error', {message: "Player already exists or wrong password"});
           });
       })
-      //.catch(err => this.emit('throw_error', {message: "Player already exists or wrong password"}))
       .finally(() => pool.end());
   }
   else if (data.username.length <= 0)
@@ -330,7 +329,7 @@ function onNewPlayer (data) {
 
   for (let k in game.islandList)
     this.emit('island_create', game.islandList[k]);
-  
+
   for (let k in game.botList)
     this.emit('new_enemyPlayer', game.botList[k]);
 
@@ -535,14 +534,14 @@ function addBot () {
   let newBot = new Enemy(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
   aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
   0, id);
-  
+
   while (colliding(newBot) && !circle.in_circle(newBot)) {
     newBot.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
     aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
   }
-  
+
   game.botList[newBot.id] = newBot;
-  
+
   //send message to every connected client except the sender ?
   io.in('game').emit("new_enemyPlayer", newBot);
 }

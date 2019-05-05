@@ -46,7 +46,7 @@ class Bullet {
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
-    this.shadow.destroy();
+    //this.shadow.destroy();
   }
 };
 
@@ -120,6 +120,54 @@ class Stone {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Explosion                                                                  //
+////////////////////////////////////////////////////////////////////////////////
+// Client-only explosion class
+class Explosion {
+  constructor (scene, x, y, scale, attack, decay) {
+    this.sizeX = 100*scale;
+    this.sizeY = 100*scale;
+    this.explosion = scene.add.image(x, y, "explosion").setAlpha(0);
+    this.explosion.setDepth(5100);
+    this.explosion.setDisplaySize(this.sizeX, this.sizeY);
+    this.explosion.setSize(this.sizeX, this.sizeY);
+
+    this.tween = scene.tweens.add({
+      targets: this.explosion,
+      paused: false,
+      delay: 0,
+      duration: attack,
+      ease: "Sine.easeInOut",
+      alpha: {
+        getStart: () => 0,
+        getEnd: () => 1
+      },
+      onComplete: () => {
+        scene.tweens.add({
+          targets: this.explosion,
+          paused: false,
+          delay: 0,
+          duration: decay,
+          ease: "Sine.easeInOut",
+          alpha: {
+            getStart: () => 1,
+            getEnd: () => 0
+          },
+          onComplete: () => {
+            this.destroy();
+          }
+        });
+      }
+    });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.explosion.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +212,16 @@ function onCreateStone (data) {
     let newStone = new Stone(this, data.id, data.x, data.y, data.radius);
     stoneList[data.id] = newStone;
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when stone needs to be removed at the client.
+function onRemoveStone (data) {
+  let stoneExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+  var removeStone = stoneList[data.id];
+
+  removeStone.destroy();
+  delete stoneList[data.id];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
