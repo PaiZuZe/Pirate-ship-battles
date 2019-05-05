@@ -63,15 +63,8 @@ function updateGame () {
     let p = game.playerList[k];
     p.updatePos(UPDATE_TIME);
 
-    if (p.inputs.shootLeft) {
-      let newBullets = p.tryToShoot(false);
-      for (const b of newBullets) {
-        game.bulletList[b.id] = b;
-        io.in('game').emit("bullet_create", b);
-      }
-    }
-    if (p.inputs.shootRight) {
-      let newBullets = p.tryToShoot(true);
+    if (p.inputs.shootLeft || p.inputs.shootRight) {
+      let newBullets = p.tryToShoot();
       for (const b of newBullets) {
         game.bulletList[b.id] = b;
         io.in('game').emit("bullet_create", b);
