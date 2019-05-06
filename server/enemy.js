@@ -52,24 +52,22 @@ module.exports = class Enemy {
 
     takeAction(playerList) {
       var playersToConsider = [];
+      var bullets = [];
       for (const k in playerList) {
         let p = playerList[k];
         if (SAT.testPolygonCircle(p.poly, this.agro)) {
           playersToConsider.push(p);
         }
       }
-
       if (playersToConsider.length > 0) {
         let player_index = Math.floor(Math.random() * playersToConsider.length);
-        var target_angle = this.allign_with(playersToConsider[player_index]);
-        this.addAngle((target_angle - this.angle) / 10);
-        this.addPos(Math.sin(this.angle)*4, -Math.cos(this.angle)*4);
-        if (aux.distSq(playersToConsider[player_index], this) < 400*400) {
-          let bullets = this.tryToShoot();
-          return bullets;
-        }
+        this.aproach_target(playersToConsider[player_index]);
+        bullets = this.attack_target(playersToConsider[player_index]);
       }
-      return [];
+      else {
+        this.random_move();
+      }
+      return bullets;
     }
 
     allign_with(target) {
@@ -77,6 +75,27 @@ module.exports = class Enemy {
       var del_y = this.y - target.y;
       var theta = Math.atan2(del_y, del_x); 
       return theta - Math.PI/2;
+    }
+
+    random_move() {
+      this.addAngle(Math.PI / 72);
+      this.addPos(Math.sin(this.angle)*4, -Math.cos(this.angle)*4);
+      return;
+    }
+
+    aproach_target(target) {
+      var alligned_angle = this.allign_with(target);
+      this.addAngle((alligned_angle - this.angle) / 10);
+      this.addPos(Math.sin(this.angle)*4, -Math.cos(this.angle)*4);
+      return;
+    }
+
+    attack_target(target) {
+      if (aux.distSq(target, this) < 400*400) {
+        let bullets = this.tryToShoot();
+        return bullets;
+      }
+      return [];
     }
   
     //////////////////////////////////////////////////////////////////////////////
