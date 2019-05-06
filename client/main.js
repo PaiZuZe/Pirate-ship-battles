@@ -132,6 +132,7 @@ class Main extends Phaser.Scene {
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
     this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // Add second pointer for mobile
     if (mobileMode)
@@ -170,13 +171,14 @@ class Main extends Phaser.Scene {
         if (!this.mobileMode) {
           this.minimap.ignore(hud.getGameObjects());
         }
-        let jsFeat = hud.getJSFeatures();
+        let jsFeat = hud.getJSFeatures(); //mobile shit, fuck that my dude.
         let data = {
           up: (this.key_W.isDown || jsFeat[0]),
           left: (this.key_A.isDown || jsFeat[1]),
           right: (this.key_D.isDown || jsFeat[2]),
           shootLeft: (this.key_J.isDown || jsFeat[3]),
-          shootRight: (this.key_K.isDown || jsFeat[4])
+          shootRight: (this.key_K.isDown || jsFeat[4]),
+          boost: (this.key_SPACE.isDown)
         }
         socket.emit('input_fired', data);
       }

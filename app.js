@@ -350,6 +350,7 @@ function onInputFired (data) {
   movePlayer.inputs.right = data.right;
   movePlayer.inputs.shootLeft = data.shootLeft;
   movePlayer.inputs.shootRight = data.shootRight;
+  movePlayer.inputs.boost = data.boost;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -371,7 +372,7 @@ function collidePlayerAndBox (p1, bx) {
     return;
 
   if (SAT.testPolygonCircle(p1.poly, bx.poly)) {
-    p1.bullets += bx.bullets;
+    p1.fuel += bx.bullets;
 
     console.log(`Box with ${bx.bullets} bullets picked`);
     delete game.boxList[bx.id];
@@ -572,8 +573,8 @@ io.sockets.on('connection', function(socket) {
   socket.on("input_fired", onInputFired);
 });
 
-// Prepare the boxes. they do nothing now.
-//addBox();
+// Prepare the boxes. fuel cells now.
+addBox();
 // Prepare the islands
 addIslands();
 // Prepare the stones

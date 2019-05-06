@@ -35,6 +35,7 @@ module.exports = class Player {
     this.ammo_counter = 0;
     this.life_counter = 0; //Why is this a thing ???????
     this.anchored_timer = 0;
+    this.fuel = 100;
     this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(-9, -38),
       new SAT.Vector(1, -38),
@@ -56,7 +57,8 @@ module.exports = class Player {
       left: false,
       right: false,
       shootLeft: false,
-      shootRight: false
+      shootRight: false,
+      boost: false
     };
     this.lastShootTimeLeft = 0;
     this.lastShootTimeRight = 0;
@@ -129,10 +131,12 @@ module.exports = class Player {
     this.speed += this.accel*dt;
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
-    this.addPos(Math.sin(this.angle)*this.speed*dt, -Math.cos(this.angle)*this.speed*dt);
-    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
-    this.addAngle((this.inputs.right)? ANGULAR_VEL*dt : 0);
-    this.addAngle((this.inputs.left)? -1*ANGULAR_VEL*dt : 0);
+    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel; 
+    let mod = (this.inputs.boost && this.fuel) ? 2 : 1;
+    this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
+    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER); 
+    this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);
+    this.addAngle((this.inputs.left)? -mod*ANGULAR_VEL*dt : 0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
