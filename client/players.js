@@ -52,6 +52,7 @@ class Player extends Ship {
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
     this.bullets = 0;
+    this.life = 100;
     scene.cameras.main.startFollow(this.body);
     this.leftHoldStart = 0;
     this.rightHoldStart = 0;
@@ -64,6 +65,7 @@ class Player extends Ship {
     super.update(data);
     this.bullets = data.bullets;
     this.life = data.life;
+    this.fuel = data.fuel; //since bots are players, this should be undef for them, is that a problem ? I don't know.
     this.leftHoldStart = data.leftHoldStart;
     this.rightHoldStart = data.rightHoldStart;
     this.lastShootTimeLeft = data.lastShootTimeLeft;

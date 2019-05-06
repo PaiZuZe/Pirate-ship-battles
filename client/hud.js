@@ -33,8 +33,11 @@ class HUD {
     this.BULLET_FILL_X = 30 * this.JS_ALL_SCALE;
     this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
-    this.health = scene.add.text(56, 56, `🛠 100`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.health = scene.add.text(56, 26, `🛠 100`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.fuel = scene.add.text(56, 56, `🛠 blob`, {color: "white", fontSize: 32, strokeThickness: 2});
+
     this.health.setScrollFactor(0).setDepth(5000);
+    this.fuel.setScrollFactor(0).setDepth(5000);
     this.bulletImage = scene.add.image(70, 125, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
     this.bullets = scene.add.text(100, 110, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
@@ -106,6 +109,8 @@ class HUD {
 
     // Update life bar
     this.health.setText(`🛠 ${player.life}`);
+    this.fuel.setText(`Fuel: ${player.fuel}`);
+
 
     // Update bullet charge bar
     if (player.bullets != 0) {
@@ -207,7 +212,7 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   getGameObjects () {
     let objs = [];
-    objs.push(this.health, this.bulletImage, this.bullets, this.scoreBoard);
+    objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
     for (let i = 0; i < this.leftBulletBar.length; i++) {
       objs.push(this.leftBulletBar[i]);
     }
@@ -226,6 +231,7 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.health.destroy();
+    this.fuel.destroy();
     this.bulletImage.destroy();
     this.bullets.destroy();
     if (this.mobileMode) {
