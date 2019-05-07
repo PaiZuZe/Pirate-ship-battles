@@ -130,8 +130,7 @@ class Main extends Phaser.Scene {
     this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-    this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    this.key_SHIFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // Add second pointer for mobile
@@ -176,9 +175,8 @@ class Main extends Phaser.Scene {
           up: (this.key_W.isDown || jsFeat[0]),
           left: (this.key_A.isDown || jsFeat[1]),
           right: (this.key_D.isDown || jsFeat[2]),
-          shootLeft: (this.key_J.isDown || jsFeat[3]),
-          shootRight: (this.key_K.isDown || jsFeat[4]),
-          boost: (this.key_SPACE.isDown)
+          primary_fire: (this.key_SPACE.isDown),
+          boost: (this.key_SHIFT.isDown)
         }
         socket.emit('input_fired', data);
       }

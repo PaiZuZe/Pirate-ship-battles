@@ -63,7 +63,7 @@ function updateGame () {
     let p = game.playerList[k];
     p.updatePos(UPDATE_TIME);
 
-    if (p.inputs.shootLeft || p.inputs.shootRight) {
+    if (p.inputs.primary_fire) {
       let newBullets = p.tryToShoot();
       for (const b of newBullets) {
         game.bulletList[b.id] = b;
@@ -348,8 +348,7 @@ function onInputFired (data) {
   movePlayer.inputs.up = data.up;
   movePlayer.inputs.left = data.left;
   movePlayer.inputs.right = data.right;
-  movePlayer.inputs.shootLeft = data.shootLeft;
-  movePlayer.inputs.shootRight = data.shootRight;
+  movePlayer.inputs.primary_fire = data.primary_fire;
   movePlayer.inputs.boost = data.boost;
 }
 
