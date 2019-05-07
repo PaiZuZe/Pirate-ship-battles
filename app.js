@@ -50,8 +50,6 @@ const BULLET_LIFETIME = 5000; // ms
 
 const game = new GameObj();
 
-circle = new SafeZone(1000, 1000, 1000, game.canvasWidth, game.canvasHeight);
-
 setInterval(updateGame, 1000 * UPDATE_TIME);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,13 +66,6 @@ function updateGame () {
       for (const b of newBullets) {
         game.bulletList[b.id] = b;
         io.in('game').emit("bullet_create", b);
-      }
-    }
-    //checking if outside safe-zone
-    if (!circle.in_circle(p)) {
-      p.takeDamage(game.delta, game.mod);
-      if (p.life <= 0) {
-      playerKilled(p);
       }
     }
   }
@@ -137,6 +128,9 @@ function updateGame () {
     }
     for (const kb in game.stoneList) {
       collidePlayerAndStone(p1, game.stoneList[kb]);
+    }
+    for (const kb in game.debrisFieldList) {
+      collidePlayerAndDebrisField(p1, game.debrisFieldList[kb]);
     }
   }
 
@@ -286,7 +280,7 @@ function onNewPlayer (data) {
                  aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
                  0, this.id, data.username);
 
-  while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
+  while (colliding(newPlayer)) {
     newPlayer.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
              aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
   }
@@ -332,6 +326,8 @@ function onNewPlayer (data) {
 
   for (let k in game.stoneList)
     this.emit('stone_create', game.stoneList[k]);
+  for (let k in game.debrisFieldList)
+    this.emit("debris_create", game.debrisFieldList[k]);
 
   //send message to every connected client except the sender
   this.broadcast.emit('new_enemyPlayer', current_info);
@@ -486,6 +482,17 @@ function collidePlayerAndStone (p1, stn) {
   }
 }
 
+function collidePlayerAndDebrisField (p1, debries) {
+  if (!(p1.id in game.playerList) || !(debries.id in game.debrisFieldList))
+    return;
+  if (SAT.testPolygonCircle(p1.poly, debries.circle)) {
+    //p1.takeDamage(game.delta, game.mod);
+    if (p1.life <= 0) {
+      playerKilled(p1);
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Called when a someone dies
 function playerKilled (player) {
@@ -543,7 +550,7 @@ function addBot () {
     aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
     0, id);
 
-    while (colliding(newBot) && !circle.in_circle(newBot)) {
+    while (colliding(newBot)) {
       newBot.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
       aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
     }
@@ -552,6 +559,18 @@ function addBot () {
 
     //send message to every connected client except the sender ?
     io.in('game').emit("new_enemyPlayer", newBot);
+  }
+}
+
+function addDebrisField() {  
+  let n = game.debrisFieldMax - Object.keys(game.debrisFieldList).length;
+  for (let i = 0; i < n; i++) {
+    var x = aux.getRndInteger(0, game.canvasWidth - 1);
+    var y = aux.getRndInteger(0, game.canvasHeight - 1);
+    var radius = aux.getRndInteger(100, 300);
+    let debrisfieldentity = new SafeZone(x, y, radius, game.canvasWidth, game.canvasHeight);
+    game.debrisFieldList[debrisfieldentity.id] = debrisfieldentity;
+    io.in('game').emit("debris_create", debrisfieldentity);
   }
 }
 
@@ -580,5 +599,7 @@ addIslands();
 addStones();
 
 addBot();
+
+addDebrisField();
 
 ////////////////////////////////////////////////////////////////////////////////

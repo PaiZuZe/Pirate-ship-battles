@@ -35,6 +35,12 @@ module.exports = class Game {
     else {
       this.islandList = {};
     }
+    if (typeof dict == "object" && "debrisFieldList" in dict) {
+      this.debrisFieldList = dict["debrisFieldList"];
+    }
+    else {
+      this.debrisFieldList = {};
+    }
     //List of stones in the game
     if (typeof dict == "object" && "stoneList" in dict) {
       this.stoneList = dict["stoneList"];
@@ -75,6 +81,12 @@ module.exports = class Game {
     }
     else {
       this.botMax = 1;
+    }
+    if (typeof dict == "object" && "debrisFieldMax" in dict) {
+      this.debrisFieldMax = dict["debrisFieldMax"];
+    }
+    else {
+      this.debrisFieldMax = 3;
     }
 
     // The max number of islands in the game

@@ -32,6 +32,7 @@ function resetObjects () {
   islandList = {};
   stoneList = {};
   botList = {};
+  DebrisFieldList = {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +71,8 @@ class Main extends Phaser.Scene {
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('stone_create', onCreateStone.bind(this));
     socket.on('stone_hit', onStoneHit.bind(this));
-    //socket.on('stone_shape', drawCollisionPoly.bind(this)); // Checking collision shape
     socket.on('island_create', onCreateIsland.bind(this));
+    socket.on('debris_create', onCreatedebrisField.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('enable_inputs', this.enableInputs.bind(this));
@@ -136,16 +137,6 @@ class Main extends Phaser.Scene {
     // Add second pointer for mobile
     if (mobileMode)
       this.input.addPointer(1);
-
-    // Safe zone boundaries
-    let safe_zone = this.add.graphics();
-    let color = 0xff0000;
-    let thickness = 4;
-    let alpha = 1;
-    let smoothness = 64;
-    safe_zone.lineStyle(thickness, color, alpha);
-    let a = new Phaser.Geom.Point(1000, 1000);
-    safe_zone.strokeEllipse(a.x, a.y, 1000*2, 1000*2, smoothness);
 
     // Mini Map
     if (!this.mobileMode) {

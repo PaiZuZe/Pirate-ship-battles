@@ -22,6 +22,7 @@ module.exports = class SafeZone {
       this.circle = new SAT.Circle(center_x, center_y, radius);
       this.center_x = center_x;
       this.center_y = center_y;
+      this.id = unique.v4();
       this.radius = radius;
       this.radius_sqr = radius**2;
     } catch (err) {

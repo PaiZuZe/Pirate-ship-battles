@@ -8,6 +8,7 @@ var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
 var stoneList = {}; // Stones list
+var DebrisFieldList = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +107,34 @@ class Stone {
   }
 };
 
+class DebrisField {
+  constructor (scene, center_x, center_y, radius, id) {
+    this.id = id;
+    
+    this.debris_field = scene.add.graphics();
+    let color = 0xff0000;
+    let thickness = 4;
+    let alpha = 1;
+    let smoothness = 64;
+    this.debris_field.lineStyle(thickness, color, alpha);
+    let a = new Phaser.Geom.Point(center_x, center_y);
+    this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
+    this.debris_field.par_obj = this; // Just to associate this id with the image
+    /*
+    this.sizeX = 101;
+    this.sizeY = 84;
+    this.stone = scene.add.image(x, y, "asteroid");
+    this.stone.setDisplaySize(this.sizeX, this.sizeY);
+    this.stone.setSize(this.sizeX, this.sizeY);
+    */
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.debris_field.destroy();
+  }
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Explosion                                                                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -187,6 +216,12 @@ function onCreateIsland (data) {
     let newIsland = new Island(this, data.id, data.x, data.y, data.radius);
     islandList[data.id] = newIsland;
   }
+}
+
+function onCreatedebrisField (data) {
+  console.log(`Criando Debris Field ${data.id}`);
+  let newDebrisField = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
+  DebrisFieldList[data.id] = newDebrisField;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
