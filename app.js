@@ -224,7 +224,7 @@ function addStones () {
       }
     }
 
-    let stoneentity = new Stone(temp_x, temp_y, 50, game.canvasWidth, game.canvasHeight);
+    let stoneentity = new Stone(temp_x, temp_y, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
   }
