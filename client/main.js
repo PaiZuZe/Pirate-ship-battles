@@ -144,7 +144,7 @@ class Main extends Phaser.Scene {
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
-      var border = new Phaser.Geom.Rectangle(camera.width-202, 0, 202, 202); // Thicker border = larger rectangle
+      var border = new Phaser.Geom.Rectangle(camera.width-202, 0, 202, 202); // Larger rectangle = Thicker border
       var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } }).setDepth(5150);
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
