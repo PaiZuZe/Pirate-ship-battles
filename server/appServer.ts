@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//                            Space  Ship Battles                             //
+//                             Space Ship Battles                             //
 //                                                                            //
 //                             Server - AppServer                             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -9,19 +9,21 @@ import { Pool, Client } from 'pg';
 import * as express from 'express';
 import * as socketIO from 'socket.io';
 import * as path from 'path';
+import { RoomManager } from './roomManager';
 
 export class AppServer {
   private app: express.Application; 
   private server: Server;
   private io: socketIO.Server;
   private readonly port: number = 2000;
+  private roomManager: RoomManager = RoomManager.getInstance();
 
   constructor() {
     this.createApp();
     this.createServer(); 
     this.setClient();
     this.sockets(); 
-    this.listen();   
+    this.listen();
   }
 
   private createApp(): void {
@@ -55,12 +57,12 @@ export class AppServer {
     this.io.on('connect', (socket: any) => {
       socket.join('login');
       socket.on('enter_name', this.onEntername.bind(this, socket));
-      socket.on('logged_in', function(data) {
+      socket.on('logged_in', function(data) { 
         this.emit('enter_game', {username: data.username});
         socket.leave('login');
-        socket.join('game');
+        socket.join(this.roomManager.getRoom());
       });
-      //socket.on("new_player", onNewPlayer);
+      socket.on("new_player", this.onNewPlayer);
       //socket.on("input_fired", onInputFired);
       
       socket.on('disconnect', () => {   //socket.on('disconnect', onClientDisconnect);
@@ -80,7 +82,7 @@ export class AppServer {
     return pool;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////\///////////////////////////////////////////////////
   // Called after the player entered its name
   private onEntername (socket: any, data: any): void {                        
     console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
