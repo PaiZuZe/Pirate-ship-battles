@@ -6,8 +6,8 @@
 
 import * as SAT from 'sat';
 //const Bullet = require('./bullet.js');
-import * as aux from './aux';
 //import { DamageArtefact } from './damageArtefact';
+// import { something } from './aux';
 
 const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;

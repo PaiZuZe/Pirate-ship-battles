@@ -13,8 +13,8 @@ export class Room {
     private game: Game;
 
     constructor(num: number) {
-        this.name = 'room${num}';
+        this.name = 'room' + num;
         this.game = new Game();
-        setInterval(game.updateGame(), 1000 * UPDATE_TIME);
+        setInterval(this.game.updateGame, 1000 * UPDATE_TIME);
     }
 }

@@ -7,7 +7,6 @@
 import { Room } from './room';
 
 export class RoomManager {
-    
     private rooms: Room[];
     private static instance: RoomManager = new RoomManager();
  
@@ -18,7 +17,7 @@ export class RoomManager {
         RoomManager.instance = this;
         this.rooms = [new Room(0)];
     }
- 
+
     public static getInstance(): RoomManager {
         return RoomManager.instance;
     }
