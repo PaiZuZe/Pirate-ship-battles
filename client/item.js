@@ -110,7 +110,6 @@ class Stone {
 class DebrisField {
   constructor (scene, center_x, center_y, radius, id) {
     this.id = id;
-    
     this.debris_field = scene.add.graphics();
     let color = 0xff0000;
     let thickness = 4;

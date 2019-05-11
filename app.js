@@ -286,8 +286,8 @@ function onNewPlayer (data) {
   }
   console.log("Created new player with id " + this.id);
 
-  //this.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
-  this.emit('create_player', data);
+  this.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
+  //this.emit('create_player', data);
 
   let current_info = {
     id: newPlayer.id,
@@ -562,7 +562,7 @@ function addBot () {
   }
 }
 
-function addDebrisField() {  
+function addDebrisField() {
   let n = game.debrisFieldMax - Object.keys(game.debrisFieldList).length;
   for (let i = 0; i < n; i++) {
     var x = aux.getRndInteger(0, game.canvasWidth - 1);

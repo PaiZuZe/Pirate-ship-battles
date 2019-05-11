@@ -33,14 +33,14 @@ class HUD {
     this.BULLET_FILL_X = 30 * this.JS_ALL_SCALE;
     this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
-    this.health = scene.add.text(56, 26, `🛠`, {color: "white", fontSize: 32, strokeThickness: 2});
-    this.fuel = scene.add.text(56, 60, `⛽`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.health = scene.add.text(56, 36, `🛠`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.fuel = scene.add.text(56, 79, `⛽`, {color: "white", fontSize: 32, strokeThickness: 2});
 
     this.health.setScrollFactor(0).setDepth(5000);
     this.fuel.setScrollFactor(0).setDepth(5000);
-    this.bulletImage = scene.add.image(70, 125, "big_bullet");
+    this.bulletImage = scene.add.image(70, 150, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
-    this.bullets = scene.add.text(100, 110, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
+    this.bullets = scene.add.text(100, 135, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
     this.bullets.setScrollFactor(0).setDepth(5000);
     this.leftBulletBar = [];
     for (let i = 0; i < 3; i++) {
