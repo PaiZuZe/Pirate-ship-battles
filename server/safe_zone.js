@@ -6,7 +6,7 @@
 // The safe zone is a circle server-side that can change its size over time.
 // Due to the isometric view, its graphic representation is a circle.
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const unique = require('node-uuid');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ module.exports = class SafeZone {
       if (center_y < 0 || center_y >= max_y) throw "center_y must be non-negative or smaller than max_y";
       if (radius <= 0) throw "radius must be bigger than zero";
 
-      this.circle = new SAT.Circle(center_x, center_y, radius);
+      this.circle = new Circle(center_x, center_y, radius);
       this.center_x = center_x;
       this.center_y = center_y;
       this.id = unique.v4();

@@ -11,4 +11,3 @@ COPY . .
 EXPOSE 2000
 
 CMD [ "yarn", "up" ]
-

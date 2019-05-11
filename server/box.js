@@ -4,7 +4,7 @@
 //                                Server - Box                                //
 ////////////////////////////////////////////////////////////////////////////////
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const unique = require('node-uuid');
 const aux = require('./_aux.js');
 
@@ -18,7 +18,7 @@ module.exports = class Box {
     this.bullets = aux.getRndInteger(1, 10);
     this.type = type;
     this.id = unique.v4();
-    this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 9);
+    this.poly = new Circle(this.x, this.y, 9);
   }
 }
 

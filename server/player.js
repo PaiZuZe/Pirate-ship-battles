@@ -4,7 +4,7 @@
 //                              Server - Player                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const Bullet = require('./bullet.js');
 const aux = require('./_aux.js');
 
@@ -36,21 +36,21 @@ module.exports = class Player {
     this.life_counter = 0; //Why is this a thing ???????
     this.anchored_timer = 0;
     this.fuel = 100;
-    this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-      new SAT.Vector(-9, -38),
-      new SAT.Vector(1, -38),
-      new SAT.Vector(11, -13),
-      new SAT.Vector(35, 1),
-      new SAT.Vector(48, -7),
-      new SAT.Vector(43, 21),
-      new SAT.Vector(13, 26),
-      new SAT.Vector(6, 36),
-      new SAT.Vector(-8, 36),
-      new SAT.Vector(-16, 26),
-      new SAT.Vector(-45, 21),
-      new SAT.Vector(-50, -7),
-      new SAT.Vector(-37, 1),
-      new SAT.Vector(-13, -13)
+    this.poly = new Polygon(this.x, this.y, [
+      [-9, -38],
+      [1, -38],
+      [11, -13],
+      [35, 1],
+      [48, -7],
+      [43, 21],
+      [13, 26],
+      [6, 36],
+      [-8, 36],
+      [-16, 26],
+      [-45, 21],
+      [-50, -7],
+      [-37, 1],
+      [-13, -13]
     ]);
     this.inputs = {
    			up: false,
@@ -105,23 +105,23 @@ module.exports = class Player {
   //////////////////////////////////////////////////////////////////////////////
   addAngle (angle) {
     this.angle += angle;
-    this.poly.setAngle(this.angle);
+    this.poly.angle = this.angle;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   addPos (x, y) {
     this.x += x;
     this.y += y;
-    this.poly.pos.x = this.x;
-    this.poly.pos.y = this.y;
+    this.poly.x = this.x;
+    this.poly.y = this.y;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   setPos (x, y) {
     this.x = x;
     this.y = y;
-    this.poly.pos.x = this.x;
-    this.poly.pos.y = this.y;
+    this.poly.x = this.x;
+    this.poly.y = this.y;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -131,10 +131,10 @@ module.exports = class Player {
     this.speed += this.accel*dt;
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
-    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel; 
+    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
     let mod = (this.inputs.boost && this.fuel) ? 2 : 1;
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
-    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER); 
+    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);
     this.addAngle((this.inputs.left)? -mod*ANGULAR_VEL*dt : 0);
   }

@@ -1,4 +1,4 @@
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const Bullet = require('./bullet.js');
 const aux = require('./_aux.js');
 
@@ -23,23 +23,23 @@ module.exports = class Enemy {
       this.bullets = Infinity;
       this.life = 3;
       this.invul_time = 0;
-      this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-        new SAT.Vector(-9, -38),
-        new SAT.Vector(1, -38),
-        new SAT.Vector(11, -13),
-        new SAT.Vector(35, 1),
-        new SAT.Vector(48, -7),
-        new SAT.Vector(43, 21),
-        new SAT.Vector(13, 26),
-        new SAT.Vector(6, 36),
-        new SAT.Vector(-8, 36),
-        new SAT.Vector(-16, 26),
-        new SAT.Vector(-45, 21),
-        new SAT.Vector(-50, -7),
-        new SAT.Vector(-37, 1),
-        new SAT.Vector(-13, -13)
+      this.poly = new Polygon(this.x, this.y, [
+        [-9, -38],
+        [1, -38],
+        [11, -13],
+        [35, 1],
+        [48, -7],
+        [43, 21],
+        [13, 26],
+        [6, 36],
+        [-8, 36],
+        [-16, 26],
+        [-45, 21],
+        [-50, -7],
+        [-37, 1],
+        [-13, -13]
       ]);
-      this.agro = new SAT.Circle(new SAT.Vector(this.x, this.y), 600);
+      this.agro = new Circle(this.x, this.y, 600);
       this.inputs = {
                  up: false,
         left: false,
@@ -55,7 +55,7 @@ module.exports = class Enemy {
       var bullets = [];
       for (const k in playerList) {
         let p = playerList[k];
-        if (SAT.testPolygonCircle(p.poly, this.agro)) {
+        if (p.poly.collides(this.agro)) {
           playersToConsider.push(p);
         }
       }
@@ -73,7 +73,7 @@ module.exports = class Enemy {
     allign_with(target) {
       var del_x = this.x - target.x;
       var del_y = this.y - target.y;
-      var theta = Math.atan2(del_y, del_x); 
+      var theta = Math.atan2(del_y, del_x);
       return theta - Math.PI/2;
     }
 
@@ -97,7 +97,7 @@ module.exports = class Enemy {
       }
       return [];
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     /**
      * Attempts to shoot a bullet in the provided direction  taking  into  account
@@ -115,43 +115,43 @@ module.exports = class Enemy {
         let [offx1, offy1] = aux.rotate(this.angle, 20, -10);
         let [offx2, offy2] = aux.rotate(this.angle, -20, -10);
 
-        let bullets = [ new Bullet(this.x + offx1, this.y + offy1, this.angle, this.id, 1000), 
+        let bullets = [ new Bullet(this.x + offx1, this.y + offy1, this.angle, this.id, 1000),
                         new Bullet(this.x + offx2, this.y + offy2, this.angle, this.id, 1000)];
         return bullets;
       } else {
         return [];
       }
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     canShoot () {
       if (this.lastShootTime + BULLET_COOLDOWN < Date.now())
         return true;
       return false;
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     addAngle (angle) {
       this.angle += angle;
-      this.poly.setAngle(this.angle);
+      this.poly.angle = this.angle;
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     addPos (x, y) {
       this.x += x;
       this.y += y;
-      this.poly.pos.x = this.x;
-      this.poly.pos.y = this.y;
+      this.poly.x = this.x;
+      this.poly.y = this.y;
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     setPos (x, y) {
       this.x = x;
       this.y = y;
-      this.poly.pos.x = this.x;
-      this.poly.pos.y = this.y;
+      this.poly.x = this.x;
+      this.poly.y = this.y;
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     updatePos (dt) {
       this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
@@ -163,7 +163,7 @@ module.exports = class Enemy {
       this.addAngle((this.inputs.right)? ANGULAR_VEL*dt : 0);
       this.addAngle((this.inputs.left)? -1*ANGULAR_VEL*dt : 0);
     }
-  
+
     //////////////////////////////////////////////////////////////////////////////
     takeDamage (delta, mod) {
       this.invul_time += delta;

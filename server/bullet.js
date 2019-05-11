@@ -4,7 +4,7 @@
 //                              Server - Bullet                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const unique = require('node-uuid');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,9 +19,9 @@ module.exports = class Bullet {
     this.speed = speed;
     this.creator = creator;
     this.timeCreated = Date.now();
-    this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-      new SAT.Vector(0, -26),
-      new SAT.Vector(0, 26)
+    this.poly = new Polygon(this.x, this.y, [
+      [0, -26],
+      [0, 26]
     ]);
     this.id = unique.v4();
   }
@@ -30,13 +30,14 @@ module.exports = class Bullet {
   addPos (x, y) {
     this.x += x;
     this.y += y;
-    this.poly.pos.x = this.x;
-    this.poly.pos.y = this.y;
+    this.poly.x = this.x;
+    this.poly.y = this.y;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   updatePos (dt) {
     this.addPos(Math.sin(this.angle) * this.speed * dt, -Math.cos(this.angle) * this.speed * dt);
+    this.poly.angle = this.angle;
   }
 }
 

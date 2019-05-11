@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const unique = require('node-uuid');
 
 module.exports = class Stone {
@@ -18,14 +18,14 @@ module.exports = class Stone {
       this.y = y;
       this.hp = 7;
       this.id = unique.v4();
-      this.collision_poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-        new SAT.Vector(-34, -41),
-        new SAT.Vector(24, -41),
-        new SAT.Vector(50, -2),
-        new SAT.Vector(34, 31),
-        new SAT.Vector(10, 27),
-        new SAT.Vector(-22, 40),
-        new SAT.Vector(-50, 9),
+      this.collision_poly = new Polygon(this.x, this.y, [
+        [-34, -41],
+        [24, -41],
+        [50, -2],
+        [34, 31],
+        [10, 27],
+        [-22, 40],
+        [-50, 9],
       ]);
     } catch(err) {
       console.log("Stone constructor: " + err);

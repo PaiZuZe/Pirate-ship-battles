@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const SAT = require('sat');
+const {Circle, Polygon} = require('./collisions/Collisions.mjs');
 const unique = require('node-uuid');
 
 module.exports = class Island {
@@ -20,8 +20,8 @@ module.exports = class Island {
       this.radius = radius;
       this.type = type;
       this.id = unique.v4();
-      this.restore_poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 5 * radius);
-      this.collision_poly = new SAT.Circle(new SAT.Vector(this.x, this.y), radius);
+      this.restore_poly = new Circle(this.x, this.y, 5 * radius);
+      this.collision_poly = new Circle(this.x, this.y, radius);
     } catch(err) {
       console.log("Island constructor: " + err);
     }

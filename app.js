@@ -4,7 +4,7 @@
 
 const express = require('express');
 const unique = require('node-uuid');
-const SAT = require('sat');
+const {Circle, Polygon, Result} = require('./server/collisions/Collisions.mjs');
 const Player = require('./server/player.js');
 const Box = require('./server/box.js');
 const SafeZone = require('./server/safe_zone.js');
@@ -354,7 +354,7 @@ function collidePlayers (p1, p2) {
   if (!(p2.id in game.playerList) || !(p1.id in game.playerList)
     || p1.dead || p2.dead)
     return;
-  if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
+  if (p1.poly.collides(p2.poly)) {
         playerKilled(p1);
         playerKilled(p2);
   }
@@ -366,7 +366,7 @@ function collidePlayerAndBox (p1, bx) {
   if (!(p1.id in game.playerList) || !(bx.id in game.boxList))
     return;
 
-  if (SAT.testPolygonCircle(p1.poly, bx.poly)) {
+  if (p1.poly.collides(bx.poly)) {
     p1.fuel += bx.bullets;
 
     console.log(`Box with ${bx.bullets} bullets picked`);
@@ -382,7 +382,7 @@ function collidePlayerAndBox (p1, bx) {
 function collideBulletAndStone (bullet, stone) {
   if (!(stone.id in game.stoneList) || !(bullet.id in game.bulletList))
     return;
-  if (SAT.testPolygonPolygon(stone.collision_poly, bullet.poly)) {
+  if (stone.collision_poly.collides(bullet.poly)) {
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);
     console.log(`Bullet hit ${stone.id}`);
@@ -406,7 +406,7 @@ function collidePlayerAndBullet (p1, bullet) {
   if (!(p1.id in game.playerList) || !(bullet.id in game.bulletList) || bullet.creator == p1.id)
     return;
 
-  if (SAT.testPolygonPolygon(p1.poly, bullet.poly)) {
+  if (p1.poly.collides(bullet.poly)) {
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);
     console.log(`Bullet hit ${p1.username}`);
@@ -427,7 +427,7 @@ function collideBotAndBullet (bot, bullet) {
   if (!(bot.id in game.botList) || !(bullet.id in game.bulletList) || bullet.creator == bot.id)
     return;
 
-  if (SAT.testPolygonPolygon(bot.poly, bullet.poly)) {
+  if (bot.poly.collides(bullet.poly)) {
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);
     console.log(`Bullet hit the bot ${bot.id}`);
@@ -451,7 +451,7 @@ function collidePlayerAndIslandRestore (p1, isl) {
     return false;
   }
 
-  if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
+  if (p1.poly.collides(isl.restore_poly)) {
     if (p1.anchored_timer < 180) {
       p1.anchored_timer += 1;
     }
@@ -468,7 +468,7 @@ function collidePlayerAndIslandRestore (p1, isl) {
 function collidePlayerAndIsland (p1, isl) {
   if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
     return false;
-  if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
+  if (p1.poly.collides(isl.collision_poly)) {
     playerKilled(p1);
   }
 }
@@ -477,7 +477,7 @@ function collidePlayerAndIsland (p1, isl) {
 function collidePlayerAndStone (p1, stn) {
   if (!(p1.id in game.playerList) || !(stn.id in game.stoneList))
     return;
-  if (SAT.testPolygonPolygon(p1.poly, stn.collision_poly)) {
+  if (p1.poly.collides(stn.collision_poly)) {
     playerKilled(p1);
   }
 }
@@ -485,7 +485,9 @@ function collidePlayerAndStone (p1, stn) {
 function collidePlayerAndDebrisField (p1, debries) {
   if (!(p1.id in game.playerList) || !(debries.id in game.debrisFieldList))
     return;
-  if (SAT.testPolygonCircle(p1.poly, debries.circle)) {
+  let result = new Result();
+  if (p1.poly.collides(debries.circle, result)) {
+    console.log(result);
     //p1.takeDamage(game.delta, game.mod);
     if (p1.life <= 0) {
       playerKilled(p1);
