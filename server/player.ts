@@ -19,9 +19,9 @@ export class Player {
   public id: String;
   public username: String;
   private isDead: boolean = false;
-  private x: number;
-  private y: number;
-  private angle: number;
+  public x: number;
+  public y: number;
+  public angle: number;
   private speed: number = 0;
   private accel: number = 0;
   private hull: number = 3;

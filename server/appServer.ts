@@ -60,7 +60,7 @@ export class AppServer {
       socket.on('logged_in', function(data) { 
         this.io.emit('enter_game', {username: data.username});
         socket.leave('login');
-        socket.join(this.roomManager.getRoom());
+        socket.join(this.roomManager.pickRandomRoom(socket.id));
       }.bind(this));
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       //socket.on("input_fired", onInputFired);
@@ -108,15 +108,7 @@ export class AppServer {
 
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {
-
-    /*
-    GOTTA FIND OUT A WAY OF TREATING THIS ERROR
-    if (this.id in game.playerList) {
-      console.log(`Player with id ${this.id} already exists`);
-      return;
-    }
-    */
-    console.log(socket.id);
+    this.roomManager.newPlayer(socket, data);
   }
 
   public getApp(): express.Application {
