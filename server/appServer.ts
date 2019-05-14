@@ -16,14 +16,14 @@ export class AppServer {
   private server: Server;
   private io: socketIO.Server;
   private readonly port: number = 2000;
-  private roomManager: RoomManager = RoomManager.getInstance();
-
+  private roomManager: RoomManager; 
   constructor() {
     this.createApp();
     this.createServer(); 
     this.setClient();
     this.sockets(); 
     this.listen();
+    this.roomManager = new RoomManager(this.io);
   }
 
   private createApp(): void {
@@ -63,7 +63,7 @@ export class AppServer {
         socket.join(this.roomManager.pickRandomRoom(socket.id));
       }.bind(this));
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
-      //socket.on("input_fired", onInputFired);
+      socket.on("input_fired", this.onInputFired.bind(this, socket));
       
       socket.on('disconnect', () => {   //socket.on('disconnect', onClientDisconnect);
         console.log('Client disconnected');
@@ -109,6 +109,11 @@ export class AppServer {
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {
     this.roomManager.newPlayer(socket, data);
+  }
+
+  // Called when someone fired an input
+  private onInputFired (socket: any, data: any): void {
+    this.roomManager.inputFired(socket, data)
   }
 
   public getApp(): express.Application {

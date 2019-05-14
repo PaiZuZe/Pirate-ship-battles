@@ -7,6 +7,8 @@
 import { ScoreBoard } from './scoreBoard';
 import { Player } from './player';
 import { mapFloatToInt } from './aux';
+import * as socketIO from 'socket.io';
+
 /*
 import { Bot } from './bot';
 import { Station } from './station';
@@ -32,6 +34,7 @@ export class Room {
   private fuelCells: Map<String, FuelCell> = new Map<String, FuelCell>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
+  private io: socketIO.Server;
   
   // Game Propertires
   private fuelCellsMax: number = 15; 
@@ -43,13 +46,47 @@ export class Room {
   private canvasWidth: number = 2000; 
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
-  constructor(num: number) {
+  
+  constructor(io: socketIO.server, num: number) {
+      this.io = io;
       this.name = 'room' + num;
       this.scoreBoard = new ScoreBoard();
-      setInterval(this.updateGame, 1000 * UPDATE_TIME);
+      setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
   
   public updateGame(): void {
+    /*
+    // Update players
+    for (let k in game.playerList) {
+      if (!(k in game.playerList))
+        continue;
+      let p = game.playerList[k];
+      p.updatePos(UPDATE_TIME);
+
+      if (p.inputs.primary_fire) {
+        let newBullets = p.tryToShoot();
+        for (const b of newBullets) {
+          game.bulletList[b.id] = b;
+          io.in('game').emit("bullet_create", b);
+        }
+      }
+    }
+    */
+   
+    // Update Players'
+    if (this.players) 
+      this.players.forEach((value: Player, key: string) => {
+        if (!this.players.has(key))
+          return;
+        value.updatePos(UPDATE_TIME);
+      });
+  
+
+    /*
+    io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
+                                      bulletList:  game.bulletList, score_board: game.score_board});
+    */
+    this.io.in(this.name).emit("update_game", {playerList: Object. (this.players), score_board: this.scoreBoard})
   }
 
   public newPlayer(socket: any, data: any): void {
@@ -81,7 +118,7 @@ export class Room {
       username: newPlayer.username,
     };
 
-    this.players.forEach((value: Player, key: string) => {
+    this.players.forEach((value: Player, key: String) => {
         let player_info = {
             id: value.id,
             username: value.username,
@@ -116,5 +153,18 @@ export class Room {
     */
     //send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', current_info);
+  }
+
+  public inputFired(socket: any, data: any): void {
+    console.log("Chegou no room");
+    let player: Player = this.players.get(socket.id);
+    if (!this.players.has(socket.id) || this.players.get(socket.id).isDead)
+      return;
+
+    player.inputs.up = data.up;
+    player.inputs.left = data.left;
+    player.inputs.right = data.right;
+    player.inputs.primaryFire = data.primary_fire;
+    player.inputs.boost = data.boost;
   }
 }

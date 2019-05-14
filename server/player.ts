@@ -18,7 +18,7 @@ const BULLET_COOLDOWN = 500; // ms
 export class Player {
   public id: String;
   public username: String;
-  private isDead: boolean = false;
+  public isDead: boolean = false;
   public x: number;
   public y: number;
   public angle: number;
@@ -46,7 +46,7 @@ export class Player {
     new SAT.Vector(-37, 1),
     new SAT.Vector(-13, -13)
   ]);
-  private inputs = {
+  public inputs = {
     up: false,
     left: false,
     right: false,

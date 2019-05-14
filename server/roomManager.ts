@@ -5,17 +5,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import { Room } from './room';
+import * as socketIO from 'socket.io';
 
 export class RoomManager {
   private rooms: Room[];
-  private static instance: RoomManager = new RoomManager();
+  private io: socketIO.Server;
   public roomMap: Map<String, String> = new Map<String, String>(); 
  
-  private constructor() {
-    if (RoomManager.instance)
-      throw new Error("Error: Instantiation failed: Use RoomManager.getInstance() instead of new.");
-    RoomManager.instance = this;
-    this.rooms = [new Room(0)];
+  constructor(io: socketIO.Server) {
+    this.io = io;
+    this.rooms = [new Room(this.io, 0)];
   }
 
   private searchRoom(roomName: String): Room {
@@ -23,10 +22,6 @@ export class RoomManager {
       if (this.rooms[i].name == roomName) return this.rooms[i];
     }
     return;
-  }
-
-  public static getInstance(): RoomManager {
-      return RoomManager.instance;
   }
 
   public pickRandomRoom(playerId: String): String {
@@ -37,15 +32,30 @@ export class RoomManager {
   public newPlayer(socket: any, data: any): void {
     let playerRoomName: String = this.roomMap.get(socket.id);
     if (playerRoomName == null) {
-			console.log("Error: could not locate player room1.");
+			console.log("Error: could not locate player room.");
 			return;
 		}
 		let playerRoom = this.searchRoom(playerRoomName);
 		if (playerRoom == null) {
-			console.log("Error: could not locate player room2.");
+			console.log("Error: could not locate player room.");
 			return;
     }
     
 		playerRoom.newPlayer(socket, data);
-	}
+  }
+  
+  public inputFired(socket: any, data: any): void {
+    console.log(socket.id);
+    let playerRoomName: String = this.roomMap.get(socket.id);
+    if (playerRoomName == null) {
+			console.log("Error: could not locate player room2453.");
+			return;
+		}
+		let playerRoom = this.searchRoom(playerRoomName);
+		if (playerRoom == null) {
+			console.log("Error: could not locate player room.");
+			return;
+    }
+		playerRoom.inputFired(socket, data);
+  }
 }
