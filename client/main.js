@@ -57,7 +57,6 @@ function resetObjects () {
  * @param {{playerList: {}, bulletList: {}}} data
  */
 function onUpdate (data) {
-  console.log(data.playerList);
 	for (const k in data.playerList) {
 		if (k in enemies)
 			enemies[k].update(data.playerList[k]);

@@ -6,8 +6,9 @@
 
 import { ScoreBoard } from './scoreBoard';
 import { Player } from './player';
-import { mapFloatToInt } from './aux';
+import { mapFloatToInt, fromEntries } from './aux';
 import * as socketIO from 'socket.io';
+import 'polyfill-object.fromentries';
 
 /*
 import { Bot } from './bot';
@@ -22,16 +23,16 @@ const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
 
 export class Room {
-  public name: String; 
+  public name: string; 
   // Game Elements
-  private players: Map<String, Player> = new Map<String, Player>();
+  private players: Map<string, Player> = new Map<string, Player>();
   /*
-  private bots: Map<String, Bot> = new Map<String, Bot>();  
-  private damageArtefacts: Map<String, DamageArtefact> = new Map<String, DamageArtefact>();
-  private stations: Map<String, Station> = new Map<String, Station>();
-  private debrisField: Map<String, DebrisField> = new Map<String, DebrisField>();
-  private asteroids: Map<String, Asteroid> = new Map<String, Asteroid>();
-  private fuelCells: Map<String, FuelCell> = new Map<String, FuelCell>();
+  private bots: Map<string, Bot> = new Map<string, Bot>();  
+  private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
+  private stations: Map<string, Station> = new Map<string, Station>();
+  private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
+  private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
+  private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
   private io: socketIO.Server;
@@ -86,7 +87,13 @@ export class Room {
     io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
                                       bulletList:  game.bulletList, score_board: game.score_board});
     */
-    this.io.in(this.name).emit("update_game", {playerList: Object. (this.players), score_board: this.scoreBoard})
+
+    let obj = fromEntries(this.players);
+    //console.log(obj);
+       
+    this.io.in(this.name).emit("update_game", 
+                               {playerList: obj, 
+                                score_board: this.scoreBoard})
   }
 
   public newPlayer(socket: any, data: any): void {
@@ -118,7 +125,7 @@ export class Room {
       username: newPlayer.username,
     };
 
-    this.players.forEach((value: Player, key: String) => {
+    this.players.forEach((value: Player, key: string) => {
         let player_info = {
             id: value.id,
             username: value.username,
@@ -156,7 +163,6 @@ export class Room {
   }
 
   public inputFired(socket: any, data: any): void {
-    console.log("Chegou no room");
     let player: Player = this.players.get(socket.id);
     if (!this.players.has(socket.id) || this.players.get(socket.id).isDead)
       return;

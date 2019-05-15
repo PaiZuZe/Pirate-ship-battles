@@ -16,6 +16,9 @@ class Ship {
 
   //////////////////////////////////////////////////////////////////////////////
   update (data) {
+    console.log(data.x);
+    console.log(data.y);
+    console.log("=======");
     this.body.x = data.x;
     this.body.y = data.y;
     this.body.setVelocity(Math.sin(data.angle) * data.speed, -(Math.cos(data.angle) * data.speed));

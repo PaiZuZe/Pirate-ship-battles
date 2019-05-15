@@ -45,7 +45,6 @@ export class RoomManager {
   }
   
   public inputFired(socket: any, data: any): void {
-    console.log(socket.id);
     let playerRoomName: String = this.roomMap.get(socket.id);
     if (playerRoomName == null) {
 			console.log("Error: could not locate player room2453.");
