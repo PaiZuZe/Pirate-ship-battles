@@ -8,7 +8,6 @@ import { ScoreBoard } from './scoreBoard';
 import { Player } from './player';
 import { mapFloatToInt, fromEntries } from './aux';
 import * as socketIO from 'socket.io';
-import 'polyfill-object.fromentries';
 
 /*
 import { Bot } from './bot';

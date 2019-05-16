@@ -34,7 +34,6 @@ export function fromEntries(map) {
   map.forEach((value, key) => {
     obj[key] = value;
   });
-  console.log(obj);
   return obj;
 }
   

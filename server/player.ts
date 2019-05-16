@@ -54,11 +54,12 @@ export class Player {
     boost: false
   };
   
-  constructor (x, y, angle, id, username) {
-    this.id = id;
-    this.username = username;
+  constructor (x: number, y: number, angle: number, id: String, username: String) {
     this.x = x;
     this.y = y;
+    this.id = id;
+    this.angle = angle;
+    this.username = username;
   }
 
   private addAngle(angle: number): void {
