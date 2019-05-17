@@ -10,6 +10,8 @@ RUN yarn add @types/node --dev
 
 RUN yarn add @types/express --dev
 
+RUN yarn add @types/socket.io --dev
+
 COPY . .
 
 EXPOSE 2000

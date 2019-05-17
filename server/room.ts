@@ -47,7 +47,7 @@ export class Room {
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
   
-  constructor(io: socketIO.server, num: number) {
+  constructor(io: socketIO.Server, num: number) {
       this.io = io;
       this.name = 'room' + num;
       this.scoreBoard = new ScoreBoard();
