@@ -81,7 +81,6 @@ class Main extends Phaser.Scene {
 
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
     this.blink_timer = 2;
-    this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -134,9 +133,6 @@ class Main extends Phaser.Scene {
     this.key_SHIFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // Add second pointer for mobile
-    if (mobileMode)
-      this.input.addPointer(1);
 
     // Mini Map
     if (!this.mobileMode) {
@@ -161,11 +157,10 @@ class Main extends Phaser.Scene {
         if (!this.mobileMode) {
           this.minimap.ignore(hud.getGameObjects());
         }
-        let jsFeat = hud.getJSFeatures(); //mobile shit, fuck that my dude.
         let data = {
-          up: (this.key_W.isDown || jsFeat[0]),
-          left: (this.key_A.isDown || jsFeat[1]),
-          right: (this.key_D.isDown || jsFeat[2]),
+          up: (this.key_W.isDown),
+          left: (this.key_A.isDown),
+          right: (this.key_D.isDown),
           primary_fire: (this.key_SPACE.isDown),
           boost: (this.key_SHIFT.isDown)
         }

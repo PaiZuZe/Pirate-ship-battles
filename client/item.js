@@ -119,13 +119,6 @@ class DebrisField {
     let a = new Phaser.Geom.Point(center_x, center_y);
     this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
     this.debris_field.par_obj = this; // Just to associate this id with the image
-    /*
-    this.sizeX = 101;
-    this.sizeY = 84;
-    this.stone = scene.add.image(x, y, "asteroid");
-    this.stone.setDisplaySize(this.sizeX, this.sizeY);
-    this.stone.setSize(this.sizeX, this.sizeY);
-    */
   }
 
   //////////////////////////////////////////////////////////////////////////////
