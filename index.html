@@ -30,8 +30,6 @@
         <input id="signdivupassword" type="password" placeholder="Password"/>
         <p id="errorLog"></p>
 
-        <div><input id="mobilecheckbox" type="checkbox" onclick="toggle();"><span>Mobile Mode</span></div>
-
         <button id="entername" class="hidden">PLAY</button>
 
         <br><small>Spacestation by <a href="http://millionthvector.blogspot.de">MillionthVector</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
@@ -64,14 +62,6 @@
     <script>
       signdivusername.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
-      }
-      function toggle() {
-        var howto = document.getElementById("howto");
-        if (document.getElementById('mobilecheckbox').checked){
-          howto.style.display = "none";
-        } else {
-          howto.style.display = "block";
-        }
       }
     </script>
   </body>
