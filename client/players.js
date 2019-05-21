@@ -54,12 +54,7 @@ class Player extends Ship {
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
-    this.bullets = 0;
     scene.cameras.main.startFollow(this.body);
-    this.leftHoldStart = 0;
-    this.rightHoldStart = 0;
-    this.lastShootTimeLeft = 0;
-    this.lastShootTimeRight = 0;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -67,10 +62,7 @@ class Player extends Ship {
     super.update(data);
     this.bullets = data.bullets;
     this.life = data.life;
-    this.leftHoldStart = data.leftHoldStart;
-    this.rightHoldStart = data.rightHoldStart;
-    this.lastShootTimeLeft = data.lastShootTimeLeft;
-    this.lastShootTimeRight = data.lastShootTimeRight;
+    this.fuel = data.fuel;
     this.anchored_timer = data.anchored_timer;
   }
 };
@@ -78,7 +70,7 @@ class Player extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username); // calling constructor with data.x and data.y undefined
+    player = new Player(this, data.x, data.y, data.username);
     hud = new HUD(this);
 
     /* Confirming collision shape -- dumb way
@@ -102,6 +94,31 @@ function createPlayer (data) {
     colpoly.fillPoints(poly.points, true);
     */
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function onPlayerHit (data) {
+  let playerExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function onRemovePlayer (data) {
+	if (data.id in enemies) {
+    let playerExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+		var removePlayer = enemies[data.id];
+		removePlayer.destroy();
+		delete enemies[data.id];
+		return;
+	}
+	if (data.id == socket.id) {
+    resetObjects();
+    this.disableInputs();
+    game.scene.stop('Main');
+		game.scene.start('Login');
+		return;
+	}
+  console.log('Tried to remove: Player not found: ', data.id);
+  return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

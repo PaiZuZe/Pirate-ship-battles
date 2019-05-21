@@ -21,6 +21,7 @@ class HUD {
     else {
       this.JS_ALL_SCALE = config.height / 540;
     }
+    this.scene = scene;
     this.JS_MARGIN = 120 * this.JS_ALL_SCALE;
     this.JS_RAD = 75;
     this.JS_X = this.JS_MARGIN;
@@ -31,139 +32,40 @@ class HUD {
     this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - (125 * this.JS_ALL_SCALE);
     this.BULLET_FILL_X = 30 * this.JS_ALL_SCALE;
     this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
-    this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
-    this.hearts = [];
-    for (let i = 0; i < 3; i++) {
-      let heart = scene.add.image(70 + 50*i, 70, "heart");
-      heart.setScrollFactor(0).setDepth(5000);
-      this.hearts.push(heart);
-    }
-    this.bulletImage = scene.add.image(70, 125, "big_bullet");
+    this.health = this.scene.add.text(56, 36, `🛠`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.fuel = this.scene.add.text(56, 79, `⛽`, {color: "white", fontSize: 32, strokeThickness: 2});
+
+    this.health.setScrollFactor(0).setDepth(5000);
+    this.fuel.setScrollFactor(0).setDepth(5000);
+    this.bulletImage = this.scene.add.image(70, 150, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
-    this.bullets = scene.add.text(100, 110, `${player.bullets}`, {color: "white", fontSize: 25, strokeThickness: 2});
+    this.bullets = this.scene.add.text(100, 135, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
     this.bullets.setScrollFactor(0).setDepth(5000);
-    this.leftBulletBar = [];
-    for (let i = 0; i < 3; i++) {
-      let bullet;
-      if (this.mobileMode) {
-        bullet = scene.add.sprite(this.JS_SHOT_LEFT_X + (this.BULLET_FILL_X * (i - 1)), this.JS_SHOT_Y - this.BULLET_FILL_Y, "bullet_fill", 0);
-        bullet.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      }
-      else {
-        bullet = scene.add.sprite(70 + 30*i, 170, "bullet_fill", 0);
-      }
-      bullet.setScrollFactor(0).setDepth(5000);
-      this.leftBulletBar.push(bullet);
-    }
-    this.rightBulletBar = [];
-    for (let i = 0; i < 3; i++) {
-      let bullet;
-      if (this.mobileMode) {
-        bullet = scene.add.sprite(this.JS_SHOT_RIGHT_X + (this.BULLET_FILL_X * (i - 1)), this.JS_SHOT_Y - this.BULLET_FILL_Y, "bullet_fill", 0);
-        bullet.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      }
-      else {
-        bullet = scene.add.sprite(70 + 30*i, 200, "bullet_fill", 0);
-      }
-      bullet.setScrollFactor(0).setDepth(5000);
-      this.rightBulletBar.push(bullet);
-    }
 
     // Score Board
-    this.scoreBoard = scene.add.text(32, 250, 'ScoreBoard', {
+    this.scoreBoard = this.scene.add.text(32, 250, 'ScoreBoard', {
       backgroundColor: null,
       fill: '#FFFFFF',
       fontSize: '24px',
     }).setScrollFactor(0).setDepth(5000);
 
     // Timer
-    this.timer = scene.add.text(0, 0, 'Timer', {
+    this.timer = this.scene.add.text(0, 0, 'Timer', {
       backgroundColor: '#009696',
       fill: '#FFFFFF',
       fontSize: '32px'
     }).setDepth(5000);
 
-    if (this.mobileMode) {
-      this.baseController = scene.add.sprite(this.JS_X, this.JS_Y, "base_controller");
-      this.baseController.setScrollFactor(0).setDepth(5000);
-      this.baseController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      this.topController = scene.add.sprite(this.JS_X, this.JS_Y, "top_controller");
-      this.topController.setScrollFactor(0).setDepth(5001);
-      this.topController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      this.rightShotController = scene.add.sprite(this.JS_SHOT_RIGHT_X, this.JS_SHOT_Y, "shot_controller");
-      this.rightShotController.setScrollFactor(0).setDepth(5000);
-      this.rightShotController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      this.leftShotController = scene.add.sprite(this.JS_SHOT_LEFT_X, this.JS_SHOT_Y, "shot_controller");
-      this.leftShotController.setScrollFactor(0).setDepth(5000);
-      this.leftShotController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
-      console.log(`${this.JS_SHOT_RIGHT_X}`);
-      this.pointers = [scene.input.pointer1, scene.input.pointer2];
-    }
-    this.scene = scene;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   update () {
     // Update bullets
-    this.bullets.setText(`${player.bullets}`);
+    //this.bullets.setText(`${player.bullets}`);
 
     // Update life bar
-    if (player.life < this.hearts.length) {
-      let removed = this.hearts.splice(player.life, this.hearts.length - player.life);
-      for (let heart of removed)
-        heart.destroy();
-    } else if (player.life > this.hearts.length) {
-      let beg = 70 + this.hearts.length*50;
-      for (let i = 0; i < player.life - this.hearts.length; i++) {
-        let heart = scene.add.image(beg + 50*i, 110, "heart");
-        heart.setScrollFactor(0).setDepth(5000);
-        this.hearts.push(heart);
-      }
-    }
-
-    // Update bullet charge bar
-    if (player.bullets != 0) {
-      this.leftBulletBar[0].setFrame(mapFloatToInt(Math.min(Date.now() - player.lastShootTimeLeft, 1000), 0, 1000, 0, 4));
-      this.rightBulletBar[0].setFrame(mapFloatToInt(Math.min(Date.now() - player.lastShootTimeRight, 1000), 0, 1000, 0, 4));
-    } else {
-      this.leftBulletBar[0].setFrame(0);
-      this.rightBulletBar[0].setFrame(0);
-    }
-
-    if (player.leftHoldStart == 0 || player.bullets == 1) {
-      this.leftBulletBar[1].setFrame(0);
-      this.leftBulletBar[2].setFrame(0);
-    } else if (Date.now() - player.leftHoldStart <= DBHT || player.bullets == 2) {
-      this.leftBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, DBHT), 0, DBHT, 0, 4));
-      this.leftBulletBar[2].setFrame(0);
-    } else {
-      this.leftBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, DBHT), 0, DBHT, 0, 4));
-      this.leftBulletBar[2].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, TBHT), DBHT, TBHT, 0, 4));
-    }
-
-    if (player.rightHoldStart == 0 || player.bullets == 1) {
-      this.rightBulletBar[1].setFrame(0);
-      this.rightBulletBar[2].setFrame(0);
-    } else if (Date.now() - player.rightHoldStart <= DBHT || player.bullets == 2) {
-      this.rightBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, DBHT), 0, DBHT, 0, 4));
-      this.rightBulletBar[2].setFrame(0);
-    } else {
-      this.rightBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, DBHT), 0, DBHT, 0, 4));
-      this.rightBulletBar[2].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, TBHT), DBHT, TBHT, 0, 4));
-    }
-
-    // Update virtual joystick
-    if (this.mobileMode) {
-      let nearest = argMax(this.pointers, (p) => -normSq(p.x - this.JS_X, p.y - this.JS_Y));
-      if (nearest.isDown) {
-        if (nearest.x < config.width/2) {
-          let [x, y] = clampRad(nearest.x - this.JS_X, nearest.y - this.JS_Y, this.JS_RAD);
-          this.topController.setPosition(x + this.JS_X, y + this.JS_Y);
-        }
-      } else {
-        this.topController.setPosition(this.JS_X, this.JS_Y);
-      }
-    }
+    this.health.setText(`🛠 ${player.life}`);
+    this.fuel.setText(`⛽ ${player.fuel}`);
 
     // Update score board
     if (scoreBoard) {
@@ -221,29 +123,14 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   getGameObjects () {
     let objs = [];
-    objs.push(this.bulletImage, this.bullets, this.scoreBoard);
-    for (let i = 0; i < this.hearts.length; i++) {
-      objs.push(this.hearts[i]);
-    }
-    for (let i = 0; i < this.leftBulletBar.length; i++) {
-      objs.push(this.leftBulletBar[i]);
-    }
-    for (let i = 0; i < this.rightBulletBar.length; i++) {
-      objs.push(this.rightBulletBar[i]);
-    }
-    if (this.mobileMode) {
-      objs.push(this.baseController);
-      objs.push(this.topController);
-      objs.push(this.rightShotController);
-      objs.push(this.leftShotController);
-    }
+    objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
     return objs;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
-    for (let i = 0; i < this.hearts.length; i++)
-      this.hearts[i].destroy();
+    this.health.destroy();
+    this.fuel.destroy();
     this.bulletImage.destroy();
     this.bullets.destroy();
     if (this.mobileMode) {

@@ -33,7 +33,7 @@ Or you can install [node.js](https://nodejs.org/en/download/package-manager/) an
     Be sure that postgres is not running on the host machine.
 
     ```sh
-    sudo service postgres stop
+    sudo service postgresql stop
     ```
 
     Remember to end the containers and remove their images.

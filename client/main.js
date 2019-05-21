@@ -23,24 +23,6 @@ function onSocketConnected (data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function onRemovePlayer (data) {
-	if (data.id in enemies) {
-		var removePlayer = enemies[data.id];
-		removePlayer.destroy();
-		delete enemies[data.id];
-		return;
-	}
-	if (data.id == socket.id) {
-    resetObjects();
-    this.disableInputs();
-    game.scene.stop('Main');
-		game.scene.start('Login');
-		return;
-	}
-	console.log('Player not found: ', data.id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 function resetObjects () {
   enemies = {};
   hud = null;
@@ -49,6 +31,8 @@ function resetObjects () {
   bulletList = {};
   islandList = {};
   stoneList = {};
+  botList = {};
+  DebrisFieldList = {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,11 +67,14 @@ class Main extends Phaser.Scene {
     socket.on("create_player", createPlayer.bind(this));
     socket.on("new_enemyPlayer", createEnemy.bind(this));
     socket.on('remove_player', onRemovePlayer.bind(this));
+    socket.on('player_hit', onPlayerHit.bind(this));
+    socket.on('remove_stone', onRemoveStone.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('stone_create', onCreateStone.bind(this));
-    //socket.on('stone_shape', drawCollisionPoly.bind(this)); // Checking collision shape
+    socket.on('stone_hit', onStoneHit.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
+    socket.on('debris_create', onCreatedebrisField.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('enable_inputs', this.enableInputs.bind(this));
@@ -96,7 +83,6 @@ class Main extends Phaser.Scene {
 
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
     this.blink_timer = 2;
-    this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -106,14 +92,13 @@ class Main extends Phaser.Scene {
     this.load.image("ship", "client/assets/spaceship.png");
     this.load.image("ship-alt", "client/assets/spaceship-alt.png");
     this.load.image("bullet", "client/assets/laser.png");
-    this.load.image("big_bullet", "client/assets/big_bullet.png");
+    this.load.image("big_bullet", "client/assets/laser.png");
     this.load.image("heart", "client/assets/heart.png");
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
     this.load.image("barrel", "client/assets/barrel.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
-    //this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     this.load.image("stars", "client/assets/black.png")
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
@@ -147,22 +132,9 @@ class Main extends Phaser.Scene {
     this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-    this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    this.key_SHIFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // Add second pointer for mobile
-    if (mobileMode)
-      this.input.addPointer(1);
-
-    // Safe zone boundaries
-    let safe_zone = this.add.graphics();
-    let color = 0xff0000;
-    let thickness = 4;
-    let alpha = 1;
-    let smoothness = 64;
-    safe_zone.lineStyle(thickness, color, alpha);
-    let a = new Phaser.Geom.Point(1000, 1000);
-    safe_zone.strokeEllipse(a.x, a.y, 1000*2, 1000*2, smoothness);
 
     // Mini Map
     if (!this.mobileMode) {
@@ -170,7 +142,7 @@ class Main extends Phaser.Scene {
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
-      var border = new Phaser.Geom.Rectangle(camera.width-202, 0, 202, 202); // Thicker border = larger rectangle
+      var border = new Phaser.Geom.Rectangle(camera.width-202, 0, 202, 202); // Larger rectangle = Thicker border
       var border_graphics = this.add.graphics({ fillStyle: { color: 0xffffff } }).setDepth(5150);
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
@@ -187,13 +159,12 @@ class Main extends Phaser.Scene {
         if (!this.mobileMode) {
           this.minimap.ignore(hud.getGameObjects());
         }
-        let jsFeat = hud.getJSFeatures();
         let data = {
-          up: (this.key_W.isDown || jsFeat[0]),
-          left: (this.key_A.isDown || jsFeat[1]),
-          right: (this.key_D.isDown || jsFeat[2]),
-          shootLeft: (this.key_J.isDown || jsFeat[3]),
-          shootRight: (this.key_K.isDown || jsFeat[4])
+          up: (this.key_W.isDown),
+          left: (this.key_A.isDown),
+          right: (this.key_D.isDown),
+          primary_fire: (this.key_SPACE.isDown),
+          boost: (this.key_SHIFT.isDown)
         }
         socket.emit('input_fired', data);
       }
@@ -210,32 +181,6 @@ class Main extends Phaser.Scene {
     if (player) {
       // Scroll camera to player's position (Phaser is a little buggy when doing this)
       this.cameras.main.setScroll(player.body.x, player.body.y);
-
-      // Make screen blink if player takes damage
-      if (player.life < this.player_life) {
-        if (this.blink_timer > 0) {
-          this.blink_timer -= 0.05;
-          if (this.explosion.alpha == 0)
-            this.explosion.setAlpha(1);
-          this.explosion.x = player.body.x;
-          this.explosion.y = player.body.y;
-          if (signalExplosion == 1) {
-            countExplosion += 0.05;
-          } else {
-            countExplosion -= 0.05;
-          }
-          if (countExplosion > 1) {
-            signalExplosion = -1;
-          } else if (countExplosion < 0) {
-            signalExplosion = 1;
-          }
-          this.explosion.alpha = countExplosion;
-        }
-        else {
-          this.blink_timer = 2;
-          this.player_life = player.life;
-        }
-      }
 
       // Mini Map
       if (!this.mobileMode) {

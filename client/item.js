@@ -8,6 +8,8 @@ var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
 var stoneList = {}; // Stones list
+var DebrisFieldList = {};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
@@ -20,9 +22,6 @@ class Bullet {
     this.creator = creator;
     this.id = id;
     this.speed = speed;
-    //this.z = z;
-    //this.zVelocity = 0;
-    //this.shadow = scene.physics.add.image(x, y, "bullet_shadow");
     this.item = scene.physics.add.image(x, y, "bullet");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
@@ -33,21 +32,17 @@ class Bullet {
   update (data) {
     this.item.x = data.x;
     this.item.y = data.y;
-    //this.z = data.z;
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    /*this.shadow.x = data.x;
-    this.shadow.y = data.y;
-    this.shadow.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
-    this.shadow.setDepth(data.y);*/
+
   }
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
-    this.shadow.destroy();
   }
 };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Box                                                                        //
@@ -97,23 +92,86 @@ class Island {
 // Client Stone class
 class Stone {
   constructor (scene, id, x, y, r) {
-    this.sizeX = 101; //111;
-    this.sizeY = 84; //145;
+    this.sizeX = 101;
+    this.sizeY = 84;
     this.id = id;
     this.stone = scene.add.image(x, y, "asteroid");
     this.stone.setDisplaySize(this.sizeX, this.sizeY);
     this.stone.setSize(this.sizeX, this.sizeY);
-
-    /* Scalable sprites would be better but would require scalable collision shapes
-    this.stone = scene.add.sprite(x, y, "asteroid");
-    this.stone.setScale(0.75, 0.75);
-    */
     this.stone.par_obj = this; // Just to associate this id with the image
   }
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.stone.destroy();
+  }
+};
+
+class DebrisField {
+  constructor (scene, center_x, center_y, radius, id) {
+    this.id = id;
+    this.debris_field = scene.add.graphics();
+    let color = 0xff0000;
+    let thickness = 4;
+    let alpha = 1;
+    let smoothness = 64;
+    this.debris_field.lineStyle(thickness, color, alpha);
+    let a = new Phaser.Geom.Point(center_x, center_y);
+    this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
+    this.debris_field.par_obj = this; // Just to associate this id with the image
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.debris_field.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Explosion                                                                  //
+////////////////////////////////////////////////////////////////////////////////
+// Client-only explosion class
+class Explosion {
+  constructor (scene, x, y, scale, attack, decay) {
+    this.sizeX = 100*scale;
+    this.sizeY = 100*scale;
+    this.explosion = scene.add.image(x, y, "explosion").setAlpha(0);
+    this.explosion.setDepth(5100);
+    this.explosion.setDisplaySize(this.sizeX, this.sizeY);
+    this.explosion.setSize(this.sizeX, this.sizeY);
+
+    this.tween = scene.tweens.add({
+      targets: this.explosion,
+      paused: false,
+      delay: 0,
+      duration: attack,
+      ease: "Sine.easeInOut",
+      alpha: {
+        getStart: () => 0,
+        getEnd: () => 1
+      },
+      onComplete: () => {
+        scene.tweens.add({
+          targets: this.explosion,
+          paused: false,
+          delay: 0,
+          duration: decay,
+          ease: "Sine.easeInOut",
+          alpha: {
+            getStart: () => 1,
+            getEnd: () => 0
+          },
+          onComplete: () => {
+            this.destroy();
+          }
+        });
+      }
+    });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.explosion.destroy();
   }
 };
 
@@ -137,10 +195,8 @@ function onItemRemove (data) {
     console.log("Could not find box to remove");
     return;
   }
-
   //destroy the phaser object
   boxList[data.id].destroy();
-
   delete boxList[data.id];
 }
 
@@ -154,6 +210,12 @@ function onCreateIsland (data) {
   }
 }
 
+function onCreatedebrisField (data) {
+  console.log(`Criando Debris Field ${data.id}`);
+  let newDebrisField = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
+  DebrisFieldList[data.id] = newDebrisField;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Function called when new stone is added at the server.
 function onCreateStone (data) {
@@ -162,6 +224,22 @@ function onCreateStone (data) {
     let newStone = new Stone(this, data.id, data.x, data.y, data.radius);
     stoneList[data.id] = newStone;
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when stone needs to be removed at the client.
+function onStoneHit (data) {
+  let stoneExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when stone needs to be removed at the client.
+function onRemoveStone (data) {
+  let stoneExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+  var removeStone = stoneList[data.id];
+
+  removeStone.destroy();
+  delete stoneList[data.id];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,10 +258,8 @@ function onBulletRemove (data) {
     console.log("Could not find bullet to remove");
     return;
   }
-
   //destroy the phaser object
   bulletList[data.id].destroy();
-
   delete bulletList[data.id];
 }
 
