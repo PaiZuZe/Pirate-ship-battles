@@ -32,6 +32,8 @@ export function mapFloatToInt (v, fmin, fmax, imin, imax) {
 export function fromEntries(map) {
   const obj = {};
   map.forEach((value, key) => {
+    if (key == 'shape')
+      console.log("aux fromEntries");
     obj[key] = value;
   });
   return obj;

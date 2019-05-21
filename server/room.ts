@@ -8,6 +8,7 @@ import { ScoreBoard } from './scoreBoard';
 import { Player } from './player';
 import { mapFloatToInt, fromEntries } from './aux';
 import * as socketIO from 'socket.io';
+import { Collisions, Polygon } from './collisions/Collisions'
 
 /*
 import { Bot } from './bot';
@@ -46,11 +47,14 @@ export class Room {
   private canvasWidth: number = 2000; 
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
-  
+  private system: Collisions; 
+
   constructor(io: socketIO.Server, num: number) {
       this.io = io;
       this.name = 'room' + num;
       this.scoreBoard = new ScoreBoard();
+      this.system = new Collisions();
+      this.system.update();
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
   
@@ -86,13 +90,15 @@ export class Room {
     io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
                                       bulletList:  game.bulletList, score_board: game.score_board});
     */
+    //this.system.update();
 
     let obj = fromEntries(this.players);
     //console.log(obj);
-       
+    console.log("UPDATE: entrou"); 
     this.io.in(this.name).emit("update_game", 
                                {playerList: obj, 
-                                score_board: this.scoreBoard})
+                                score_board: this.scoreBoard});
+    console.log("UPDATE: saiu");
   }
 
   public newPlayer(socket: any, data: any): void {
@@ -115,7 +121,8 @@ export class Room {
   
     socket.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
     //this.emit('create_player', data);
-  
+    console.log("passou");
+    this.system.insert(newPlayer.shape);
     let current_info = {
       id: newPlayer.id,
       x: newPlayer.x,
@@ -123,6 +130,8 @@ export class Room {
       angle: newPlayer.angle,
       username: newPlayer.username,
     };
+
+    console.log("passou2");
 
     this.players.forEach((value: Player, key: string) => {
         let player_info = {
@@ -134,6 +143,8 @@ export class Room {
           };
           socket.emit("new_enemyPlayer", player_info);
     });
+
+    console.log("passou3");
   
     this.players.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username)
@@ -159,6 +170,7 @@ export class Room {
     */
     //send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', current_info);
+    console.log("passou4");
   }
 
   public inputFired(socket: any, data: any): void {

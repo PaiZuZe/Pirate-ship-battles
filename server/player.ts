@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import * as SAT from 'sat';
+import { Polygon } from './collisions/Collisions'
 //const Bullet = require('./bullet.js');
 //import { DamageArtefact } from './damageArtefact';
 // import { something } from './aux';
@@ -22,6 +23,7 @@ export class Player {
   public x: number;
   public y: number;
   public angle: number;
+  public shape: Polygon;
   private speed: number = 0;
   private accel: number = 0;
   private hull: number = 3;
@@ -30,6 +32,7 @@ export class Player {
   private fuel: number = 100;
   private primaryCooldown: number = 0;
 
+  /*
   private poly: SAT.Polygon = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
     new SAT.Vector(-9, -38),
     new SAT.Vector(1, -38),
@@ -46,6 +49,8 @@ export class Player {
     new SAT.Vector(-37, 1),
     new SAT.Vector(-13, -13)
   ]);
+  */
+
   public inputs = {
     up: false,
     left: false,
@@ -60,25 +65,46 @@ export class Player {
     this.id = id;
     this.angle = angle;
     this.username = username;
+    this.shape = new Polygon(this.x, this.y, [
+      [-9, -38],
+      [1, -38],
+      [11, -13],
+      [35, 1],
+      [48, -7],
+      [43, 21],
+      [13, 26],
+      [6, 36],
+      [-8, 36],
+      [-16, 26],
+      [-45, 21],
+      [-50, -7],
+      [-37, 1],
+      [-13, -13]
+    ]);
   }
 
   private addAngle(angle: number): void {
     this.angle += angle;
-    this.poly.setAngle(this.angle);
+    //this.poly.setAngle(this.angle);
+    this.shape.angle = (this.angle);
   }
 
   private addPos(x: number, y: number): void {
     this.x += x;
     this.y += y;
-    this.poly.pos.x = this.x;
-    this.poly.pos.y = this.y;
+    //this.poly.pos.x = this.x;
+    //this.poly.pos.y = this.y;
+    this.shape.x = this.x;
+    this.shape.y = this.y;
   }
 
   private setPos(x: number, y: number): void {
     this.x = x;
     this.y = y;
-    this.poly.pos.x = this.x;
-    this.poly.pos.y = this.y;
+    //this.poly.pos.x = this.x;
+    //this.poly.pos.y = this.y;
+    this.shape.x = this.x;
+    this.shape.y = this.y;
   }
 
   private canFire(): boolean {
