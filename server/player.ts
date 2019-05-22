@@ -23,7 +23,7 @@ export class Player {
   public x: number;
   public y: number;
   public angle: number;
-  public shape: Polygon;
+  public collisionShape: Polygon;
   public speed: number = 0;
   private accel: number = 0;
   public hull: number = 3;
@@ -31,6 +31,7 @@ export class Player {
   public stationInfluenceTimer: number = 0;
   public fuel: number = 100;
   private primaryCooldown: number = 0;
+  public readonly polygonPoints: number[][];
 
   /*
   private poly: SAT.Polygon = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
@@ -65,7 +66,7 @@ export class Player {
     this.id = id;
     this.angle = angle;
     this.username = username;
-    this.shape = new Polygon(this.x, this.y, [
+    this.polygonPoints = [
       [-9, -38],
       [1, -38],
       [11, -13],
@@ -80,31 +81,27 @@ export class Player {
       [-50, -7],
       [-37, 1],
       [-13, -13]
-    ]);
+    ];
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
   }
 
   private addAngle(angle: number): void {
     this.angle += angle;
-    //this.poly.setAngle(this.angle);
-    this.shape.angle = (this.angle);
+    this.collisionShape.angle = (this.angle);
   }
 
   private addPos(x: number, y: number): void {
     this.x += x;
     this.y += y;
-    //this.poly.pos.x = this.x;
-    //this.poly.pos.y = this.y;
-    this.shape.x = this.x;
-    this.shape.y = this.y;
+    this.collisionShape.x = this.x;
+    this.collisionShape.y = this.y;
   }
 
   private setPos(x: number, y: number): void {
     this.x = x;
     this.y = y;
-    //this.poly.pos.x = this.x;
-    //this.poly.pos.y = this.y;
-    this.shape.x = this.x;
-    this.shape.y = this.y;
+    this.collisionShape.x = this.x;
+    this.collisionShape.y = this.y;
   }
 
   private canFire(): boolean {

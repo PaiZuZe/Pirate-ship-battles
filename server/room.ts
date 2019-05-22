@@ -86,11 +86,11 @@ export class Room {
         if (!this.players.has(key))
           return;
         value.updatePos(UPDATE_TIME);
-        const potentials = value.shape.potentials();
+        const potentials = value.collisionShape.potentials();
         
         // Check for collisions
         for (const body of potentials) {
-          if (value.shape.collides(body)) {
+          if (value.collisionShape.collides(body)) {
             console.log('Collision detected!');
           }
         }
@@ -126,8 +126,7 @@ export class Room {
   
     socket.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
     //this.emit('create_player', data);
-    console.log("passou");
-    this.collisionSystem.insert(newPlayer.shape);
+    this.collisionSystem.insert(newPlayer.collisionShape);
     let current_info = {
       id: newPlayer.id,
       x: newPlayer.x,

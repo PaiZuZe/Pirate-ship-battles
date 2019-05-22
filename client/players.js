@@ -16,9 +16,6 @@ class Ship {
 
   //////////////////////////////////////////////////////////////////////////////
   update (data) {
-    console.log(data.x);
-    console.log(data.y);
-    console.log("=======");
     this.body.x = data.x;
     this.body.y = data.y;
     this.body.setVelocity(Math.sin(data.angle) * data.speed, -(Math.cos(data.angle) * data.speed));
@@ -51,6 +48,7 @@ class Player extends Ship {
     this.anchored_timer = 0;
     let sprite = "ship";
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
+    //this.collisionShape = scene.physics.add.graphics();
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
@@ -72,7 +70,7 @@ function createPlayer (data) {
     player = new Player(this, data.x, data.y, data.username);
     hud = new HUD(this);
 
-    /* Confirming collision shape -- dumb way
+    // Confirming collision shape -- dumb way
     let colpoly = this.add.graphics();
     let color = 0xff0000;
     let thickness = 4;
@@ -80,18 +78,12 @@ function createPlayer (data) {
     let smoothness = 64;
     colpoly.lineStyle(thickness, color, alpha);
 
-    points = new Array();
-    for (let i = 0; i < data.poly.points.length; i++) {
-      points[2*i] = data.x + data.poly.points[i].x;
-      points[2*i + 1] = data.y + data.poly.points[i].y;
-    }
-    console.log(points);
-    let poly = new Phaser.Geom.Polygon(points);
+    let poly = new Phaser.Geom.Polygon(data.polygonPoints);
+    
     colpoly.strokePoints(poly.points, true);
-
     colpoly.fillStyle(color, alpha);
     colpoly.fillPoints(poly.points, true);
-    */
+    
   }
 }
 

@@ -46,7 +46,6 @@ function onUpdate (data) {
 			enemies[k].update(data.playerList[k]);
 		else if (player){
       player.update(data.playerList[k]);
-      console.log("Atualizou");
     }
 	}
 	for (const bk in data.bulletList) {
