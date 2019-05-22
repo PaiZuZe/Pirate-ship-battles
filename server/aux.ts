@@ -28,14 +28,3 @@ export function distSq (p1, p2) {
 export function mapFloatToInt (v, fmin, fmax, imin, imax) {
   return Math.floor((v - fmin)*(imax - imin)/(fmax - fmin) + imin);
 }
-
-export function fromEntries(map) {
-  const obj = {};
-  map.forEach((value, key) => {
-    if (key == 'shape')
-      console.log("aux fromEntries");
-    obj[key] = value;
-  });
-  return obj;
-}
-  

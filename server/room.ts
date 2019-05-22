@@ -6,11 +6,12 @@
 
 import { ScoreBoard } from './scoreBoard';
 import { Player } from './player';
-import { mapFloatToInt, fromEntries } from './aux';
+import { mapFloatToInt } from './aux';
 import * as socketIO from 'socket.io';
 import { Collisions, Polygon } from './collisions/Collisions'
 
 /*
+TODO: Future imports
 import { Bot } from './bot';
 import { Station } from './station';
 import { DamageArtefact } from './damageArtefact';
@@ -23,10 +24,11 @@ const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
 
 export class Room {
-  public name: string; 
+  public readonly name: string; 
   // Game Elements
   private players: Map<string, Player> = new Map<string, Player>();
   /*
+  TODO: Future Elements
   private bots: Map<string, Bot> = new Map<string, Bot>();  
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private stations: Map<string, Station> = new Map<string, Station>();
@@ -37,7 +39,7 @@ export class Room {
   private scoreBoard: ScoreBoard; // The list of scores form active players
   private io: socketIO.Server;
   
-  // Game Propertires
+  // Game Properties
   private fuelCellsMax: number = 15; 
   private botsMax: number = 1;
   private debrisFieldMax: number = 3;
@@ -47,48 +49,21 @@ export class Room {
   private canvasWidth: number = 2000; 
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
-  private system: Collisions; 
+  private collisionSystem: Collisions; 
 
   constructor(io: socketIO.Server, num: number) {
       this.io = io;
       this.name = 'room' + num;
       this.scoreBoard = new ScoreBoard();
-      this.system = new Collisions();
-      this.system.update();
+      this.collisionSystem = new Collisions();
+      this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
-  
-  public updateGame(): void {
-    /*
-    // Update players
-    for (let k in game.playerList) {
-      if (!(k in game.playerList))
-        continue;
-      let p = game.playerList[k];
-      p.updatePos(UPDATE_TIME);
 
-      if (p.inputs.primary_fire) {
-        let newBullets = p.tryToShoot();
-        for (const b of newBullets) {
-          game.bulletList[b.id] = b;
-          io.in('game').emit("bullet_create", b);
-        }
-      }
-    }
-    */
-   
-    // Update Players'
-    if (this.players) 
-      this.players.forEach((value: Player, key: string) => {
-        if (!this.players.has(key))
-          return;
-        value.updatePos(UPDATE_TIME);
-      });
-      
-    this.system.update();
-    let obj = {};
+  private getPlayersInfo(): any {
+    let playerData: any = {}
     this.players.forEach((value: Player, key: string) => {
-      let current_info = {
+      let currentPlayerInfo = {
         id: value.id,
         x: value.x,
         y: value.y,
@@ -99,11 +74,35 @@ export class Room {
         fuel: value.fuel,
         anchored_timer: value.stationInfluenceTimer
         };
-        obj[key] = current_info;
+        playerData[key] = currentPlayerInfo;
       });
 
+    return playerData;
+  }
+
+  private updatePlayers(): void {
+    if (this.players) { 
+      this.players.forEach((value: Player, key: string) => {
+        if (!this.players.has(key))
+          return;
+        value.updatePos(UPDATE_TIME);
+        const potentials = value.shape.potentials();
+        
+        // Check for collisions
+        for (const body of potentials) {
+          if (value.shape.collides(body)) {
+            console.log('Collision detected!');
+          }
+        }
+      });
+    }
+  }
+  
+  public updateGame(): void { 
+    this.updatePlayers();
+    this.collisionSystem.update();
     this.io.in(this.name).emit("update_game", 
-                               {playerList: obj, 
+                               {playerList: this.getPlayersInfo(), 
                                 score_board: this.scoreBoard});
   }
 
@@ -128,7 +127,7 @@ export class Room {
     socket.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
     //this.emit('create_player', data);
     console.log("passou");
-    this.system.insert(newPlayer.shape);
+    this.collisionSystem.insert(newPlayer.shape);
     let current_info = {
       id: newPlayer.id,
       x: newPlayer.x,
