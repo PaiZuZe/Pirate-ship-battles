@@ -18,6 +18,7 @@ export class RoomManager {
   }
 
   private searchRoom(roomName: String): Room {
+    // TODO: shouldn't use iterator.
     for (let i: number = 0; i < this.rooms.length; i++) {
       if (this.rooms[i].name == roomName) return this.rooms[i];
     }
@@ -52,7 +53,7 @@ export class RoomManager {
 		}
 		let playerRoom = this.searchRoom(playerRoomName);
 		if (playerRoom == null) {
-			console.log("Error: could not locate player room.");
+		  console.log("Error: could not locate player room.");
 			return;
     }
 		playerRoom.inputFired(socket, data);

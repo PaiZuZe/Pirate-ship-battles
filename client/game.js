@@ -4,7 +4,7 @@
 //                               Client - Game                                //
 ////////////////////////////////////////////////////////////////////////////////
 
-var socket = io({transports: ['websocket'], upgrade: false});
+var socket = io({transports: ['websocket'], upgrade: false, reconnection: false});
 
 var config = {
   type: Phaser.WEBGL,

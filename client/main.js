@@ -153,7 +153,7 @@ class Main extends Phaser.Scene {
   //////////////////////////////////////////////////////////////////////////////
   update (dt) {
     if (gameProperties.inGame) {
-
+      
       if (hud) {
         // Update inputs
         if (!this.mobileMode) {

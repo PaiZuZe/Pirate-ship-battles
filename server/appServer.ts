@@ -74,8 +74,7 @@ export class AppServer {
       }.bind(this));
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       socket.on("input_fired", this.onInputFired.bind(this, socket));
-      
-      socket.on('disconnect', () => {  
+      socket.on('disconnect', () => { 
         console.log('Client disconnected');
       });
     });
