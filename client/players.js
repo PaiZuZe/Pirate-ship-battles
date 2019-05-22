@@ -78,12 +78,12 @@ function createPlayer (data) {
     let smoothness = 64;
     colpoly.lineStyle(thickness, color, alpha);
 
-    let poly = new Phaser.Geom.Polygon(data.polygonPoints);
-    
+    let poly = new Phaser.Geom.Polygon(data.polygonPoints.map(point => [data.x + point[0], data.y + point[1]]));
+
     colpoly.strokePoints(poly.points, true);
     colpoly.fillStyle(color, alpha);
     colpoly.fillPoints(poly.points, true);
-    
+
   }
 }
 
