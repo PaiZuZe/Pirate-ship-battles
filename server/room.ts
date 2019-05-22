@@ -107,7 +107,7 @@ export class Room {
                                 score_board: this.scoreBoard});
   }
 
-  public newPlayer(socket: any, data: any): void {
+  public addNewPlayer(socket: any, data: any): void {
     if (this.players.get(socket.id)) {
       console.log(`Player with id ${socket.id} already exists`);
       return;
@@ -179,7 +179,7 @@ export class Room {
     console.log("passou4");
   }
 
-  public inputFired(socket: any, data: any): void {
+  public updatePlayerInput(socket: any, data: any): void {
     let player: Player = this.players.get(socket.id);
     if (!this.players.has(socket.id) || this.players.get(socket.id).isDead)
       return;

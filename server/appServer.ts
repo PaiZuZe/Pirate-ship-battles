@@ -116,12 +116,20 @@ export class AppServer {
 
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {
-    this.roomManager.newPlayer(socket, data);
+    try {
+      this.roomManager.getPlayerRoom(socket.id).addNewPlayer(socket, data);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // Called when someone fired an input
-  private onInputFired (socket: any, data: any): void {
-    this.roomManager.inputFired(socket, data)
+  private onInputFired(socket: any, data: any): void {
+    try {
+      this.roomManager.getPlayerRoom(socket.id).updatePlayerInput(socket, data);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   public getApp(): express.Application {

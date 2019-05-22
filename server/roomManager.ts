@@ -18,44 +18,34 @@ export class RoomManager {
   }
 
   private searchRoom(roomName: String): Room {
-    // TODO: shouldn't use iterator.
-    for (let i: number = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].name == roomName) return this.rooms[i];
+    let playerRoom: Room;
+    this.rooms.some((room: Room, index: number) => {
+      if (room.name == roomName) {
+        playerRoom = room;
+        return true;
+      }
+    });
+    if (playerRoom == null) {
+      throw new Error("could not locate room");
+      return;
     }
-    return;
+  
+    return playerRoom;
+  }
+
+  public getPlayerRoom(playerID: String): Room {
+    let playerRoomName: String = this.roomMap.get(playerID);
+    if (playerRoomName == null) {
+			throw new Error("could not locate player");
+			return;
+    }
+     
+    return this.searchRoom(playerRoomName);
   }
 
   public pickRandomRoom(playerId: String): String {
     this.roomMap.set(playerId, this.rooms[0].name);
+    // TODO: Improve this algorithm
     return this.rooms[0].name;
-  }
-
-  public newPlayer(socket: any, data: any): void {
-    let playerRoomName: String = this.roomMap.get(socket.id);
-    if (playerRoomName == null) {
-			console.log("Error: could not locate player room.");
-			return;
-		}
-		let playerRoom = this.searchRoom(playerRoomName);
-		if (playerRoom == null) {
-			console.log("Error: could not locate player room.");
-			return;
-    }
-    
-		playerRoom.newPlayer(socket, data);
-  }
-  
-  public inputFired(socket: any, data: any): void {
-    let playerRoomName: String = this.roomMap.get(socket.id);
-    if (playerRoomName == null) {
-			console.log("Error: could not locate player room2453.");
-			return;
-		}
-		let playerRoom = this.searchRoom(playerRoomName);
-		if (playerRoom == null) {
-		  console.log("Error: could not locate player room.");
-			return;
-    }
-		playerRoom.inputFired(socket, data);
   }
 }
