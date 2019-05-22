@@ -84,21 +84,27 @@ export class Room {
           return;
         value.updatePos(UPDATE_TIME);
       });
-  
+      
+    this.system.update();
+    let obj = {};
+    this.players.forEach((value: Player, key: string) => {
+      let current_info = {
+        id: value.id,
+        x: value.x,
+        y: value.y,
+        speed: value.speed,
+        angle: value.angle,
+        username: value.username,
+        life: value.hull,
+        fuel: value.fuel,
+        anchored_timer: value.stationInfluenceTimer
+        };
+        obj[key] = current_info;
+      });
 
-    /*
-    io.in('game').emit("update_game", { playerList:  Object.assign({}, game.playerList, game.botList),
-                                      bulletList:  game.bulletList, score_board: game.score_board});
-    */
-    //this.system.update();
-
-    let obj = fromEntries(this.players);
-    //console.log(obj);
-    console.log("UPDATE: entrou"); 
     this.io.in(this.name).emit("update_game", 
                                {playerList: obj, 
                                 score_board: this.scoreBoard});
-    console.log("UPDATE: saiu");
   }
 
   public newPlayer(socket: any, data: any): void {

@@ -60,7 +60,6 @@ class Player extends Ship {
   //////////////////////////////////////////////////////////////////////////////
   update (data) {
     super.update(data);
-    this.bullets = data.bullets;
     this.life = data.life;
     this.fuel = data.fuel;
     this.anchored_timer = data.anchored_timer;

@@ -4,26 +4,27 @@
 //                             Server - AppServer                             //
 ////////////////////////////////////////////////////////////////////////////////
 
-import { createServer, Server } from 'http';
+import * as path from 'path';
 import { Pool, Client } from 'pg';
 import * as express from 'express';
 import * as socketIO from 'socket.io';
-import * as path from 'path';
 import { RoomManager } from './roomManager';
+import { createServer, Server } from 'http';
 
 export class AppServer {
   private app: express.Application; 
   private server: Server;
   private io: socketIO.Server;
-  private readonly port: number = 2000;
-  private roomManager: RoomManager; 
+  private roomManager: RoomManager;
+  private readonly port: number = 2000; 
+  
   constructor() {
     this.createApp();
     this.createServer(); 
     this.setClient();
-    this.sockets(); 
+    this.initializeSockets(); 
     this.listen();
-    this.roomManager = new RoomManager(this.io);
+    this.initializeRoomManager();
   }
 
   private createApp(): void {
@@ -31,21 +32,30 @@ export class AppServer {
   }
 
   private createServer(): void {
+    // TODO: Error checking, must initialize server before
     this.server = createServer(this.app);
   }
 
   private setClient(): void {
+    // TODO: Error checking, must initialize app before
     this.app.get('/', function (req, res) {
       res.sendFile(path.normalize(__dirname + "/..") + '/index.html');
     });
     this.app.use('/client', express.static(path.normalize(__dirname + "/..") + '/client'));
   }
 
-  private sockets(): void {
+  private initializeSockets(): void {
+    // TODO: Error checking, must initialize server before
     this.io = socketIO(this.server);
   }
 
+  private initializeRoomManager(): void {
+    // TODO: Error checking, must initialize sockets before
+    this.roomManager = new RoomManager(this.io);
+  }
+
   private listen(): void {
+    // TODO: Error checking, must initialize server and io before
     this.server.listen({
       host: '0.0.0.0',
       port: this.port,
@@ -65,7 +75,7 @@ export class AppServer {
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       socket.on("input_fired", this.onInputFired.bind(this, socket));
       
-      socket.on('disconnect', () => {   //socket.on('disconnect', onClientDisconnect);
+      socket.on('disconnect', () => {  
         console.log('Client disconnected');
       });
     });
@@ -82,28 +92,27 @@ export class AppServer {
     return pool;
   }
 
-  // Called after the player entered its name
+  // Called when someone enters its names
   private onEntername (socket: any, data: any): void {                        
     console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
     if (data.username.length > 0 && data.username.length < 15) {
-      let pool = this.createPool();
+      let pool: Pool = this.createPool();
       pool.query('INSERT INTO players(name, password) VALUES($1, $2)', [data.username, data.password])
-        .then((res) => socket.emit('join_game', {username: data.username, id: socket.id, password: data.password}))
+        .then((res) => socket.emit('join_game', { username: data.username, id: socket.id, password: data.password }))
         .catch(err => {
           pool.query('SELECT password FROM players WHERE name = $1', [data.username])
             .then((res) => {
               if (res.rows[0].password == data.password)
-                socket.emit('join_game', {username: data.username, id: socket.id, password: data.password});
-              else socket.emit('throw_error', {message: "Player already exists or wrong password"});
+                socket.emit('join_game', { username: data.username, id: socket.id, password: data.password });
+              else socket.emit('throw_error', { message: "Player already exists or wrong password" });
             });
         })
-        //.catch(err => this.emit('throw_error', {message: "Player already exists or wrong password"}))
         .finally(() => pool.end());
     }
     else if (data.username.length <= 0)
-      this.io.emit('throw_error', {message: "Name can't be null"});
+      this.io.emit('throw_error', { message: "Name can't be null" });
     else if (data.username.length >= 15)
-      this.io.emit('throw_error', {message: "Name is too long"});
+      this.io.emit('throw_error', { message: "Name is too long" });
   }
 
   // Called when a new player connects to the server

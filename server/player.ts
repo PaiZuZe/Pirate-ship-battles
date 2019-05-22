@@ -24,12 +24,12 @@ export class Player {
   public y: number;
   public angle: number;
   public shape: Polygon;
-  private speed: number = 0;
+  public speed: number = 0;
   private accel: number = 0;
-  private hull: number = 3;
+  public hull: number = 3;
   private invulTime: number = 0; // Invulnerability time inside debrisField
-  private stationInfluenceTimer: number = 0;
-  private fuel: number = 100;
+  public stationInfluenceTimer: number = 0;
+  public fuel: number = 100;
   private primaryCooldown: number = 0;
 
   /*
