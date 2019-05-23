@@ -91,7 +91,11 @@ export class Room {
         // Check for collisions
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            console.log('Collision detected!');
+            if (body.type == "Player") {
+              this.removePlayer(value);
+              this.removePlayer(this.players.get(body.id));
+              break;
+            }
           }
         }
       });
@@ -135,8 +139,6 @@ export class Room {
       username: newPlayer.username,
     };
 
-    console.log("passou2");
-
     this.players.forEach((value: Player, key: string) => {
         let player_info = {
             id: value.id,
@@ -147,8 +149,6 @@ export class Room {
           };
           socket.emit("new_enemyPlayer", player_info);
     });
-
-    console.log("passou3");
   
     this.players.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username)
@@ -174,7 +174,20 @@ export class Room {
     */
     //send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', current_info);
-    console.log("passou4");
+  }
+
+  public removePlayer(player: Player) {  
+    console.log(`${player.username} died!`);
+    if (this.players.has(player.id)) {
+      console.log(`${player.username} was removed`);
+      this.collisionSystem.remove(player.collisionShape);
+      this.scoreBoard.removePlayer(player.username);
+      this.players.delete(player.id);
+      this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
+      this.io.sockets.sockets[player.id].leave(this.name);
+      this.io.sockets.sockets[player.id].join('login');
+    }
+    return;
   }
 
   public updatePlayerInput(socket: any, data: any): void {

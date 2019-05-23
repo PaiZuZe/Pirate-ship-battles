@@ -5,12 +5,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 export class ScoreBoard {
-    private scores: Map<String, number> = new Map<String, number>();
+    private scores: Map<string, number> = new Map<string, number>();
 
     constructor() {
     }
   
-    public addPlayer(username: String) {
+    public addPlayer(username: string) {
       this.scores.set(username, 0);
     }
   

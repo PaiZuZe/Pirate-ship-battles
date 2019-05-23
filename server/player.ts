@@ -17,8 +17,8 @@ const DRAG_POWER = 1.5;
 const BULLET_COOLDOWN = 500; // ms
 
 export class Player {
-  public id: String;
-  public username: String;
+  public id: string;
+  public username: string;
   public isDead: boolean = false;
   public x: number;
   public y: number;
@@ -33,25 +33,6 @@ export class Player {
   private primaryCooldown: number = 0;
   public readonly polygonPoints: number[][];
 
-  /*
-  private poly: SAT.Polygon = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-    new SAT.Vector(-9, -38),
-    new SAT.Vector(1, -38),
-    new SAT.Vector(11, -13),
-    new SAT.Vector(35, 1),
-    new SAT.Vector(48, -7),
-    new SAT.Vector(43, 21),
-    new SAT.Vector(13, 26),
-    new SAT.Vector(6, 36),
-    new SAT.Vector(-8, 36),
-    new SAT.Vector(-16, 26),
-    new SAT.Vector(-45, 21),
-    new SAT.Vector(-50, -7),
-    new SAT.Vector(-37, 1),
-    new SAT.Vector(-13, -13)
-  ]);
-  */
-
   public inputs = {
     up: false,
     left: false,
@@ -60,7 +41,7 @@ export class Player {
     boost: false
   };
   
-  constructor (x: number, y: number, angle: number, id: String, username: String) {
+  constructor (x: number, y: number, angle: number, id: string, username: string) {
     this.x = x;
     this.y = y;
     this.id = id;
@@ -83,6 +64,9 @@ export class Player {
       [-13, -13]
     ];
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
+    this.collisionShape.type = 'Player';
+    this.collisionShape.id = this.id;
+
   }
 
   private addAngle(angle: number): void {
@@ -151,7 +135,7 @@ export class Player {
     }
   }
 
-  public gainResource(delta: number, mod: number, type: String) {
+  public gainResource(delta: number, mod: number, type: string) {
     if (type == 'life') {
       this.hull += 1;
     }

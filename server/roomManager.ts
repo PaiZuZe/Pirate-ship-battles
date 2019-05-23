@@ -10,14 +10,14 @@ import * as socketIO from 'socket.io';
 export class RoomManager {
   private rooms: Room[];
   private io: socketIO.Server;
-  public roomMap: Map<String, String> = new Map<String, String>(); 
+  public roomMap: Map<string, string> = new Map<string, string>(); 
  
   constructor(io: socketIO.Server) {
     this.io = io;
     this.rooms = [new Room(this.io, 0)];
   }
 
-  private searchRoom(roomName: String): Room {
+  private searchRoom(roomName: string): Room {
     let playerRoom: Room;
     this.rooms.some((room: Room, index: number) => {
       if (room.name == roomName) {
@@ -33,8 +33,8 @@ export class RoomManager {
     return playerRoom;
   }
 
-  public getPlayerRoom(playerID: String): Room {
-    let playerRoomName: String = this.roomMap.get(playerID);
+  public getPlayerRoom(playerID: string): Room {
+    let playerRoomName: string = this.roomMap.get(playerID);
     if (playerRoomName == null) {
 			throw new Error("could not locate player");
 			return;
@@ -43,7 +43,7 @@ export class RoomManager {
     return this.searchRoom(playerRoomName);
   }
 
-  public pickRandomRoom(playerId: String): String {
+  public pickRandomRoom(playerId: string): string {
     this.roomMap.set(playerId, this.rooms[0].name);
     // TODO: Improve this algorithm
     return this.rooms[0].name;
