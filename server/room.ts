@@ -119,7 +119,6 @@ export class Room {
                    0, socket.id, data.username);
     this.players.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
-
     /*
      * TODO: Probably it is better the player verify this on its constructor. 
      * Check if player is not colliding with another object. 
@@ -139,10 +138,10 @@ export class Room {
         socket.emit("new_enemyPlayer", value.getPlayerData());
       }
     });
+    
     console.log("Created new player with id " + socket.id);
-
     // Send message to every connected client except the sender
-    socket.broadcast.emit('new_enemyPlayer', newPlayer.getPlayerData);
+    socket.broadcast.emit('new_enemyPlayer', newPlayer.getPlayerData());
   }
 
   public removePlayer(player: Player) {  
