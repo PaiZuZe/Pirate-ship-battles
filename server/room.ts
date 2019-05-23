@@ -158,6 +158,16 @@ export class Room {
     return;
   }
 
+  public playerInRoom(username: string): boolean {
+    let response = false;
+    this.players.forEach((value: Player, key: string) => {
+      if (value.username == username) {
+        response = true;
+      }
+    });
+    return response;
+  }
+
   public updatePlayerInput(socket: any, data: any): void {
     let player: Player = this.players.get(socket.id);
     if (!this.players.has(socket.id) || this.players.get(socket.id).isDead)

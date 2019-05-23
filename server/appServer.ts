@@ -94,7 +94,16 @@ export class AppServer {
   // Called when someone enters its names
   private onEntername (socket: any, data: any): void {                        
     console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
-    if (data.username.length > 0 && data.username.length < 15) {
+    if (data.username.length <= 0) {
+      this.io.emit('throw_error', { message: "Name can't be null" });
+    }
+    else if (data.username.length >= 15) {
+      this.io.emit('throw_error', { message: "Name is too long" });
+    }
+    else if (this.playerInGame(data.username)) {
+      this.io.emit('throw_error', { message: "Player in game" });
+    }
+    else if (data.username.length > 0 && data.username.length < 15) {
       let pool: Pool = this.createPool();
       pool.query('INSERT INTO players(name, password) VALUES($1, $2)', [data.username, data.password])
         .then((res) => socket.emit('join_game', { username: data.username, id: socket.id, password: data.password }))
@@ -108,10 +117,6 @@ export class AppServer {
         })
         .finally(() => pool.end());
     }
-    else if (data.username.length <= 0)
-      this.io.emit('throw_error', { message: "Name can't be null" });
-    else if (data.username.length >= 15)
-      this.io.emit('throw_error', { message: "Name is too long" });
   }
 
   // Called when a new player connects to the server
@@ -121,6 +126,15 @@ export class AppServer {
     } catch(err) {
       console.log(err);
     }
+  }
+
+  private playerInGame(username: string): boolean {
+    for (let i: number = 0; i < this.roomManager.rooms.length; ++i) {
+      if (this.roomManager.rooms[i].playerInRoom(username)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Called when someone fired an input

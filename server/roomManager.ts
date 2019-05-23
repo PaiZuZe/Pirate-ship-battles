@@ -8,7 +8,7 @@ import { Room } from './room';
 import * as socketIO from 'socket.io';
 
 export class RoomManager {
-  private rooms: Room[];
+  public rooms: Room[];
   private io: socketIO.Server;
   public roomMap: Map<string, string> = new Map<string, string>(); 
  
