@@ -9,7 +9,7 @@ import { Player } from './player';
 import { mapFloatToInt } from './aux';
 import * as socketIO from 'socket.io';
 import { Collisions, Polygon } from './collisions/Collisions'
-import collisionHandler from './collisionHandler';
+import { collisionHandler, isColliding }  from './collisionHandler';
 
 /*
 TODO: Future imports
@@ -74,9 +74,9 @@ export class Room {
         life: value.hull,
         fuel: value.fuel,
         anchored_timer: value.stationInfluenceTimer
-        };
-        playerData[key] = currentPlayerInfo;
-      });
+      };
+      playerData[key] = currentPlayerInfo;
+    });
 
     return playerData;
   }
@@ -117,61 +117,32 @@ export class Room {
     let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
                    mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250),
                    0, socket.id, data.username);
-  
-    /*               
-    while (colliding(newPlayer)) {
-      newPlayer.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-               aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
-    }
-    */
-    console.log("Created new player with id " + socket.id);
-  
-    socket.emit('create_player', newPlayer); // client Player() constructor expects player coordinates
-    //this.emit('create_player', data);
-    this.collisionSystem.insert(newPlayer.collisionShape);
-    let current_info = {
-      id: newPlayer.id,
-      x: newPlayer.x,
-      y: newPlayer.y,
-      angle: newPlayer.angle,
-      username: newPlayer.username,
-    };
-
-    this.players.forEach((value: Player, key: string) => {
-        let player_info = {
-            id: value.id,
-            username: value.username,
-            x: value.x,
-            y: value.y,
-            angle: value.angle,
-          };
-          socket.emit("new_enemyPlayer", player_info);
-    });
-  
     this.players.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
-  
+
     /*
-    for (let k in game.boxList)
-        socket.emit('item_create', game.boxList[k]);
-  
-    for (let k in game.bulletList)
-        socket.emit('bullet_create', game.bulletList[k]);
-  
-    for (let k in game.islandList)
-        socket.emit('island_create', game.islandList[k]);
-  
-    for (let k in game.botList)
-        socket.emit('new_enemyPlayer', game.botList[k]);
-  
-    for (let k in game.stoneList)
-        socket.emit('stone_create', game.stoneList[k]);
-    for (let k in game.debrisFieldList)
-        socket.emit("debris_create", game.debrisFieldList[k]);
-  
+     * TODO: Probably it is better the player verify this on its constructor. 
+     * Check if player is not colliding with another object. 
+     * If it is, place it somewhere else it isn't colliding with anything else.
+     */
+    /*               
+    while (isColliding(newPlayer.collisionShape)) {
+      newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
+               mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250));
+      this.collisionSystem.update();
+    }
     */
-    //send message to every connected client except the sender
-    socket.broadcast.emit('new_enemyPlayer', current_info);
+    socket.emit('create_player', newPlayer);
+    this.collisionSystem.insert(newPlayer.collisionShape);
+    this.players.forEach((value: Player, key: string) => {
+      if (value != newPlayer) {
+        socket.emit("new_enemyPlayer", value.getPlayerData());
+      }
+    });
+    console.log("Created new player with id " + socket.id);
+
+    // Send message to every connected client except the sender
+    socket.broadcast.emit('new_enemyPlayer', newPlayer.getPlayerData);
   }
 
   public removePlayer(player: Player) {  

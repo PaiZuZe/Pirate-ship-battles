@@ -69,6 +69,12 @@ export class Player {
 
   }
 
+  private canFire(): boolean {
+    if (this.primaryCooldown + BULLET_COOLDOWN > Date.now())
+      return false;
+    return true;
+  }
+
   private addAngle(angle: number): void {
     this.angle += angle;
     this.collisionShape.angle = (this.angle);
@@ -81,17 +87,29 @@ export class Player {
     this.collisionShape.y = this.y;
   }
 
-  private setPos(x: number, y: number): void {
+  public setPos(x: number, y: number): void {
     this.x = x;
     this.y = y;
     this.collisionShape.x = this.x;
     this.collisionShape.y = this.y;
   }
 
-  private canFire(): boolean {
-    if (this.primaryCooldown + BULLET_COOLDOWN > Date.now())
-      return false;
-    return true;
+  public getPlayerData(): any {
+    // TODO: Change anchored_timer in the client to stationInfluenceTimer
+    let playerInfo: any = {
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      speed: this.speed,
+      angle: this.angle,
+      username: this.username,
+      life: this.hull,
+      fuel: this.fuel,
+      anchored_timer: this.stationInfluenceTimer,
+      polygonPoints: this.polygonPoints,
+    };
+
+    return playerInfo; 
   }
 
   public updatePos(dt: number): void {
