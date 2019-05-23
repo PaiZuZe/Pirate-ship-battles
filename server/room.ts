@@ -9,6 +9,7 @@ import { Player } from './player';
 import { mapFloatToInt } from './aux';
 import * as socketIO from 'socket.io';
 import { Collisions, Polygon } from './collisions/Collisions'
+import collisionHandler from './collisionHandler';
 
 /*
 TODO: Future imports
@@ -91,11 +92,7 @@ export class Room {
         // Check for collisions
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            if (body.type == "Player") {
-              this.removePlayer(value);
-              this.removePlayer(this.players.get(body.id));
-              break;
-            }
+            collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
           }
         }
       });
