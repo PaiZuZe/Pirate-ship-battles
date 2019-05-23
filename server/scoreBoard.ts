@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 export class ScoreBoard {
-    private scores: Map<string, number> = new Map<string, number>();
+    public scores: Map<string, number> = new Map<string, number>();
 
     constructor() {
     }
@@ -20,6 +20,14 @@ export class ScoreBoard {
   
     public updateScore(username) {
       this.scores.set(username, this.scores.get(username) + 1);
+    }
+
+    public asObj() {
+      var obj: any = {};
+      this.scores.forEach((value: number, key: string) => {
+        obj[key] = value;
+      });
+      return obj;
     }
 }
   

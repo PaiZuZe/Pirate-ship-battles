@@ -70,8 +70,8 @@ class HUD {
     // Update score board
     if (scoreBoard) {
       var text = "SCOREBOARD\n";
-      for (const i in scoreBoard.score_list) {
-        text += "\n" + scoreBoard.username_list[i] + ": " + scoreBoard.score_list[i];
+      for (const i in scoreBoard) {
+        text += "\n" + i + ": " + scoreBoard[i];
       }
       this.scoreBoard.setText(text);
     }

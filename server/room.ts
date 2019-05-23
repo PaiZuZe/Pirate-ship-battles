@@ -104,10 +104,11 @@ export class Room {
   
   public updateGame(): void { 
     this.updatePlayers();
+    let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
     this.io.in(this.name).emit("update_game", 
                                {playerList: this.getPlayersInfo(), 
-                                score_board: this.scoreBoard});
+                                score_board: scoreBoard});
   }
 
   public addNewPlayer(socket: any, data: any): void {
@@ -151,7 +152,7 @@ export class Room {
     });
   
     this.players.set(socket.id, newPlayer);
-    this.scoreBoard.addPlayer(data.username)
+    this.scoreBoard.addPlayer(data.username);
   
     /*
     for (let k in game.boxList)
