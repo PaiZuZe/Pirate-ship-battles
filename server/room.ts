@@ -10,6 +10,8 @@ import { mapFloatToInt } from './aux';
 import * as socketIO from 'socket.io';
 import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
+import { DamageArtefact, PrimaryFire } from './damageArtefact';
+
 
 /*
 TODO: Future imports
@@ -28,10 +30,10 @@ export class Room {
   public readonly name: string; 
   // Game Elements
   private players: Map<string, Player> = new Map<string, Player>();
+  private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   /*
   TODO: Future Elements
   private bots: Map<string, Bot> = new Map<string, Bot>();  
-  private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private stations: Map<string, Station> = new Map<string, Station>();
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
   private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
@@ -98,9 +100,48 @@ export class Room {
       });
     }
   }
-  
+
+  private updateDamageArtefacts(): void {
+    if (this.damageArtefacts) { 
+      this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
+        if (!this.damageArtefacts.has(key))
+          return;
+        value.updatePos(UPDATE_TIME);
+        const potentials = value.collisionShape.potentials();
+        
+        // Check for collisions
+        for (const body of potentials) {
+          if (value.collisionShape.collides(body)) {
+            console.log("Boooo");
+            //collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
+          }
+        }
+      });
+    }
+  }
+
+  private createDamageArtefacts(): void {
+    let temp: DamageArtefact[];
+    if (this.players) { 
+      this.players.forEach((value: Player, key: string) => {
+        if (!this.players.has(key)) {
+          return;
+        }
+        if (value.inputs.primaryFire) {
+          temp = value.primaryFire();
+          for (let i: number = 0; i < temp.length; ++i) {
+            this.damageArtefacts.set(temp[i].id, temp[i]);
+            this.collisionSystem.insert(temp[i].collisionShape);
+          }
+        }      
+      });
+    }
+  }
+
   public updateGame(): void { 
     this.updatePlayers();
+    this.updateDamageArtefacts();
+    this.createDamageArtefacts();
     let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
     this.io.in(this.name).emit("update_game", 

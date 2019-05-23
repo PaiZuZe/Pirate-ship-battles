@@ -6,8 +6,9 @@
 
 import * as SAT from 'sat';
 import { Polygon } from './collisions/Collisions'
+import { rotate } from './aux';
 //const Bullet = require('./bullet.js');
-//import { DamageArtefact } from './damageArtefact';
+import { DamageArtefact, PrimaryFire } from './damageArtefact';
 // import { something } from './aux';
 
 const MAX_ACCEL = 100;
@@ -69,7 +70,7 @@ export class Player {
 
   }
 
-  private canFire(): boolean {
+  private canPrimaryFire(): boolean {
     if (this.primaryCooldown + BULLET_COOLDOWN > Date.now())
       return false;
     return true;
@@ -130,21 +131,21 @@ export class Player {
    * Attempts to fire, taking into account the last time it fired.
    * Returns the DamageArtefact's just created, or null if it can not fire.
    */
-  /*
-  public fire(): DamageArtefact { 
-    if (this.canFire()) {
+  public primaryFire(): PrimaryFire[] { 
+    if (this.canPrimaryFire()) {
       console.log(`FIRE! fire from: ${this.username}`);
       this.primaryCooldown = Date.now();
-      let [offx, offy] = aux.rotate(this.angle, 20, -10); // NO TYPES
-      let [offx1, offy1] = aux.rotate(this.angle, -20, -10); // NO TYPES
-      let damageArtefacts: DamageArtefact[] = [new DamageArtefact(this.x + offx, this.y + offy, this.angle, this.id, 1000),
-                                               new DamageArtefact(this.x + offx1, this.y + offy1, this.angle, this.id, 1000)];
-      return damageArtefacts;
-    } else {
-      return null; // not sure if it works, works with []
+      let [offx, offy] = rotate(this.angle, 20, -10); // NO TYPES
+      let [offx1, offy1] = rotate(this.angle, -20, -10); // NO TYPES
+      let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle, 1000),
+        new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];
+        return damageArtefacts;
+      } else {
+        return null; // not sure if it works, works with []
+      }
     }
-  }
-
+    
+  /*
   public takeDamage(delta: number, mod: number) {
     this.invulTime += delta;
     if (this.invulTime % (mod * delta) == 0) {
