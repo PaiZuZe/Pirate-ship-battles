@@ -66,15 +66,15 @@ export class Room {
   private getPlayerInfo(player: Player): any {
     let playerData: any;
     playerData = {
-      id: playerData.id,
-      x: playerData.x,
-      y: playerData.y,
-      speed: playerData.speed,
-      angle: playerData.angle,
-      username: playerData.username,
-      life: playerData.hull,
-      fuel: playerData.fuel,
-      anchored_timer: playerData.stationInfluenceTimer
+      id: player.id,
+      x: player.x,
+      y: player.y,
+      speed: player.speed,
+      angle: player.angle,
+      username: player.username,
+      life: player.hp,
+      fuel: player.fuel,
+      anchored_timer: player.stationInfluenceTimer
     };
     return playerData;
   }
@@ -82,32 +82,21 @@ export class Room {
   private getPlayersInfo(): any {
     let playerData: any = {}
     this.players.forEach((value: Player, key: string) => {
-      let currentPlayerInfo = {
-        id: value.id,
-        x: value.x,
-        y: value.y,
-        speed: value.speed,
-        angle: value.angle,
-        username: value.username,
-        life: value.hull,
-        fuel: value.fuel,
-        anchored_timer: value.stationInfluenceTimer
-      };
-      playerData[key] = currentPlayerInfo;
+      playerData[key] = this.getPlayerInfo(value);
     });
 
     return playerData;
   }
 
-  private getDamageArtefactInfo(player: DamageArtefact): any {
+  private getDamageArtefactInfo(damageArtefact: DamageArtefact): any {
     let artefactData: any;
     artefactData = {
-      id: artefactData.id, 
-      creator: artefactData.creator, 
-      x: artefactData.x, 
-      y: artefactData.y, 
-      angle: artefactData.angle, 
-      speed: artefactData.speed
+      id: damageArtefact.id, 
+      creator: damageArtefact.creator, 
+      x: damageArtefact.x, 
+      y: damageArtefact.y, 
+      angle: damageArtefact.angle, 
+      speed: damageArtefact.speed
     };
     return artefactData;
   }
@@ -115,15 +104,7 @@ export class Room {
   private getDamageArtefactsInfo(): any {
     let artefactData: any = {};
     this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
-      let currentArtefactInfo = {
-        id: value.id, 
-        creator: value.creator, 
-        x: value.x, 
-        y: value.y, 
-        angle: value.angle, 
-        speed: value.speed
-      };
-      artefactData[key] = currentArtefactInfo;
+      artefactData[key] = this.getDamageArtefactInfo(value);
     });
     return artefactData;
   }
@@ -139,7 +120,8 @@ export class Room {
         // Check for collisions
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
+            console.log("Boooo");
+            //collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
           }
         }
       });
@@ -178,7 +160,7 @@ export class Room {
             for (let i: number = 0; i < temp.length; ++i) {
               this.damageArtefacts.set(temp[i].id, temp[i]);
               this.collisionSystem.insert(temp[i].collisionShape);
-              this.io.in(this.name).emit("bullet_create", temp[i]);
+              this.io.in(this.name).emit("bullet_create", this.getDamageArtefactInfo(temp[i]));
             }
           }
         }      

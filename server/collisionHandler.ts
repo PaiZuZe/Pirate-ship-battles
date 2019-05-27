@@ -11,6 +11,12 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     if (obj1Type == 'Player' && obj2Type == 'Player') {
       collidePlayers(room, obj1, obj2);
     }
+    else if (obj1Type == 'DamageArtefact' && obj2Type != 'DamageArtefact') {
+      obj1.applyEffect(obj2);
+    }
+    else if (obj1Type != 'DamageArtefact' && obj2Type == 'DamageArtefact') {
+      obj2.applyEffect(obj1);
+    }
 }
 
 export function isColliding(collisionPoly: any): boolean {

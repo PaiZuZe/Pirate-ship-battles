@@ -27,7 +27,7 @@ export class Player {
   public collisionShape: Polygon;
   public speed: number = 0;
   private accel: number = 0;
-  public hull: number = 3;
+  public hp: number = 3;
   private invulTime: number = 0; // Invulnerability time inside debrisField
   public stationInfluenceTimer: number = 0;
   public fuel: number = 100;
@@ -104,7 +104,7 @@ export class Player {
       speed: this.speed,
       angle: this.angle,
       username: this.username,
-      life: this.hull,
+      life: this.hp,
       fuel: this.fuel,
       anchored_timer: this.stationInfluenceTimer,
       polygonPoints: this.polygonPoints,
@@ -138,7 +138,7 @@ export class Player {
       let [offx, offy] = rotate(this.angle, 20, -10); // NO TYPES
       let [offx1, offy1] = rotate(this.angle, -20, -10); // NO TYPES
       let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle, 1000),
-        new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];
+                                            new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];
         return damageArtefacts;
       } else {
         return null; // not sure if it works, works with []
@@ -149,14 +149,14 @@ export class Player {
   public takeDamage(delta: number, mod: number) {
     this.invulTime += delta;
     if (this.invulTime % (mod * delta) == 0) {
-      this.hull--;
+      this.hp--;
       this.invulTime = delta;
     }
   }
 
   public gainResource(delta: number, mod: number, type: string) {
     if (type == 'life') {
-      this.hull += 1;
+      this.hp += 1;
     }
   }
   */

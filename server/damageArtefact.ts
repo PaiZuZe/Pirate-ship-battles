@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import { Polygon } from './collisions/Collisions'
+import {v4} from 'node-uuid'
 
 export abstract class DamageArtefact {
   public id: string;
@@ -24,17 +25,19 @@ export abstract class DamageArtefact {
     this.angle = angle;
     this.speed = speed;
     this.timeCreated = Date.now();
+    this.id = v4();
   }
 
-  abstract addPos (x: number, y: number): void;
+  public abstract addPos (x: number, y: number): void;
 
-  abstract updatePos (dt: number): void;
+  public abstract updatePos (dt: number): void;
+
+  public abstract applyEffect (target: any): void;
+
 };
 
 
 export class PrimaryFire extends DamageArtefact {
-  public angle: number;
-  public speed: number;
   constructor (startX: number, startY: number, creator: string, angle: number, speed: number) {
     super(startX, startY, creator, angle, speed);
     this.polygonPoints = [
@@ -42,15 +45,24 @@ export class PrimaryFire extends DamageArtefact {
       [0, 26]
     ];
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
+    this.collisionShape.type = 'DamageArtefact';
+    this.collisionShape.id = this.id;
   
   }
-  addPos (x: number, y: number): void {
+  public addPos (x: number, y: number): void {
     this.x += x;
     this.y += y;
+    this.collisionShape.x = this.x;
+    this.collisionShape.y = this.y;
   }
 
-  updatePos (dt: number): void {
+  public updatePos (dt: number): void {
     this.addPos(Math.sin(this.angle) * this.speed * dt, -Math.cos(this.angle) * this.speed * dt);
+  }
+
+  public applyEffect (target: any): void {
+    target.hp--;
+    return;
   }
  };
 
