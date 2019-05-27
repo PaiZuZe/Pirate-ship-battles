@@ -10,15 +10,19 @@ export abstract class DamageArtefact {
   public id: string;
   public x: number;
   public y: number;
+  public angle: number;
+  public speed: number;
   public creator: string;
   public timeCreated: number;
   public polygonPoints: number[][];
   public collisionShape: Polygon;
 
-  constructor (startX: number, startY: number, creator: string) {
+  constructor (startX: number, startY: number, creator: string,  angle: number, speed: number) {
     this.x = startX;
     this.y = startY;
     this.creator = creator;
+    this.angle = angle;
+    this.speed = speed;
     this.timeCreated = Date.now();
   }
 
@@ -32,9 +36,7 @@ export class PrimaryFire extends DamageArtefact {
   public angle: number;
   public speed: number;
   constructor (startX: number, startY: number, creator: string, angle: number, speed: number) {
-    super(startX, startY, creator);
-    this.angle = angle;
-    this.speed = speed;
+    super(startX, startY, creator, angle, speed);
     this.polygonPoints = [
       [0, -26],
       [0, 26]

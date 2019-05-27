@@ -63,6 +63,22 @@ export class Room {
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
+  private getPlayerInfo(player: Player): any {
+    let playerData: any;
+    playerData = {
+      id: playerData.id,
+      x: playerData.x,
+      y: playerData.y,
+      speed: playerData.speed,
+      angle: playerData.angle,
+      username: playerData.username,
+      life: playerData.hull,
+      fuel: playerData.fuel,
+      anchored_timer: playerData.stationInfluenceTimer
+    };
+    return playerData;
+  }
+
   private getPlayersInfo(): any {
     let playerData: any = {}
     this.players.forEach((value: Player, key: string) => {
@@ -81,6 +97,35 @@ export class Room {
     });
 
     return playerData;
+  }
+
+  private getDamageArtefactInfo(player: DamageArtefact): any {
+    let artefactData: any;
+    artefactData = {
+      id: artefactData.id, 
+      creator: artefactData.creator, 
+      x: artefactData.x, 
+      y: artefactData.y, 
+      angle: artefactData.angle, 
+      speed: artefactData.speed
+    };
+    return artefactData;
+  }
+
+  private getDamageArtefactsInfo(): any {
+    let artefactData: any = {};
+    this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
+      let currentArtefactInfo = {
+        id: value.id, 
+        creator: value.creator, 
+        x: value.x, 
+        y: value.y, 
+        angle: value.angle, 
+        speed: value.speed
+      };
+      artefactData[key] = currentArtefactInfo;
+    });
+    return artefactData;
   }
 
   private updatePlayers(): void {
@@ -129,9 +174,12 @@ export class Room {
         }
         if (value.inputs.primaryFire) {
           temp = value.primaryFire();
-          for (let i: number = 0; i < temp.length; ++i) {
-            this.damageArtefacts.set(temp[i].id, temp[i]);
-            this.collisionSystem.insert(temp[i].collisionShape);
+          if (temp != null) {
+            for (let i: number = 0; i < temp.length; ++i) {
+              this.damageArtefacts.set(temp[i].id, temp[i]);
+              this.collisionSystem.insert(temp[i].collisionShape);
+              this.io.in(this.name).emit("bullet_create", temp[i]);
+            }
           }
         }      
       });
@@ -145,7 +193,8 @@ export class Room {
     let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
     this.io.in(this.name).emit("update_game", 
-                               {playerList: this.getPlayersInfo(), 
+                               {playerList: this.getPlayersInfo(),
+                                bulletList: this.getDamageArtefactsInfo(), 
                                 score_board: scoreBoard});
   }
 
