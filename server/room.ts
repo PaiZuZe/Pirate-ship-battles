@@ -40,7 +40,7 @@ export class Room {
   private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
-  private io: socketIO.Server;
+  public io: socketIO.Server;
   
   // Game Properties
   private fuelCellsMax: number = 15; 
@@ -63,48 +63,29 @@ export class Room {
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
-  private getPlayerInfo(player: Player): any {
-    let playerData: any;
-    playerData = {
-      id: player.id,
-      x: player.x,
-      y: player.y,
-      speed: player.speed,
-      angle: player.angle,
-      username: player.username,
-      life: player.hp,
-      fuel: player.fuel,
-      anchored_timer: player.stationInfluenceTimer
-    };
-    return playerData;
+  private getObj(objId: string, objType: string): any {
+    if (objType == 'Player') {
+      return this.players.get(objId);
+    }
+    else if (objType == 'DamageArtefact') {
+      return this.damageArtefacts.get(objId);
+    }
   }
 
   private getPlayersInfo(): any {
     let playerData: any = {}
     this.players.forEach((value: Player, key: string) => {
-      playerData[key] = this.getPlayerInfo(value);
+      playerData[key] = value.getData();
     });
 
     return playerData;
   }
 
-  private getDamageArtefactInfo(damageArtefact: DamageArtefact): any {
-    let artefactData: any;
-    artefactData = {
-      id: damageArtefact.id, 
-      creator: damageArtefact.creator, 
-      x: damageArtefact.x, 
-      y: damageArtefact.y, 
-      angle: damageArtefact.angle, 
-      speed: damageArtefact.speed
-    };
-    return artefactData;
-  }
 
   private getDamageArtefactsInfo(): any {
     let artefactData: any = {};
     this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
-      artefactData[key] = this.getDamageArtefactInfo(value);
+      artefactData[key] = value.getData();
     });
     return artefactData;
   }
@@ -120,8 +101,7 @@ export class Room {
         // Check for collisions
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            console.log("Boooo");
-            //collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
+            collisionHandler(this, value, this.getObj(body.id, body.type), 'Player', body.type);
           }
         }
       });
@@ -139,8 +119,7 @@ export class Room {
         // Check for collisions
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            console.log("Boooo");
-            //collisionHandler(this, value, this.players.get(body.id), 'Player', body.type);
+            collisionHandler(this, value, this.getObj(body.id, body.type), 'DamageArtefact', body.type);
           }
         }
       });
@@ -160,7 +139,7 @@ export class Room {
             for (let i: number = 0; i < temp.length; ++i) {
               this.damageArtefacts.set(temp[i].id, temp[i]);
               this.collisionSystem.insert(temp[i].collisionShape);
-              this.io.in(this.name).emit("bullet_create", this.getDamageArtefactInfo(temp[i]));
+              this.io.in(this.name).emit("bullet_create", temp[i].getData());
             }
           }
         }      
@@ -207,13 +186,16 @@ export class Room {
     this.collisionSystem.insert(newPlayer.collisionShape);
     this.players.forEach((value: Player, key: string) => {
       if (value != newPlayer) {
-        socket.emit("new_enemyPlayer", value.getPlayerData());
+        socket.emit("new_enemyPlayer", value.getData());
       }
+    });
+    this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
+        socket.emit("bullet_create", value.getData());
     });
     
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
-    socket.broadcast.emit('new_enemyPlayer', newPlayer.getPlayerData());
+    socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
   }
 
   public removePlayer(player: Player) {  

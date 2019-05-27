@@ -32,8 +32,9 @@ export abstract class DamageArtefact {
 
   public abstract updatePos (dt: number): void;
 
-  public abstract applyEffect (target: any): void;
-
+  public abstract applyEffect (target: any): string;
+  
+  public abstract getData(): any;
 };
 
 
@@ -60,9 +61,25 @@ export class PrimaryFire extends DamageArtefact {
     this.addPos(Math.sin(this.angle) * this.speed * dt, -Math.cos(this.angle) * this.speed * dt);
   }
 
-  public applyEffect (target: any): void {
-    target.hp--;
-    return;
+  public applyEffect (target: any): string {
+    if (target.id != this.creator) {
+      target.hp--;
+      return 'hit'
+    }
+    return null;
+  }
+
+  public getData(): any {
+    let artefactData: any;
+    artefactData = {
+      id: this.id, 
+      creator: this.creator, 
+      x: this.x, 
+      y: this.y, 
+      angle: this.angle, 
+      speed: this.speed
+    };
+    return artefactData;
   }
  };
 

@@ -263,4 +263,8 @@ function onBulletRemove (data) {
   delete bulletList[data.id];
 }
 
+function onHit (data) {
+  let playerExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+}
+
 ////////////////////////////////////////////////////////////////////////////////

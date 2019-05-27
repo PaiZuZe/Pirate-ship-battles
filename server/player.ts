@@ -95,7 +95,7 @@ export class Player {
     this.collisionShape.y = this.y;
   }
 
-  public getPlayerData(): any {
+  public getData(): any {
     // TODO: Change anchored_timer in the client to stationInfluenceTimer
     let playerInfo: any = {
       id: this.id,
