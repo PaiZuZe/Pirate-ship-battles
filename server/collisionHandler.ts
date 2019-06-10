@@ -7,8 +7,10 @@
 import { Room } from './room';
 import { Player } from './player';
 import { DamageArtefact } from './damageArtefact';
+import { SpaceStation } from './spaceStation';
 
-export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: string, obj2Type: string) {
+
+export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: string, obj2Type: string): void {
     if (obj1Type == 'Player' && obj2Type == 'Player') {
       collidePlayers(room, obj1, obj2);
     }
@@ -18,6 +20,19 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     else if (obj1Type != 'DamageArtefact' && obj2Type == 'DamageArtefact') {
       collideDamageArtefact(room, obj2, obj1);
     }
+    else if (obj1Type == 'Player' && obj2Type == 'SpaceSationRest') {
+      collideRestoration(obj1, obj2);
+    }
+    else if (obj1Type == 'SpaceSationRest' && obj2Type == 'Player') {
+      collideRestoration(obj2, obj1);
+    }
+    else if (obj1Type == 'Player' && obj2Type == 'SpaceSationCol') {
+      collideStation(room, obj1);
+    }
+    else if (obj1Type == 'SpaceSationCol' && obj2Type == 'Player') {
+      collideStation(room, obj2);
+    }
+    return;
 }
 
 export function isColliding(collisionPoly: any): boolean {
@@ -33,9 +48,10 @@ export function isColliding(collisionPoly: any): boolean {
   return retValue;
 }
 
-function collidePlayers(room: Room, p1: Player, p2: Player) {
+function collidePlayers(room: Room, p1: Player, p2: Player): void {
   room.removePlayer(p1);
   room.removePlayer(p2);
+  return;
 }
 
 function collideDamageArtefact(room: Room, artefact: DamageArtefact, obj: any): void {
@@ -44,5 +60,15 @@ function collideDamageArtefact(room: Room, artefact: DamageArtefact, obj: any): 
   if (signal != null) {
     room.io.in(room.name).emit(signal, obj.getData());
   }
+  return;
+}
+
+function collideRestoration(player: Player, station: SpaceStation): void {
+  station.updateCounter(player);
+  return;
+}
+
+function collideStation(room: Room, player: Player): void {
+  room.removePlayer(player);
   return;
 }

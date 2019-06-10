@@ -4,10 +4,8 @@
 //                              Server - Player                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-import * as SAT from 'sat';
 import { Polygon } from './collisions/Collisions'
 import { rotate } from './aux';
-//const Bullet = require('./bullet.js');
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 // import { something } from './aux';
 
@@ -27,6 +25,7 @@ export class Player {
   public collisionShape: Polygon;
   public speed: number = 0;
   private accel: number = 0;
+  public counter: number = 0;
   public hp: number = 3;
   private invulTime: number = 0; // Invulnerability time inside debrisField
   public stationInfluenceTimer: number = 0;

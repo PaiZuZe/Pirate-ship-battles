@@ -11,12 +11,12 @@ import * as socketIO from 'socket.io';
 import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
+import { SpaceStation } from './spaceStation';
 
 
 /*
 TODO: Future imports
 import { Bot } from './bot';
-import { Station } from './station';
 import { DamageArtefact } from './damageArtefact';
 import { DebrisField } from './debrisField';
 import { Asteroid } from './asteroid';
@@ -31,10 +31,10 @@ export class Room {
   // Game Elements
   private players: Map<string, Player> = new Map<string, Player>();
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
+  private stations: Map<string, SpaceStation> = new Map<string, SpaceStation>();
   /*
   TODO: Future Elements
   private bots: Map<string, Bot> = new Map<string, Bot>();  
-  private stations: Map<string, Station> = new Map<string, Station>();
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
   private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
   private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
@@ -61,6 +61,7 @@ export class Room {
       this.collisionSystem = new Collisions();
       this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
+      this.fillWStations();
   }
 
   private getObj(objId: string, objType: string): any {
@@ -69,6 +70,9 @@ export class Room {
     }
     else if (objType == 'DamageArtefact') {
       return this.damageArtefacts.get(objId);
+    }
+    else if (objType == 'SpaceSationRest' || objType == 'SpaceSationCol') {
+      return this.stations.get(objId);
     }
   }
 
@@ -192,6 +196,9 @@ export class Room {
     this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
         socket.emit("bullet_create", value.getData());
     });
+    this.stations.forEach((value: SpaceStation, key: string) => {
+      socket.emit("island_create", value.getData());
+  });
     
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
@@ -208,6 +215,24 @@ export class Room {
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
       this.io.sockets.sockets[player.id].leave(this.name);
       this.io.sockets.sockets[player.id].join('login');
+    }
+    return;
+  }
+
+  private addSpaceStation(): void {
+    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
+    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let newSpaceSatition = new SpaceStation(x, y, 100, this.canvasWidth, this.canvasHeight, "life", 1, 180);
+    this.stations.set(newSpaceSatition.id, newSpaceSatition);
+    this.collisionSystem.insert(newSpaceSatition.restorationShape);
+    this.collisionSystem.insert(newSpaceSatition.collisionShape);
+    this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
+    return;
+  }
+
+  private fillWStations(): void {
+    for (let i:number = 0; i < this.stationsMax; i+=1) {
+      this.addSpaceStation();
     }
     return;
   }

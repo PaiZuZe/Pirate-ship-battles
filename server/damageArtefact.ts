@@ -81,6 +81,6 @@ export class PrimaryFire extends DamageArtefact {
     };
     return artefactData;
   }
- };
+};
 
 
