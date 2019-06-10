@@ -12,17 +12,17 @@ import { RoomManager } from './roomManager';
 import { createServer, Server } from 'http';
 
 export class AppServer {
-  private app: express.Application; 
+  private app: express.Application;
   private server: Server;
   private io: socketIO.Server;
   private roomManager: RoomManager;
-  private readonly port: number = 2000; 
-  
+  private readonly port: number = 2000;
+
   constructor() {
     this.createApp();
-    this.createServer(); 
+    this.createServer();
     this.setClient();
-    this.initializeSockets(); 
+    this.initializeSockets();
     this.listen();
     this.initializeRoomManager();
   }
@@ -67,14 +67,15 @@ export class AppServer {
     this.io.on('connect', (socket: any) => {
       socket.join('login');
       socket.on('enter_name', this.onEntername.bind(this, socket));
-      socket.on('logged_in', function(data) { 
+      socket.on('logged_in', function(data) {
         this.io.emit('enter_game', {username: data.username});
         socket.leave('login');
         socket.join(this.roomManager.pickRandomRoom(socket.id));
       }.bind(this));
+      socket.on("selected_ship", this.onSelectedShip.bind(this, socket))
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       socket.on("input_fired", this.onInputFired.bind(this, socket));
-      socket.on('disconnect', () => { 
+      socket.on('disconnect', () => {
         console.log('Client disconnected');
       });
     });
@@ -92,7 +93,7 @@ export class AppServer {
   }
 
   // Called when someone enters its names
-  private onEntername (socket: any, data: any): void {                        
+  private onEntername (socket: any, data: any): void {
     console.log(`Received joinning request from ${socket.id}, size: ${data.config.width}:${data.config.height}`);
     if (data.username.length <= 0) {
       this.io.emit('throw_error', { message: "Name can't be null" });
@@ -117,6 +118,11 @@ export class AppServer {
         })
         .finally(() => pool.end());
     }
+  }
+
+  // Called when the ship is selected
+  private onSelectedShip(socket: any, data: any): void {
+    this.roomManager
   }
 
   // Called when a new player connects to the server

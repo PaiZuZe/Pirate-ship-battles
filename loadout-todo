@@ -15,7 +15,6 @@ Player entity created
 Config (done)
 Index (done)
 Client
-	onEnterLoadout
 Server
-Flow
+  Tratar sinal selected_ship
 CSS

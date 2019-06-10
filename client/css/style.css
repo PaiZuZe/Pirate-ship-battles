@@ -8,8 +8,7 @@ html, body {
   overflow: hidden;
   font-family: "Roboto","Helvetica","Arial",sans-serif;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
-  cursor: url('../assets/cursor.cur')
-, auto;
+  cursor: url('../assets/cursor.cur'), auto;
 }
 ::selection {
   background: #000000;
@@ -113,14 +112,14 @@ html, body {
 }
 
 #shipPreview {
-  content: url(http://placehold.it/350x150);
   display: inline;
+  padding: 10px;
   border: 2px solid black;
-  border-radius: 15%;
+  border-radius: 10%;
 }
 */
 #gameDiv {
-  background-image: url("../assets/black.png");
+  background-image: url('../assets/black.png');
   background-repeat: repeat;
   position: absolute;
   top: 0px;

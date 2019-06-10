@@ -10,36 +10,39 @@ let loadout_shipdesc = [ //Better have this in another file (JSON?)
   "Fast boost and high fire rate"
 ]
 let loadout_shipimg = [
-  'url("../assets/spaceship.png")',
-  'url("../assets/spaceship-alt.png")'
+  "url('../assets/spaceship.png')",
+  "url('../assets/spaceship-alt.png')"
 ]
 let loadout_count = 0;
 let loadout_username = "";
 
+////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {
-  //Tratar isso no servidor (enviando os dados corretos)
-  socket.emit('selected_ship', {ship: loadout_shipname[loadout_count]});
+  socket.emit('selected_ship', {shipname: loadout_shipname[loadout_count]});
   socket.emit('exit_loadout');
 }
 
-//Esses botões devem atualizar a página? Como?
 loadout_previous.onclick = function () {
   if (--loadout_count < 0) loadout_count = loadout_shipname.length - 1;
+  changeShip();
 }
 
 loadout_next.onclick = function () {
   if (++loadcount >= loadout_shipname.length) loadout_count = 0;
+  changeShip();
 }
 
+////////////////////////////////////////////////////////////////////////////////
 function changeShip () {
   shipName.innerHTML = loadout_shipname[loadout_count];
   shipDesc.innerHTML = loadout_shipdesc[loadout_count];
   shipPreview.style.content = loadout_shipimg[loadout_count];
 }
 
+////////////////////////////////////////////////////////////////////////////////
 function onEnterLoadout (username) {
-  //Preparar cena
   loadout_username = username;
+  changeShip();
 }
 
 function onExitLoadout () {
