@@ -22,7 +22,7 @@ function joinGame (data) {
   signDiv.style.display = 'none';
   loadoutDiv.style.display = null;
   errorLog.textContent = "";
-  game.scene.start('Main', data.username);
+  game.scene.start('Loadout', data.username);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
