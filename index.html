@@ -42,11 +42,15 @@
     <div id="loadoutDiv" display="none">
       <div class="loadoutDiv-content">
           <h2>Select your ship</h2>
+
           <div id="shipPreview"></div>
-          <button id="loadout_previous">◄</button>
-          <button id="loadout_next">►</button>
+
+          <button id="loadout_previous" class="circle-button">◄</button>
+          <button id="loadout_next" class="circle-button">►</button>
+
           <p id="shipName"></p>
           <p id="shipDesc"></p>
+
           <button id="loadout_select">◄</button>
       </div>
     </div>
@@ -67,6 +71,9 @@
     <script src="client/game.js"></script>
     <script>
       signdivusername.onkeypress = function(e) {
+        if (e.keyCode == 13) entername.click();
+      }
+      signdivupassword.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
       }
     </script>

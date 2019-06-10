@@ -14,7 +14,8 @@ Player entity created
 
 Config (done)
 Index (done)
-CSS
 Client
+	onEnterLoadout
 Server
 Flow
+CSS

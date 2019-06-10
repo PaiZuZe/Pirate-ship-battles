@@ -4,14 +4,22 @@
 //                             Client - Loadout                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-var loadout_shipname = ["Blastbeat", "Blindside"];
-var loadout_count = 0;
-var loadout_username = "";
+let loadout_shipname = ["Blastbeat", "Blindside"];
+let loadout_shipdesc = [ //Better have this in another file (JSON?)
+  "Strong attacks and massive HP",
+  "Fast boost and high fire rate"
+]
+let loadout_shipimg = [
+  'url("../assets/spaceship.png")',
+  'url("../assets/spaceship-alt.png")'
+]
+let loadout_count = 0;
+let loadout_username = "";
 
 loadout_select.onclick = function () {
-  socket.emit('select_ship', {ship: loadout_shipname[loadout_count]});
+  //Tratar isso no servidor (enviando os dados corretos)
+  socket.emit('selected_ship', {ship: loadout_shipname[loadout_count]});
   socket.emit('exit_loadout');
-  //Comunicar com servidor de que forma?
 }
 
 //Esses botões devem atualizar a página? Como?
@@ -20,7 +28,13 @@ loadout_previous.onclick = function () {
 }
 
 loadout_next.onclick = function () {
-    if (++loadcount >= loadout_shipname.length) loadout_count = 0;
+  if (++loadcount >= loadout_shipname.length) loadout_count = 0;
+}
+
+function changeShip () {
+  shipName.innerHTML = loadout_shipname[loadout_count];
+  shipDesc.innerHTML = loadout_shipdesc[loadout_count];
+  shipPreview.style.content = loadout_shipimg[loadout_count];
 }
 
 function onEnterLoadout (username) {
@@ -42,11 +56,6 @@ class Loadout extends Phaser.Scene {
     super({key: "Loadout"});
     socket.on('enter_loadout', onEnterLoadout);
     socket.on('exit_loadout', onExitLoadout);
-  }
-
-  preload () {
-    this.load.image("ship", "client/assets/spaceship.png");
-    this.load.image("ship-alt", "client/assets/spaceship-alt.png");
   }
 
   //////////////////////////////////////////////////////////////////////////////
