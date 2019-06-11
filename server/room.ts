@@ -12,6 +12,7 @@ import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
+import { Asteroid } from './asteroid';
 
 
 /*
@@ -19,7 +20,6 @@ TODO: Future imports
 import { Bot } from './bot';
 import { DamageArtefact } from './damageArtefact';
 import { DebrisField } from './debrisField';
-import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
 */
 
@@ -32,11 +32,11 @@ export class Room {
   private players: Map<string, Player> = new Map<string, Player>();
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private stations: Map<string, SpaceStation> = new Map<string, SpaceStation>();
+  private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
   /*
   TODO: Future Elements
   private bots: Map<string, Bot> = new Map<string, Bot>();  
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
-  private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
   private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
@@ -47,7 +47,7 @@ export class Room {
   private botsMax: number = 1;
   private debrisFieldMax: number = 3;
   private stationsMax: number = 10; 
-  private asteroidsMax: number = 4;  
+  private asteroidsMax: number = 10;  
   private canvasHeight: number = 2000;  
   private canvasWidth: number = 2000; 
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
@@ -62,6 +62,7 @@ export class Room {
       this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
       this.fillWStations();
+      this.fillWAsteroids();
   }
 
   private getObj(objId: string, objType: string): any {
@@ -73,6 +74,9 @@ export class Room {
     }
     else if (objType == 'SpaceSationRest' || objType == 'SpaceSationCol') {
       return this.stations.get(objId);
+    }
+    else if (objType == 'Asteroid') {
+      return this.asteroids.get(objId);
     }
   }
 
@@ -197,9 +201,11 @@ export class Room {
         socket.emit("bullet_create", value.getData());
     });
     this.stations.forEach((value: SpaceStation, key: string) => {
-      socket.emit("island_create", value.getData());
-  });
-    
+      socket.emit("island_create", value.getData());  
+    });
+    this.asteroids.forEach((value: Asteroid, key: string) => {
+      socket.emit("stone_create", value.getData());  
+    });
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
@@ -230,9 +236,26 @@ export class Room {
     return;
   }
 
+  private addAsteroid(): void {
+    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
+    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let newAsteroid = new Asteroid(x, y, this.canvasWidth, this.canvasHeight);
+    this.asteroids.set(newAsteroid.id, newAsteroid);
+    this.collisionSystem.insert(newAsteroid.collisionShape);
+    this.io.in(this.name).emit("stone_create", newAsteroid.getData());
+    return;
+  }
+
   private fillWStations(): void {
-    for (let i:number = 0; i < this.stationsMax; i+=1) {
+    for (let i:number = 0; i < this.stationsMax; i++) {
       this.addSpaceStation();
+    }
+    return;
+  }
+
+  private fillWAsteroids(): void {
+    for (let i:number = 0; i < this.asteroidsMax; i++) {
+      this.addAsteroid();
     }
     return;
   }

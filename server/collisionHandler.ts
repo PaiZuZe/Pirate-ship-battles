@@ -32,6 +32,12 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     else if (obj1Type == 'SpaceSationCol' && obj2Type == 'Player') {
       collideStation(room, obj2);
     }
+    else if (obj1Type == 'Player' && obj2Type == 'Asteroid') {
+      collideAsteroid(room, obj1);
+    }
+    else if (obj1Type == 'Asteroid' && obj2Type == 'Player') {
+      collideAsteroid(room, obj2);
+    }
     return;
 }
 
@@ -71,4 +77,8 @@ function collideRestoration(player: Player, station: SpaceStation): void {
 function collideStation(room: Room, player: Player): void {
   room.removePlayer(player);
   return;
+}
+
+function collideAsteroid(room: Room, player: Player): void {
+  room.removePlayer(player);
 }
