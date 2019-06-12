@@ -8,6 +8,7 @@ import { Room } from './room';
 import { Player } from './player';
 import { DamageArtefact } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
+import { FuelCell } from './fuelCell';
 
 
 export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: string, obj2Type: string): void {
@@ -37,6 +38,12 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     }
     else if (obj1Type == 'Asteroid' && obj2Type == 'Player') {
       collideAsteroid(room, obj2);
+    }
+    else if (obj1Type == 'Player' && obj2Type == 'FuelCell') {
+      collideFuelCell(room, obj1, obj2);
+    }
+    else if (obj1Type == 'FuelCell' && obj2Type == 'Player') {
+      collideFuelCell(room, obj2, obj1);
     }
     return;
 }
@@ -81,4 +88,11 @@ function collideStation(room: Room, player: Player): void {
 
 function collideAsteroid(room: Room, player: Player): void {
   room.removePlayer(player);
+  return;
+}
+
+function collideFuelCell(room: Room, player: Player, cell: FuelCell): void {
+  cell.giveResource(player);
+  room.removeFuelCell(cell);
+  return;
 }

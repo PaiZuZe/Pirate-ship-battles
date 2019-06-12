@@ -13,6 +13,7 @@ import { collisionHandler, isColliding }  from './collisionHandler';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
+import { FuelCell } from './fuelCell';
 
 
 /*
@@ -20,7 +21,6 @@ TODO: Future imports
 import { Bot } from './bot';
 import { DamageArtefact } from './damageArtefact';
 import { DebrisField } from './debrisField';
-import { FuelCell } from './fuelCell';
 */
 
 const UPDATE_TIME = 0.06; // sec
@@ -33,11 +33,11 @@ export class Room {
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private stations: Map<string, SpaceStation> = new Map<string, SpaceStation>();
   private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
+  private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   /*
   TODO: Future Elements
   private bots: Map<string, Bot> = new Map<string, Bot>();  
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
-  private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
@@ -63,6 +63,7 @@ export class Room {
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
       this.fillWStations();
       this.fillWAsteroids();
+      this.fillWFuelCells();
   }
 
   private getObj(objId: string, objType: string): any {
@@ -77,6 +78,9 @@ export class Room {
     }
     else if (objType == 'Asteroid') {
       return this.asteroids.get(objId);
+    }
+    else if (objType == "FuelCell") {
+      return this.fuelCells.get(objId);
     }
   }
 
@@ -206,6 +210,9 @@ export class Room {
     this.asteroids.forEach((value: Asteroid, key: string) => {
       socket.emit("stone_create", value.getData());  
     });
+    this.fuelCells.forEach((value: FuelCell, key: string) => {
+      socket.emit("item_create", value.getData());  
+    });
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
@@ -246,6 +253,30 @@ export class Room {
     return;
   }
 
+  public removeAsteroid(obj: Asteroid): void {
+    this.collisionSystem.remove(obj.collisionShape);
+    this.asteroids.delete(obj.id);
+    this.io.in(this.name).emit("remove_stone", obj.getData());
+    return;
+  }
+
+  private addFuelCell(): void {
+    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
+    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let newFuelCell = new FuelCell(x, y, this.canvasWidth, this.canvasHeight);
+    this.fuelCells.set(newFuelCell.id, newFuelCell);
+    this.collisionSystem.insert(newFuelCell.collisionShape);
+    this.io.in(this.name).emit("item_create", newFuelCell.getData());
+    return;
+  }
+
+  public removeFuelCell(obj: FuelCell): void {
+    this.collisionSystem.remove(obj.collisionShape);
+    this.fuelCells.delete(obj.id);
+    this.io.in(this.name).emit("item_remove", obj.getData());
+    return;
+  }
+
   private fillWStations(): void {
     for (let i:number = 0; i < this.stationsMax; i++) {
       this.addSpaceStation();
@@ -256,6 +287,13 @@ export class Room {
   private fillWAsteroids(): void {
     for (let i:number = 0; i < this.asteroidsMax; i++) {
       this.addAsteroid();
+    }
+    return;
+  }
+
+  private fillWFuelCells(): void {
+    for (let i:number = 0; i < this.fuelCellsMax; i++) {
+      this.addFuelCell();
     }
     return;
   }
