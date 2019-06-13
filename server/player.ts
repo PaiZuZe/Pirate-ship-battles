@@ -138,11 +138,12 @@ export class Player {
       let [offx1, offy1] = rotate(this.angle, -20, -10); // NO TYPES
       let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle, 1000),
                                             new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];
-        return damageArtefacts;
-      } else {
-        return null; // not sure if it works, works with []
-      }
+      return damageArtefacts;
+    } 
+    else {
+      return null; // not sure if it works, works with []
     }
+  }
     
   /*
   public takeDamage(delta: number, mod: number) {

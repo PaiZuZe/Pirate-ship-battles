@@ -14,11 +14,11 @@ import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
+import { Bot } from './bot';
 
 
 /*
 TODO: Future imports
-import { Bot } from './bot';
 import { DamageArtefact } from './damageArtefact';
 import { DebrisField } from './debrisField';
 */
@@ -34,9 +34,9 @@ export class Room {
   private stations: Map<string, SpaceStation> = new Map<string, SpaceStation>();
   private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
   private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
+  private bots: Map<string, Bot> = new Map<string, Bot>();  
   /*
   TODO: Future Elements
-  private bots: Map<string, Bot> = new Map<string, Bot>();  
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
   */
   private scoreBoard: ScoreBoard; // The list of scores form active players
@@ -60,10 +60,11 @@ export class Room {
       this.scoreBoard = new ScoreBoard();
       this.collisionSystem = new Collisions();
       this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
-      setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
       this.fillWStations();
       this.fillWAsteroids();
       this.fillWFuelCells();
+      this.fillWBots();
+      setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
   private getObj(objId: string, objType: string): any {
@@ -82,6 +83,9 @@ export class Room {
     else if (objType == "FuelCell") {
       return this.fuelCells.get(objId);
     }
+    else if (objType == "Bot") {
+      return this.bots.get(objId);
+    }
   }
 
   private getPlayersInfo(): any {
@@ -93,6 +97,14 @@ export class Room {
     return playerData;
   }
 
+  private getBotsInfo(): any {
+    let botData: any = {}
+    this.bots.forEach((value: Bot, key: string) => {
+      botData[key] = value.getData();
+    });
+
+    return botData;
+  }
 
   private getDamageArtefactsInfo(): any {
     let artefactData: any = {};
@@ -165,8 +177,23 @@ export class Room {
     this.createDamageArtefacts();
     let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
+    this.asteroids.forEach((value: Asteroid, key: string) => {
+      if (value.hp <= 0) {
+        this.removeAsteroid(value); 
+      }
+    });
+    this.bots.forEach((value: Bot, key: string) => {
+      if (value.hp <= 0) {
+        this.removeBot(value); 
+      }
+    });
+    this.players.forEach((value: Player, key: string) => {
+      if (value.hp <= 0) {
+        this.removePlayer(value); 
+      }
+    });
     this.io.in(this.name).emit("update_game", 
-                               {playerList: this.getPlayersInfo(),
+                               {playerList: {...this.getPlayersInfo(), ...this.getBotsInfo()},
                                 bulletList: this.getDamageArtefactsInfo(), 
                                 score_board: scoreBoard});
   }
@@ -212,6 +239,9 @@ export class Room {
     });
     this.fuelCells.forEach((value: FuelCell, key: string) => {
       socket.emit("item_create", value.getData());  
+    });
+    this.bots.forEach((value: Bot, key: string) => {
+      socket.emit("new_enemyPlayer", value.getData());  
     });
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
@@ -277,6 +307,23 @@ export class Room {
     return;
   }
 
+  private addBot(): void {
+    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
+    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let newBot = new Bot(x, y);
+    this.bots.set(newBot.id, newBot);
+    this.collisionSystem.insert(newBot.collisionShape);
+    this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
+    return;
+  }
+
+  public removeBot(obj: Bot): void {
+    this.collisionSystem.remove(obj.collisionShape);
+    this.bots.delete(obj.id);
+    this.io.in(this.name).emit("remove_player", obj.getData());
+    return;
+  }
+
   private fillWStations(): void {
     for (let i:number = 0; i < this.stationsMax; i++) {
       this.addSpaceStation();
@@ -294,6 +341,13 @@ export class Room {
   private fillWFuelCells(): void {
     for (let i:number = 0; i < this.fuelCellsMax; i++) {
       this.addFuelCell();
+    }
+    return;
+  }
+
+  private fillWBots(): void {
+    for (let i:number = 0; i < this.botsMax; i++) {
+      this.addBot();
     }
     return;
   }
