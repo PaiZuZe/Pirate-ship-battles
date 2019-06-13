@@ -44,10 +44,14 @@ export class Room {
   
   // Game Properties
   private fuelCellsMax: number = 15; 
+  private fuelCellsCount: number = 0;
   private botsMax: number = 1;
+  private botsCount: number = 0;  
   private debrisFieldMax: number = 3;
   private stationsMax: number = 10; 
+  private stationsCount: number = 0;  
   private asteroidsMax: number = 10;  
+  private asteroidsCount: number = 0;  
   private canvasHeight: number = 2000;  
   private canvasWidth: number = 2000; 
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
@@ -60,10 +64,6 @@ export class Room {
       this.scoreBoard = new ScoreBoard();
       this.collisionSystem = new Collisions();
       this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
-      this.fillWStations();
-      this.fillWAsteroids();
-      this.fillWFuelCells();
-      this.fillWBots();
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
@@ -172,6 +172,10 @@ export class Room {
   }
 
   public updateGame(): void { 
+    this.fillWStations();
+    this.fillWAsteroids();
+    this.fillWFuelCells();
+    this.fillWBots();
     this.updatePlayers();
     this.updateDamageArtefacts();
     this.createDamageArtefacts();
@@ -270,6 +274,7 @@ export class Room {
     this.collisionSystem.insert(newSpaceSatition.restorationShape);
     this.collisionSystem.insert(newSpaceSatition.collisionShape);
     this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
+    this.stationsCount++;
     return;
   }
 
@@ -280,6 +285,7 @@ export class Room {
     this.asteroids.set(newAsteroid.id, newAsteroid);
     this.collisionSystem.insert(newAsteroid.collisionShape);
     this.io.in(this.name).emit("stone_create", newAsteroid.getData());
+    this.asteroidsCount++;
     return;
   }
 
@@ -287,6 +293,7 @@ export class Room {
     this.collisionSystem.remove(obj.collisionShape);
     this.asteroids.delete(obj.id);
     this.io.in(this.name).emit("remove_stone", obj.getData());
+    this.asteroidsCount--;
     return;
   }
 
@@ -297,6 +304,7 @@ export class Room {
     this.fuelCells.set(newFuelCell.id, newFuelCell);
     this.collisionSystem.insert(newFuelCell.collisionShape);
     this.io.in(this.name).emit("item_create", newFuelCell.getData());
+    this.fuelCellsCount++;
     return;
   }
 
@@ -304,6 +312,7 @@ export class Room {
     this.collisionSystem.remove(obj.collisionShape);
     this.fuelCells.delete(obj.id);
     this.io.in(this.name).emit("item_remove", obj.getData());
+    this.fuelCellsCount--;
     return;
   }
 
@@ -314,6 +323,7 @@ export class Room {
     this.bots.set(newBot.id, newBot);
     this.collisionSystem.insert(newBot.collisionShape);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
+    this.botsCount++;
     return;
   }
 
@@ -321,32 +331,33 @@ export class Room {
     this.collisionSystem.remove(obj.collisionShape);
     this.bots.delete(obj.id);
     this.io.in(this.name).emit("remove_player", obj.getData());
+    this.botsCount--;
     return;
   }
 
   private fillWStations(): void {
-    for (let i:number = 0; i < this.stationsMax; i++) {
+    for (let i:number = this.stationsCount; i < this.stationsMax; i++) {
       this.addSpaceStation();
     }
     return;
   }
 
   private fillWAsteroids(): void {
-    for (let i:number = 0; i < this.asteroidsMax; i++) {
+    for (let i:number = this.asteroidsCount; i < this.asteroidsMax; i++) {
       this.addAsteroid();
     }
     return;
   }
 
   private fillWFuelCells(): void {
-    for (let i:number = 0; i < this.fuelCellsMax; i++) {
+    for (let i:number = this.fuelCellsCount; i < this.fuelCellsMax; i++) {
       this.addFuelCell();
     }
     return;
   }
 
   private fillWBots(): void {
-    for (let i:number = 0; i < this.botsMax; i++) {
+    for (let i:number = this.botsCount; i < this.botsMax; i++) {
       this.addBot();
     }
     return;
