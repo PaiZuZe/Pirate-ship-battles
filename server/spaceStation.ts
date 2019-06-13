@@ -59,12 +59,12 @@ export class SpaceStation {
   }
 
   public updateCounter(player: Player): void {
-    if (player.counter <= this.threshold) {
+    if (player.counter >= this.threshold) {
       this.giveResource(player);
       player.counter = 0;
     }
     else {
-      player.counter+=1;
+      player.counter++;
     }
     return;
   }

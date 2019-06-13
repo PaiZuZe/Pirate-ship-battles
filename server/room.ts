@@ -19,7 +19,6 @@ import { Bot } from './bot';
 
 /*
 TODO: Future imports
-import { DamageArtefact } from './damageArtefact';
 import { DebrisField } from './debrisField';
 */
 
@@ -132,6 +131,15 @@ export class Room {
     }
   }
 
+  private updateBots(): void {
+    if (this.bots) {
+      this.bots.forEach((value: Bot, key: string) => {
+        value.takeAction(this.players);
+      });
+    }
+    return;
+  }
+
   private updateDamageArtefacts(): void {
     if (this.damageArtefacts) { 
       this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
@@ -177,6 +185,7 @@ export class Room {
     this.fillWFuelCells();
     this.fillWBots();
     this.updatePlayers();
+    this.updateBots();
     this.updateDamageArtefacts();
     this.createDamageArtefacts();
     let scoreBoard: any = this.scoreBoard.asObj();

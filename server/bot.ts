@@ -58,14 +58,13 @@ export class Bot {
   }
 
   public takeAction(playerList: any): DamageArtefact[] {
-    var playersToConsider: Player[] = [];
+    var playersToConsider: any[] = [];
     var bullets: DamageArtefact[] = [];
-    for (const k in playerList) {
-      let p: Player = playerList[k];
-      if (p.collisionShape.collides(this.agro)) {
-        playersToConsider.push(p);
+    playerList.forEach((value: Player, key: string) => {
+      if (value.collisionShape.collides(this.agro)) {
+        playersToConsider.push(value);
       }
-    }
+    });
     if (playersToConsider.length > 0) {
       let player_index = Math.floor(Math.random() * playersToConsider.length);
       this.aproach_target(playersToConsider[player_index]);
