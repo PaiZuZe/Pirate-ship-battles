@@ -15,12 +15,7 @@ import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
 import { Bot } from './bot';
-
-
-/*
-TODO: Future imports
 import { DebrisField } from './debrisField';
-*/
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
@@ -34,10 +29,7 @@ export class Room {
   private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
   private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   private bots: Map<string, Bot> = new Map<string, Bot>();  
-  /*
-  TODO: Future Elements
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
-  */
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
   
@@ -46,8 +38,9 @@ export class Room {
   private fuelCellsCount: number = 0;
   private botsMax: number = 1;
   private botsCount: number = 0;  
-  private debrisFieldMax: number = 3;
-  private stationsMax: number = 10; 
+  private debrisFieldsMax: number = 3;
+  private debrisFieldsCount: number = 0;  
+  private stationsMax: number = 5; 
   private stationsCount: number = 0;  
   private asteroidsMax: number = 10;  
   private asteroidsCount: number = 0;  
@@ -84,6 +77,9 @@ export class Room {
     }
     else if (objType == "Bot") {
       return this.bots.get(objId);
+    }
+    else if (objType == "DebrisField") {
+      return this.debrisField.get(objId);
     }
   }
 
@@ -184,6 +180,7 @@ export class Room {
     this.fillWAsteroids();
     this.fillWFuelCells();
     this.fillWBots();
+    this.fillWDebrisFields();
     this.updatePlayers();
     this.updateBots();
     this.updateDamageArtefacts();
@@ -256,6 +253,10 @@ export class Room {
     this.bots.forEach((value: Bot, key: string) => {
       socket.emit("new_enemyPlayer", value.getData());  
     });
+    this.debrisField.forEach((value: DebrisField, key: string) => {
+      socket.emit("debris_create", value.getData());  
+    });
+
     console.log("Created new player with id " + socket.id);
     // Send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
@@ -344,6 +345,19 @@ export class Room {
     return;
   }
 
+  private addDerbisField(): void {
+    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
+    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let r = 100 + Math.ceil(Math.random()*250);
+
+    let newDerbisField = new DebrisField(x, y, r, r - 50);
+    this.debrisField.set(newDerbisField.id, newDerbisField);
+    this.collisionSystem.insert(newDerbisField.collisionShape);
+    this.io.in(this.name).emit("debris_create", newDerbisField.getData());
+    this.debrisFieldsCount++;
+    return;
+  }
+
   private fillWStations(): void {
     for (let i:number = this.stationsCount; i < this.stationsMax; i++) {
       this.addSpaceStation();
@@ -368,6 +382,13 @@ export class Room {
   private fillWBots(): void {
     for (let i:number = this.botsCount; i < this.botsMax; i++) {
       this.addBot();
+    }
+    return;
+  }
+
+  private fillWDebrisFields(): void {
+    for (let i:number = this.debrisFieldsCount; i < this.debrisFieldsMax; i++) {
+      this.addDerbisField();
     }
     return;
   }

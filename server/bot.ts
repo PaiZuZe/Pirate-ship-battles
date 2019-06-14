@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////
+//                            Space Ship Battles                              //
+//                                                                            //
+//                              Server - Bot                                  //
+////////////////////////////////////////////////////////////////////////////////
+
 import { Player } from './player';
 import { Polygon, Circle } from './collisions/Collisions'
 import { rotate, distSq } from './aux';

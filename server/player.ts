@@ -26,6 +26,7 @@ export class Player {
   public speed: number = 0;
   private accel: number = 0;
   public counter: number = 0;
+  public counterDebri: number = 0;
   public hp: number = 3;
   private invulTime: number = 0; // Invulnerability time inside debrisField
   public stationInfluenceTimer: number = 0;
