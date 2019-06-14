@@ -7,7 +7,6 @@
 import { Polygon } from './collisions/Collisions'
 import { rotate } from './aux';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
-// import { something } from './aux';
 
 const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;

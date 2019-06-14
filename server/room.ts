@@ -4,18 +4,19 @@
 //                                Server - Room                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-import { ScoreBoard } from './scoreBoard';
+import { GameObject } from './gameObject';
 import { Player } from './player';
-import { mapFloatToInt } from './aux';
-import * as socketIO from 'socket.io';
-import { Collisions, Polygon } from './collisions/Collisions'
-import { collisionHandler, isColliding }  from './collisionHandler';
-import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
 import { Bot } from './bot';
 import { DebrisField } from './debrisField';
+import { DamageArtefact, PrimaryFire } from './damageArtefact';
+import { ScoreBoard } from './scoreBoard';
+import { Collisions, Polygon } from './collisions/Collisions'
+import { collisionHandler, isColliding }  from './collisionHandler';
+import * as socketIO from 'socket.io';
+import { mapFloatToInt } from './aux';
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
@@ -23,11 +24,10 @@ const BULLET_LIFETIME = 5000; // ms
 export class Room {
   public readonly name: string; 
   // Game Elements
+  private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
+
   private players: Map<string, Player> = new Map<string, Player>();
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
-  private stations: Map<string, SpaceStation> = new Map<string, SpaceStation>();
-  private asteroids: Map<string, Asteroid> = new Map<string, Asteroid>();
-  private fuelCells: Map<string, FuelCell> = new Map<string, FuelCell>();
   private bots: Map<string, Bot> = new Map<string, Bot>();  
   private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
   private scoreBoard: ScoreBoard; // The list of scores form active players
@@ -66,20 +66,14 @@ export class Room {
     else if (objType == 'DamageArtefact') {
       return this.damageArtefacts.get(objId);
     }
-    else if (objType == 'SpaceSationRest' || objType == 'SpaceSationCol') {
-      return this.stations.get(objId);
-    }
-    else if (objType == 'Asteroid') {
-      return this.asteroids.get(objId);
-    }
-    else if (objType == "FuelCell") {
-      return this.fuelCells.get(objId);
-    }
     else if (objType == "Bot") {
       return this.bots.get(objId);
     }
     else if (objType == "DebrisField") {
       return this.debrisField.get(objId);
+    }
+    else {
+      return this.gameObjects.get(objId);
     }
   }
 
@@ -187,8 +181,8 @@ export class Room {
     this.createDamageArtefacts();
     let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
-    this.asteroids.forEach((value: Asteroid, key: string) => {
-      if (value.hp <= 0) {
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.hp <= 0 && value.collisionShape.type == "Asteroid") {
         this.removeAsteroid(value); 
       }
     });
@@ -241,14 +235,16 @@ export class Room {
     this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
         socket.emit("bullet_create", value.getData());
     });
-    this.stations.forEach((value: SpaceStation, key: string) => {
-      socket.emit("island_create", value.getData());  
-    });
-    this.asteroids.forEach((value: Asteroid, key: string) => {
-      socket.emit("stone_create", value.getData());  
-    });
-    this.fuelCells.forEach((value: FuelCell, key: string) => {
-      socket.emit("item_create", value.getData());  
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.collisionShape.type == "Asteroid") {
+        socket.emit("stone_create", value.getData());
+      } 
+      else if (value.collisionShape.type == "FuelCell") {
+        socket.emit("item_create", value.getData());  
+      }
+      else if (value.collisionShape.type == "SpaceSationCol") {
+        socket.emit("island_create", value.getData());  
+      }
     });
     this.bots.forEach((value: Bot, key: string) => {
       socket.emit("new_enemyPlayer", value.getData());  
@@ -279,8 +275,8 @@ export class Room {
   private addSpaceStation(): void {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
-    let newSpaceSatition = new SpaceStation(x, y, 100, this.canvasWidth, this.canvasHeight, "life", 1, 180);
-    this.stations.set(newSpaceSatition.id, newSpaceSatition);
+    let newSpaceSatition = new SpaceStation(x, y, 100, "life", 1, 180);
+    this.gameObjects.set(newSpaceSatition.id, newSpaceSatition);
     this.collisionSystem.insert(newSpaceSatition.restorationShape);
     this.collisionSystem.insert(newSpaceSatition.collisionShape);
     this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
@@ -292,16 +288,16 @@ export class Room {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newAsteroid = new Asteroid(x, y, this.canvasWidth, this.canvasHeight);
-    this.asteroids.set(newAsteroid.id, newAsteroid);
+    this.gameObjects.set(newAsteroid.id, newAsteroid);
     this.collisionSystem.insert(newAsteroid.collisionShape);
     this.io.in(this.name).emit("stone_create", newAsteroid.getData());
     this.asteroidsCount++;
     return;
   }
 
-  public removeAsteroid(obj: Asteroid): void {
+  public removeAsteroid(obj: GameObject): void {
     this.collisionSystem.remove(obj.collisionShape);
-    this.asteroids.delete(obj.id);
+    this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("remove_stone", obj.getData());
     this.asteroidsCount--;
     return;
@@ -311,16 +307,16 @@ export class Room {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newFuelCell = new FuelCell(x, y, this.canvasWidth, this.canvasHeight);
-    this.fuelCells.set(newFuelCell.id, newFuelCell);
+    this.gameObjects.set(newFuelCell.id, newFuelCell);
     this.collisionSystem.insert(newFuelCell.collisionShape);
     this.io.in(this.name).emit("item_create", newFuelCell.getData());
     this.fuelCellsCount++;
     return;
   }
 
-  public removeFuelCell(obj: FuelCell): void {
+  public removeFuelCell(obj: GameObject): void {
     this.collisionSystem.remove(obj.collisionShape);
-    this.fuelCells.delete(obj.id);
+    this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("item_remove", obj.getData());
     this.fuelCellsCount--;
     return;
