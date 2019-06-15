@@ -29,7 +29,6 @@ export class Room {
   private players: Map<string, Player> = new Map<string, Player>();
   private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private bots: Map<string, Bot> = new Map<string, Bot>();  
-  private debrisField: Map<string, DebrisField> = new Map<string, DebrisField>();
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
   
@@ -68,9 +67,6 @@ export class Room {
     }
     else if (objType == "Bot") {
       return this.bots.get(objId);
-    }
-    else if (objType == "DebrisField") {
-      return this.debrisField.get(objId);
     }
     else {
       return this.gameObjects.get(objId);
@@ -245,12 +241,12 @@ export class Room {
       else if (value.collisionShape.type == "SpaceSationCol") {
         socket.emit("island_create", value.getData());  
       }
+      else if (value.collisionShape.type == "DebrisField") {
+        socket.emit("debris_create", value.getData());
+      }
     });
     this.bots.forEach((value: Bot, key: string) => {
       socket.emit("new_enemyPlayer", value.getData());  
-    });
-    this.debrisField.forEach((value: DebrisField, key: string) => {
-      socket.emit("debris_create", value.getData());  
     });
 
     console.log("Created new player with id " + socket.id);
@@ -347,7 +343,7 @@ export class Room {
     let r = 100 + Math.ceil(Math.random()*250);
 
     let newDerbisField = new DebrisField(x, y, r, r - 50);
-    this.debrisField.set(newDerbisField.id, newDerbisField);
+    this.gameObjects.set(newDerbisField.id, newDerbisField);
     this.collisionSystem.insert(newDerbisField.collisionShape);
     this.io.in(this.name).emit("debris_create", newDerbisField.getData());
     this.debrisFieldsCount++;

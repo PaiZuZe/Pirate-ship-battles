@@ -4,21 +4,15 @@
 //                           Server - Debris Field                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-import {v4} from 'node-uuid'
 import {Circle } from './collisions/Collisions'
 import { Player } from './player';
+import { GameObject } from './gameObject';
 
-export class DebrisField {
-  public x: number;
-  public y: number;
-  public id: string;
+export class DebrisField extends GameObject {
   public radius: number;
-  public collisionShape: Circle;
   public threshold: number;
   constructor (x: number, y: number, radius: number, threshold: number) {
-    this.x = x;
-    this.y = y;
-    this.id = v4();
+    super(x, y);
     this.radius = radius;
     this.threshold = threshold;
     this.collisionShape = new Circle(x, y, radius);
