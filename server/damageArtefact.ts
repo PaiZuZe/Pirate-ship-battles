@@ -5,12 +5,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import { Polygon } from './collisions/Collisions'
-import {v4} from 'node-uuid'
+import { GameObject } from './gameObject';
 
-export abstract class DamageArtefact {
-  public id: string;
-  public x: number;
-  public y: number;
+export abstract class DamageArtefact extends GameObject {
   public angle: number;
   public speed: number;
   public creator: string;
@@ -18,23 +15,18 @@ export abstract class DamageArtefact {
   public polygonPoints: number[][];
   public collisionShape: Polygon;
 
-  constructor (startX: number, startY: number, creator: string,  angle: number, speed: number) {
-    this.x = startX;
-    this.y = startY;
+  constructor (x: number, y: number, creator: string,  angle: number, speed: number) {
+    super(x, y);
     this.creator = creator;
     this.angle = angle;
     this.speed = speed;
     this.timeCreated = Date.now();
-    this.id = v4();
   }
 
   public abstract addPos (x: number, y: number): void;
 
-  public abstract updatePos (dt: number): void;
-
   public abstract applyEffect (target: any): string;
   
-  public abstract getData(): any;
 };
 
 

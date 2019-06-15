@@ -27,7 +27,6 @@ export class Room {
   private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
 
   private players: Map<string, Player> = new Map<string, Player>();
-  private damageArtefacts: Map<string, DamageArtefact> = new Map<string, DamageArtefact>();
   private bots: Map<string, Bot> = new Map<string, Bot>();  
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
@@ -62,9 +61,6 @@ export class Room {
     if (objType == 'Player') {
       return this.players.get(objId);
     }
-    else if (objType == 'DamageArtefact') {
-      return this.damageArtefacts.get(objId);
-    }
     else if (objType == "Bot") {
       return this.bots.get(objId);
     }
@@ -93,10 +89,26 @@ export class Room {
 
   private getDamageArtefactsInfo(): any {
     let artefactData: any = {};
-    this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
-      artefactData[key] = value.getData();
+    this.gameObjects.forEach((value: DamageArtefact, key: string) => {
+      if (value.collisionShape.type == "DamageArtefact") {
+        artefactData[key] = value.getData();
+      }
     });
     return artefactData;
+  }
+
+  private updateObjects(): void {
+    if(this.gameObjects) {
+      this.gameObjects.forEach((value: GameObject, key: string) => {
+        value.updatePos(UPDATE_TIME);
+        const potentials = value.collisionShape.potentials();
+        for (const body of potentials) {
+          if (value.collisionShape.collides(body)) {
+            collisionHandler(this, value, this.getObj(body.id, body.type), value.collisionShape.type, body.type);
+          }
+        }
+      });
+    }
   }
 
   private updatePlayers(): void {
@@ -126,24 +138,6 @@ export class Room {
     return;
   }
 
-  private updateDamageArtefacts(): void {
-    if (this.damageArtefacts) { 
-      this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
-        if (!this.damageArtefacts.has(key))
-          return;
-        value.updatePos(UPDATE_TIME);
-        const potentials = value.collisionShape.potentials();
-        
-        // Check for collisions
-        for (const body of potentials) {
-          if (value.collisionShape.collides(body)) {
-            collisionHandler(this, value, this.getObj(body.id, body.type), 'DamageArtefact', body.type);
-          }
-        }
-      });
-    }
-  }
-
   private createDamageArtefacts(): void {
     let temp: DamageArtefact[];
     if (this.players) { 
@@ -155,7 +149,7 @@ export class Room {
           temp = value.primaryFire();
           if (temp != null) {
             for (let i: number = 0; i < temp.length; ++i) {
-              this.damageArtefacts.set(temp[i].id, temp[i]);
+              this.gameObjects.set(temp[i].id, temp[i]);
               this.collisionSystem.insert(temp[i].collisionShape);
               this.io.in(this.name).emit("bullet_create", temp[i].getData());
             }
@@ -173,7 +167,7 @@ export class Room {
     this.fillWDebrisFields();
     this.updatePlayers();
     this.updateBots();
-    this.updateDamageArtefacts();
+    this.updateObjects();
     this.createDamageArtefacts();
     let scoreBoard: any = this.scoreBoard.asObj();
     this.collisionSystem.update();
@@ -228,9 +222,6 @@ export class Room {
         socket.emit("new_enemyPlayer", value.getData());
       }
     });
-    this.damageArtefacts.forEach((value: DamageArtefact, key: string) => {
-        socket.emit("bullet_create", value.getData());
-    });
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.collisionShape.type == "Asteroid") {
         socket.emit("stone_create", value.getData());
@@ -243,6 +234,9 @@ export class Room {
       }
       else if (value.collisionShape.type == "DebrisField") {
         socket.emit("debris_create", value.getData());
+      }
+      else if (value.collisionShape.type == "DamageArtefact") {
+        socket.emit("bullet_create", value.getData());  
       }
     });
     this.bots.forEach((value: Bot, key: string) => {

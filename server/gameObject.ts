@@ -29,7 +29,7 @@ export abstract class GameObject {
     };
   }
 
-  public updatePos(): void {
+  public updatePos(dt: number = 0): void {
     return;
   }
 }
