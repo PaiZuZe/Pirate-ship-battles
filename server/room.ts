@@ -25,9 +25,6 @@ export class Room {
   public readonly name: string; 
   // Game Elements
   private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
-
-  private players: Map<string, Player> = new Map<string, Player>();
-  private bots: Map<string, Bot> = new Map<string, Bot>();  
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
   
@@ -57,22 +54,12 @@ export class Room {
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
-  private getObj(objId: string, objType: string): any {
-    if (objType == 'Player') {
-      return this.players.get(objId);
-    }
-    else if (objType == "Bot") {
-      return this.bots.get(objId);
-    }
-    else {
-      return this.gameObjects.get(objId);
-    }
-  }
-
   private getPlayersInfo(): any {
     let playerData: any = {}
-    this.players.forEach((value: Player, key: string) => {
-      playerData[key] = value.getData();
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.collisionShape.type == "Player") {
+        playerData[key] = value.getData();
+      }
     });
 
     return playerData;
@@ -80,8 +67,10 @@ export class Room {
 
   private getBotsInfo(): any {
     let botData: any = {}
-    this.bots.forEach((value: Bot, key: string) => {
-      botData[key] = value.getData();
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.collisionShape.type == "Bot") {
+        botData[key] = value.getData();
+      }
     });
 
     return botData;
@@ -104,25 +93,7 @@ export class Room {
         const potentials = value.collisionShape.potentials();
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
-            collisionHandler(this, value, this.getObj(body.id, body.type), value.collisionShape.type, body.type);
-          }
-        }
-      });
-    }
-  }
-
-  private updatePlayers(): void {
-    if (this.players) { 
-      this.players.forEach((value: Player, key: string) => {
-        if (!this.players.has(key))
-          return;
-        value.updatePos(UPDATE_TIME);
-        const potentials = value.collisionShape.potentials();
-        
-        // Check for collisions
-        for (const body of potentials) {
-          if (value.collisionShape.collides(body)) {
-            collisionHandler(this, value, this.getObj(body.id, body.type), 'Player', body.type);
+            collisionHandler(this, value, this.gameObjects.get(body.id), value.collisionShape.type, body.type);
           }
         }
       });
@@ -130,23 +101,29 @@ export class Room {
   }
 
   private updateBots(): void {
-    if (this.bots) {
-      this.bots.forEach((value: Bot, key: string) => {
-        value.takeAction(this.players);
+    if (this.gameObjects) {
+      this.gameObjects.forEach((value: Bot, key: string) => {
+        if (value.collisionShape.type == "Bot") {
+          value.takeAction(this.gameObjects);
+        }
       });
     }
     return;
   }
-
+  /*Beware here there be gambis*/
   private createDamageArtefacts(): void {
     let temp: DamageArtefact[];
-    if (this.players) { 
-      this.players.forEach((value: Player, key: string) => {
-        if (!this.players.has(key)) {
+    if (this.gameObjects) { 
+      this.gameObjects.forEach((value: GameObject, key: string) => {
+        if (!this.gameObjects.has(key) && value.collisionShape.type != "Player") {
           return;
         }
-        if (value.inputs.primaryFire) {
-          temp = value.primaryFire();
+        if (value.collisionShape.type != "Player") {
+          return;
+        }
+        let palyer = value as Player; 
+        if (palyer.inputs.primaryFire) {
+          temp = palyer.primaryFire();
           if (temp != null) {
             for (let i: number = 0; i < temp.length; ++i) {
               this.gameObjects.set(temp[i].id, temp[i]);
@@ -165,7 +142,6 @@ export class Room {
     this.fillWFuelCells();
     this.fillWBots();
     this.fillWDebrisFields();
-    this.updatePlayers();
     this.updateBots();
     this.updateObjects();
     this.createDamageArtefacts();
@@ -175,14 +151,10 @@ export class Room {
       if (value.hp <= 0 && value.collisionShape.type == "Asteroid") {
         this.removeAsteroid(value); 
       }
-    });
-    this.bots.forEach((value: Bot, key: string) => {
-      if (value.hp <= 0) {
+      if (value.hp <= 0 && value.collisionShape.type == "Bot") {
         this.removeBot(value); 
       }
-    });
-    this.players.forEach((value: Player, key: string) => {
-      if (value.hp <= 0) {
+      if (value.hp <= 0 && value.collisionShape.type == "Player") {
         this.removePlayer(value); 
       }
     });
@@ -193,7 +165,7 @@ export class Room {
   }
 
   public addNewPlayer(socket: any, data: any): void {
-    if (this.players.get(socket.id)) {
+    if (this.gameObjects.get(socket.id)) {
       console.log(`Player with id ${socket.id} already exists`);
       return;
     }
@@ -201,7 +173,7 @@ export class Room {
     let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
                    mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250),
                    0, socket.id, data.username);
-    this.players.set(socket.id, newPlayer);
+    this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
     /*
      * TODO: Probably it is better the player verify this on its constructor. 
@@ -217,13 +189,11 @@ export class Room {
     */
     socket.emit('create_player', newPlayer);
     this.collisionSystem.insert(newPlayer.collisionShape);
-    this.players.forEach((value: Player, key: string) => {
-      if (value != newPlayer) {
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.collisionShape.type == "Player" && value != newPlayer) {
         socket.emit("new_enemyPlayer", value.getData());
       }
-    });
-    this.gameObjects.forEach((value: GameObject, key: string) => {
-      if (value.collisionShape.type == "Asteroid") {
+      else if (value.collisionShape.type == "Asteroid") {
         socket.emit("stone_create", value.getData());
       } 
       else if (value.collisionShape.type == "FuelCell") {
@@ -238,9 +208,9 @@ export class Room {
       else if (value.collisionShape.type == "DamageArtefact") {
         socket.emit("bullet_create", value.getData());  
       }
-    });
-    this.bots.forEach((value: Bot, key: string) => {
-      socket.emit("new_enemyPlayer", value.getData());  
+      else if (value.collisionShape.type == "Bot") {
+        socket.emit("new_enemyPlayer", value.getData());  
+      }
     });
 
     console.log("Created new player with id " + socket.id);
@@ -248,13 +218,13 @@ export class Room {
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
   }
 
-  public removePlayer(player: Player) {  
+  public removePlayer(player: any) {  
     console.log(`${player.username} died!`);
-    if (this.players.has(player.id)) {
+    if (this.gameObjects.has(player.id)) {
       console.log(`${player.username} was removed`);
       this.collisionSystem.remove(player.collisionShape);
       this.scoreBoard.removePlayer(player.username);
-      this.players.delete(player.id);
+      this.gameObjects.delete(player.id);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
       this.io.sockets.sockets[player.id].leave(this.name);
       this.io.sockets.sockets[player.id].join('login');
@@ -316,16 +286,16 @@ export class Room {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newBot = new Bot(x, y);
-    this.bots.set(newBot.id, newBot);
+    this.gameObjects.set(newBot.id, newBot);
     this.collisionSystem.insert(newBot.collisionShape);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
     this.botsCount++;
     return;
   }
 
-  public removeBot(obj: Bot): void {
+  public removeBot(obj: GameObject): void {
     this.collisionSystem.remove(obj.collisionShape);
-    this.bots.delete(obj.id);
+    this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("remove_player", obj.getData());
     this.botsCount--;
     return;
@@ -381,17 +351,21 @@ export class Room {
 
   public playerInRoom(username: string): boolean {
     let response = false;
-    this.players.forEach((value: Player, key: string) => {
-      if (value.username == username) {
-        response = true;
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.collisionShape.type == "Player") {
+        let player = value as Player;
+        if (player.username == username) {
+          response = true;
+        }
       }
     });
     return response;
   }
 
   public updatePlayerInput(socket: any, data: any): void {
-    let player: Player = this.players.get(socket.id);
-    if (!this.players.has(socket.id) || this.players.get(socket.id).isDead)
+    let value: GameObject = this.gameObjects.get(socket.id);
+    let player: Player = value as Player;
+    if (!this.gameObjects.has(socket.id))
       return;
 
     player.inputs.up = data.up;

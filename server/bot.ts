@@ -49,7 +49,7 @@ export class Bot extends Agent {
     var playersToConsider: any[] = [];
     var bullets: DamageArtefact[] = [];
     playerList.forEach((value: Player, key: string) => {
-      if (value.collisionShape.collides(this.agro)) {
+      if (value.collisionShape.type == "Player" && value.collisionShape.collides(this.agro)) {
         playersToConsider.push(value);
       }
     });
