@@ -26,12 +26,13 @@ export class Player extends Agent {
     primaryFire: false,
     boost: false
   };
-  
-  constructor (x: number, y: number, angle: number, id: string, username: string) {
-    super(x, y, username);
+
+  constructor (x: number, y: number, angle: number, id: string, username: string, shipname: string) {
+    super(x, y, username, shipname);
     this.id = id;
     this.angle = angle;
     this.username = username;
+    this.shipname = shipname;
     this.hp = 5;
     this.primaryCooldown = 500;
     this.polygonPoints = [
@@ -69,10 +70,10 @@ export class Player extends Agent {
     this.speed += this.accel*dt;
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
-    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel; 
+    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
     let mod = (this.inputs.boost && this.fuel) ? 2 : 1;
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
-    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER); 
+    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);
     this.addAngle((this.inputs.left)? -mod*ANGULAR_VEL*dt : 0);
   }

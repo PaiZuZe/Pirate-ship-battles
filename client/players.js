@@ -42,11 +42,17 @@ class Ship {
 // Player                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 class Player extends Ship {
-  constructor (scene, x, y, username) {
+  constructor (scene, x, y, username, shipname) {
     super();
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-    let sprite = "ship";
+    let sprite = "";
+    if (shipname == "Blastbeat") {
+        sprite = "ship"
+    }
+    else if (shipname == "Blindside") {
+        sprite = "ship-alt"
+    }
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
     //this.collisionShape = scene.physics.add.graphics();
     this.text.setOrigin(0.5);
@@ -67,7 +73,7 @@ class Player extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username);
+    player = new Player(this, data.x, data.y, data.username, data.shipname);
     hud = new HUD(this);
 
     // Confirming collision shape -- dumb way

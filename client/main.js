@@ -17,7 +17,7 @@ let signalExplosion = 1;
 function onSocketConnected (data) {
   console.log("connected to server");
   if (!gameProperties.inGame) {
-    socket.emit('new_player', {username: data.username});
+    socket.emit('new_player', {username: data.username, shipname: data.shipname});
     gameProperties.inGame = true;
   }
 }
@@ -107,12 +107,12 @@ class Main extends Phaser.Scene {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  create (username) {
+  create (data) {
     let camera = this.cameras.main;
 
     console.log("client started");
 
-    socket.emit('logged_in', {username: username});
+    socket.emit('logged_in', {username: data.username, shipname: data.shipname});
     this.player_life = 3;
     this.blink_timer = 2;
 
@@ -153,7 +153,7 @@ class Main extends Phaser.Scene {
   //////////////////////////////////////////////////////////////////////////////
   update (dt) {
     if (gameProperties.inGame) {
-      
+
       if (hud) {
         // Update inputs
         if (!this.mobileMode) {

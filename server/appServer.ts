@@ -68,11 +68,11 @@ export class AppServer {
       socket.join('login');
       socket.on('enter_name', this.onEntername.bind(this, socket));
       socket.on('logged_in', function(data) {
-        this.io.emit('enter_game', {username: data.username});
+        this.io.emit('enter_game', {username: data.username, shipname: data.shipname});
         socket.leave('login');
         socket.join(this.roomManager.pickRandomRoom(socket.id));
       }.bind(this));
-      socket.on("selected_ship", this.onSelectedShip.bind(this, socket))
+      //socket.on("selected_ship", this.onSelectedShip.bind(this, socket))
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       socket.on("input_fired", this.onInputFired.bind(this, socket));
       socket.on('disconnect', () => {
@@ -120,10 +120,10 @@ export class AppServer {
     }
   }
 
-  // Called when the ship is selected
+  /* Called when the ship is selected
   private onSelectedShip(socket: any, data: any): void {
     this.roomManager
-  }
+  } */
 
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {

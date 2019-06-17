@@ -10,16 +10,15 @@ let loadout_shipdesc = [ //Better have this in another file (JSON?)
   "Fast boost and high fire rate"
 ]
 let loadout_shipimg = [
-  "url('../assets/spaceship.png')",
-  "url('../assets/spaceship-alt.png')"
+  "url('client/assets/spaceship.png')",
+  "url('client/assets/spaceship-alt.png')"
 ]
 let loadout_count = 0;
 let loadout_username = "";
 
 ////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {
-  socket.emit('selected_ship', {shipname: loadout_shipname[loadout_count]});
-  socket.emit('exit_loadout');
+  exitLoadout();
 }
 
 loadout_previous.onclick = function () {
@@ -28,7 +27,7 @@ loadout_previous.onclick = function () {
 }
 
 loadout_next.onclick = function () {
-  if (++loadcount >= loadout_shipname.length) loadout_count = 0;
+  if (++loadout_count >= loadout_shipname.length) loadout_count = 0;
   changeShip();
 }
 
@@ -40,15 +39,10 @@ function changeShip () {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function onEnterLoadout (username) {
-  loadout_username = username;
-  changeShip();
-}
-
-function onExitLoadout () {
+function exitLoadout () {
   loadoutDiv.style.display = 'none';
   gameDiv.style.display = null;
-  game.scene.start('Main', loadout_username);
+  game.scene.start('Main', {username: loadout_username, shipname: loadout_shipname[loadout_count]});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,15 +51,14 @@ function onExitLoadout () {
 class Loadout extends Phaser.Scene {
   constructor () {
     super({key: "Loadout"});
-    socket.on('enter_loadout', onEnterLoadout);
-    socket.on('exit_loadout', onExitLoadout);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   create (username) {
     loadoutDiv.style.display = null;
     gameDiv.style.display = 'none';
-    socket.emit('enter_loadout', username);
+    loadout_username = username;
+    changeShip();
   }
 }
 

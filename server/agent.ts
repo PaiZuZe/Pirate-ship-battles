@@ -13,10 +13,11 @@ export abstract class Agent extends GameObject {
   public isDead: boolean;
   public stationInfluenceTimer: number;
   public username: string;
+  public shipname: string;
   public polygonPoints: number[][];
 
 
-  constructor (x: number, y: number, username: string) {
+  constructor (x: number, y: number, username: string, shipname: string) {
     super(x, y);
     this.primaryCooldown = 1500;
     this.lastTimeShotPrimary = 0;
@@ -26,6 +27,7 @@ export abstract class Agent extends GameObject {
     this.fuel = 100;
     this.stationInfluenceTimer = 0;
     this.username = username;
+    this.shipname = shipname;
     this.isDead = false;
   }
 
@@ -50,7 +52,7 @@ export abstract class Agent extends GameObject {
     return;
   }
 
-  public primaryFire(): PrimaryFire[] { 
+  public primaryFire(): PrimaryFire[] {
     if (this.canPrimaryFire()) {
       console.log(`FIRE! fire from: ${this.username}`);
       this.lastTimeShotPrimary = Date.now();
@@ -59,7 +61,7 @@ export abstract class Agent extends GameObject {
       let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle, 1000),
                                             new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];
       return damageArtefacts;
-    } 
+    }
     else {
       return null; // not sure if it works, works with []
     }

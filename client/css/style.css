@@ -61,7 +61,7 @@ html, body {
 #errorLog {
   color: #B00020
 }
-/*
+
 #loadoutDiv {
   height: 100%;
   width: 100%;
@@ -76,12 +76,15 @@ html, body {
   border-radius: 2px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
 }
+.loadoutDiv-content div {
+    margin: 0 auto;
+}
 .loadoutDiv-content h2 {
   color: #000000;
 }
 .loadoutDiv-content p {
   color: #000000;
-}
+}/*
 .loadoutDiv-content input[type=text] {
   height: 30px;
   padding: 2px 0 0 8px;

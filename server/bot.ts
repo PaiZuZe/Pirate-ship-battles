@@ -17,7 +17,7 @@ const BULLET_COOLDOWN = 1500; // ms
 export class Bot extends Agent {
   public invul_time: number;
   public agro: Circle;
-  
+
   public readonly polygonPoints: number[][] = [
       [-9, -38],
       [1, -38],
@@ -36,7 +36,7 @@ export class Bot extends Agent {
     ];
 
   constructor (x: number, y: number) {
-    super(x, y, "BotBlob");
+    super(x, y, "BotBlob", "ship-alt");
     this.hp = 3;
     this.invul_time = 0;
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);

@@ -22,28 +22,28 @@ const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
 
 export class Room {
-  public readonly name: string; 
+  public readonly name: string;
   // Game Elements
   private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
-  
+
   // Game Properties
-  private fuelCellsMax: number = 15; 
+  private fuelCellsMax: number = 15;
   private fuelCellsCount: number = 0;
   private botsMax: number = 1;
-  private botsCount: number = 0;  
+  private botsCount: number = 0;
   private debrisFieldsMax: number = 3;
-  private debrisFieldsCount: number = 0;  
-  private stationsMax: number = 5; 
-  private stationsCount: number = 0;  
-  private asteroidsMax: number = 10;  
-  private asteroidsCount: number = 0;  
-  private canvasHeight: number = 2000;  
-  private canvasWidth: number = 2000; 
+  private debrisFieldsCount: number = 0;
+  private stationsMax: number = 5;
+  private stationsCount: number = 0;
+  private asteroidsMax: number = 10;
+  private asteroidsCount: number = 0;
+  private canvasHeight: number = 2000;
+  private canvasWidth: number = 2000;
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
-  private collisionSystem: Collisions; 
+  private collisionSystem: Collisions;
 
   constructor(io: socketIO.Server, num: number) {
       this.io = io;
@@ -113,7 +113,7 @@ export class Room {
   /*Beware here there be gambis*/
   private createDamageArtefacts(): void {
     let temp: DamageArtefact[];
-    if (this.gameObjects) { 
+    if (this.gameObjects) {
       this.gameObjects.forEach((value: GameObject, key: string) => {
         if (!this.gameObjects.has(key) && value.collisionShape.type != "Player") {
           return;
@@ -121,7 +121,7 @@ export class Room {
         if (value.collisionShape.type != "Player") {
           return;
         }
-        let palyer = value as Player; 
+        let palyer = value as Player;
         if (palyer.inputs.primaryFire) {
           temp = palyer.primaryFire();
           if (temp != null) {
@@ -131,12 +131,12 @@ export class Room {
               this.io.in(this.name).emit("bullet_create", temp[i].getData());
             }
           }
-        }      
+        }
       });
     }
   }
 
-  public updateGame(): void { 
+  public updateGame(): void {
     this.fillWStations();
     this.fillWAsteroids();
     this.fillWFuelCells();
@@ -149,18 +149,18 @@ export class Room {
     this.collisionSystem.update();
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.hp <= 0 && value.collisionShape.type == "Asteroid") {
-        this.removeAsteroid(value); 
+        this.removeAsteroid(value);
       }
       if (value.hp <= 0 && value.collisionShape.type == "Bot") {
-        this.removeBot(value); 
+        this.removeBot(value);
       }
       if (value.hp <= 0 && value.collisionShape.type == "Player") {
-        this.removePlayer(value); 
+        this.removePlayer(value);
       }
     });
-    this.io.in(this.name).emit("update_game", 
+    this.io.in(this.name).emit("update_game",
                                {playerList: {...this.getPlayersInfo(), ...this.getBotsInfo()},
-                                bulletList: this.getDamageArtefactsInfo(), 
+                                bulletList: this.getDamageArtefactsInfo(),
                                 score_board: scoreBoard});
   }
 
@@ -169,18 +169,18 @@ export class Room {
       console.log(`Player with id ${socket.id} already exists`);
       return;
     }
-    
+
     let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
                    mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250),
-                   0, socket.id, data.username);
+                   0, socket.id, data.username, data.shipname);
     this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
     /*
-     * TODO: Probably it is better the player verify this on its constructor. 
-     * Check if player is not colliding with another object. 
+     * TODO: Probably it is better the player verify this on its constructor.
+     * Check if player is not colliding with another object.
      * If it is, place it somewhere else it isn't colliding with anything else.
      */
-    /*               
+    /*
     while (isColliding(newPlayer.collisionShape)) {
       newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
                mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250));
@@ -195,21 +195,21 @@ export class Room {
       }
       else if (value.collisionShape.type == "Asteroid") {
         socket.emit("stone_create", value.getData());
-      } 
+      }
       else if (value.collisionShape.type == "FuelCell") {
-        socket.emit("item_create", value.getData());  
+        socket.emit("item_create", value.getData());
       }
       else if (value.collisionShape.type == "SpaceSationCol") {
-        socket.emit("island_create", value.getData());  
+        socket.emit("island_create", value.getData());
       }
       else if (value.collisionShape.type == "DebrisField") {
         socket.emit("debris_create", value.getData());
       }
       else if (value.collisionShape.type == "DamageArtefact") {
-        socket.emit("bullet_create", value.getData());  
+        socket.emit("bullet_create", value.getData());
       }
       else if (value.collisionShape.type == "Bot") {
-        socket.emit("new_enemyPlayer", value.getData());  
+        socket.emit("new_enemyPlayer", value.getData());
       }
     });
 
@@ -218,7 +218,7 @@ export class Room {
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
   }
 
-  public removePlayer(player: any) {  
+  public removePlayer(player: any) {
     console.log(`${player.username} died!`);
     if (this.gameObjects.has(player.id)) {
       console.log(`${player.username} was removed`);
