@@ -18,7 +18,7 @@ var config = {
     }
   },
   backgroundColor: "#000000",
-  scene: [Login, Main]
+  scene: [Login, Loadout, Main]
 };
 
 var game = new Phaser.Game(config);

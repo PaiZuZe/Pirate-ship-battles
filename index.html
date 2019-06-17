@@ -23,22 +23,37 @@
       <div id="signDiv">
           <div class="signDiv-content">
             <h1>Pirate Ship Battles</h1>
-    
+
             <p>Enter your name</p>
             <input id="signdivusername" type="text" placeholder="Username"/>
             <p>Password</p>
             <input id="signdivupassword" type="password" placeholder="Password"/>
             <p id="errorLog"></p>
-    
+
             <div><input id="mobilecheckbox" type="checkbox" onclick="toggle();"><span>Mobile Mode</span></div>
-    
+
             <button id="entername" class="hidden">PLAY</button>
-    
+
             <br><small>Spacestation by <a href="http://millionthvector.blogspot.de">MillionthVector</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
           </div>
         </div>
     </div>
-    
+
+    <div id="loadoutDiv" display="none">
+      <div class="loadoutDiv-content">
+          <h2>Select your ship</h2>
+
+          <div id="shipPreview"></div>
+
+          <button id="loadout_previous" class="circle-button">◄</button>
+          <button id="loadout_next" class="circle-button">►</button>
+
+          <p id="shipName"></p>
+          <p id="shipDesc"></p>
+
+          <button id="loadout_select">◄</button>
+      </div>
+    </div>
 
     <!-- Game -->
     <div id="gameDiv" display="none"></div>
@@ -51,10 +66,14 @@
     <script src="client/hud.js"></script>
     <script src="client/item.js"></script>
     <script src="client/login.js"></script>
+    <script src="client/loadout.js"></script>
     <script src="client/main.js"></script>
     <script src="client/game.js"></script>
     <script>
       signdivusername.onkeypress = function(e) {
+        if (e.keyCode == 13) entername.click();
+      }
+      signdivupassword.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
       }
     </script>
