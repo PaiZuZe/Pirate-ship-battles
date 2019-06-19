@@ -101,21 +101,28 @@ export class Room {
   }
 
   private updateBots(): void {
+    let damageArtefacts: DamageArtefact[];
     if (this.gameObjects) {
       this.gameObjects.forEach((value: Bot, key: string) => {
         if (value.collisionShape.type == "Bot") {
-          value.takeAction(this.gameObjects);
+          damageArtefacts = value.takeAction(this.gameObjects);
+          if (damageArtefacts != null) {
+            for (let i: number = 0; i < damageArtefacts.length; ++i) {
+              this.createDamageArtefact(damageArtefacts[i]);
+            }
+          }
         }
       });
     }
     return;
   }
+
   /*Beware here there be gambis*/
   private createDamageArtefacts(): void {
     let temp: DamageArtefact[];
     if (this.gameObjects) {
       this.gameObjects.forEach((value: GameObject, key: string) => {
-        if (!this.gameObjects.has(key) && value.collisionShape.type != "Player") {
+        if (!this.gameObjects.has(key)) {
           return;
         }
         if (value.collisionShape.type != "Player") {
@@ -126,9 +133,7 @@ export class Room {
           temp = palyer.primaryFire();
           if (temp != null) {
             for (let i: number = 0; i < temp.length; ++i) {
-              this.gameObjects.set(temp[i].id, temp[i]);
-              this.collisionSystem.insert(temp[i].collisionShape);
-              this.io.in(this.name).emit("bullet_create", temp[i].getData());
+              this.createDamageArtefact(temp[i]);
             }
           }
         }
@@ -136,7 +141,13 @@ export class Room {
     }
   }
 
-  public removeDamageArtefacts(artefact: GameObject): void {
+  public createDamageArtefact(damageArtefact: DamageArtefact): void {
+    this.gameObjects.set(damageArtefact.id, damageArtefact);
+    this.collisionSystem.insert(damageArtefact.collisionShape);
+    this.io.in(this.name).emit("bullet_create", damageArtefact.getData());
+  }
+
+  public removeDamageArtefact(artefact: GameObject): void {
     this.collisionSystem.remove(artefact.collisionShape);
     this.io.in(this.name).emit("bullet_remove", artefact.getData());
     this.gameObjects.delete(artefact.id);
@@ -182,7 +193,7 @@ export class Room {
       if (value.constructor.name == "PrimaryFire") {
         let damageArtefact = value as PrimaryFire;
         if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
-          this.removeDamageArtefacts(damageArtefact);
+          this.removeDamageArtefact(damageArtefact);
         }
       }
     });
