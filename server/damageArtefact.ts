@@ -56,6 +56,7 @@ export class PrimaryFire extends DamageArtefact {
   public applyEffect (target: any): string {
     if (target.id != this.creator) {
       target.hp--;
+      this.hp = 0;
       return 'hit'
     }
     return null;

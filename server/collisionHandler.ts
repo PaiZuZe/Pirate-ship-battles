@@ -16,12 +16,14 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     if (obj1Type == 'Player' && obj2Type == 'Player') {
       collidePlayers(room, obj1, obj2);
     }
-    else if (obj1Type == 'DamageArtefact' && obj2Type != 'DamageArtefact') {
-      collideDamageArtefact(room, obj1, obj2);
+    else if (obj1Type == 'DamageArtefact') {
+      if (obj2Type == 'Player' || obj2Type == 'Asteroid' || obj2Type == 'Bot')
+        collideDamageArtefact(room, obj1, obj2);
     }
     else if (obj1Type != 'DamageArtefact' && obj2Type == 'DamageArtefact') {
-      collideDamageArtefact(room, obj2, obj1);
-    }
+      if (obj1Type == 'Player' || obj1Type == 'Asteroid' || obj1Type == 'Bot')
+        collideDamageArtefact(room, obj2, obj1);
+    } 
     else if (obj1Type == 'Player' && obj2Type == 'SpaceSationRest') {
       collideRestoration(obj1, obj2);
     }
@@ -69,8 +71,8 @@ export function isColliding(collisionPoly: any): boolean {
 }
 
 function collidePlayers(room: Room, p1: Player, p2: Player): void {
-  room.removePlayer(p1);
-  room.removePlayer(p2);
+  p1.hp = 0;
+  p2.hp = 0;
   return;
 }
 
@@ -89,18 +91,18 @@ function collideRestoration(player: Player, station: SpaceStation): void {
 }
 
 function collideStation(room: Room, player: Player): void {
-  room.removePlayer(player);
+  player.hp = 0;
   return;
 }
 
 function collideAsteroid(room: Room, player: Player): void {
-  room.removePlayer(player);
+  player.hp = 0;
   return;
 }
 
 function collideFuelCell(room: Room, player: Player, cell: FuelCell): void {
   cell.giveResource(player);
-  room.removeFuelCell(cell);
+  cell.hp = 0;
   return;
 }
 

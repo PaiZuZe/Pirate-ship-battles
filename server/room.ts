@@ -136,6 +136,13 @@ export class Room {
     }
   }
 
+  public removeDamageArtefacts(artefact: GameObject): void {
+    this.collisionSystem.remove(artefact.collisionShape);
+    this.io.in(this.name).emit("bullet_remove", artefact.getData());
+    this.gameObjects.delete(artefact.id);
+    return;
+  }
+
   public updateGame(): void {
     this.fillWStations();
     this.fillWAsteroids();
@@ -145,23 +152,40 @@ export class Room {
     this.updateBots();
     this.updateObjects();
     this.createDamageArtefacts();
-    let scoreBoard: any = this.scoreBoard.asObj();
+    this.removeDeadObjects();
     this.collisionSystem.update();
-    this.gameObjects.forEach((value: GameObject, key: string) => {
-      if (value.hp <= 0 && value.collisionShape.type == "Asteroid") {
-        this.removeAsteroid(value);
-      }
-      if (value.hp <= 0 && value.collisionShape.type == "Bot") {
-        this.removeBot(value);
-      }
-      if (value.hp <= 0 && value.collisionShape.type == "Player") {
-        this.removePlayer(value);
-      }
-    });
+    let scoreBoard: any = this.scoreBoard.asObj();
     this.io.in(this.name).emit("update_game",
                                {playerList: {...this.getPlayersInfo(), ...this.getBotsInfo()},
                                 bulletList: this.getDamageArtefactsInfo(),
                                 score_board: scoreBoard});
+  }
+
+  public removeDeadObjects() {
+    this.gameObjects.forEach((value: GameObject, key: string) => {
+      if (value.hp <= 0) {
+        //Note, this can break if the object has a name field or we use minifie.
+        if (value.constructor.name == "Asteroid") {
+          this.removeAsteroid(value);
+        }
+        else if (value.constructor.name == "Bot") {
+          this.removeBot(value);
+        }
+        else if (value.constructor.name == "Player") {
+          this.removePlayer(value);
+        }
+        else if (value.constructor.name == "FuelCell") {
+          this.removeFuelCell(value);
+        }
+      }
+      //Only works for Primary Fire
+      if (value.constructor.name == "PrimaryFire") {
+        let damageArtefact = value as PrimaryFire;
+        if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
+          this.removeDamageArtefacts(damageArtefact);
+        }
+      }
+    });
   }
 
   public addNewPlayer(socket: any, data: any): void {
