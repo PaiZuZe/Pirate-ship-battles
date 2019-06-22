@@ -12,7 +12,20 @@ const LABEL_DIFF = 70;
 // Ship                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
 class Ship {
-  constructor () {}
+  constructor (scene, x, y, polygonPoints) {
+    // If debug mode active
+    // Todo: Make generic function in util.js
+    let colpoly = scene.add.graphics();
+    let color = 0xff0000;
+    let thickness = 4;
+    let alpha = 0.5;
+    let smoothness = 64;
+    colpoly.lineStyle(thickness, color, alpha);
+    let poly = new Phaser.Geom.Polygon(polygonPoints.map(point => [x + point[0], y + point[1]]));
+    colpoly.strokePoints(poly.points, true);
+    colpoly.fillStyle(color, alpha);
+    colpoly.fillPoints(poly.points, true);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   update (data) {
@@ -42,8 +55,8 @@ class Ship {
 // Player                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 class Player extends Ship {
-  constructor (scene, x, y, username, shipname) {
-    super();
+  constructor (scene, x, y, username, shipname, polygonPoints) {
+    super(scene, x, y, polygonPoints);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
     let sprite = "";
@@ -73,23 +86,8 @@ class Player extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, data.polygonPoints);
     hud = new HUD(this);
-
-    // Confirming collision shape -- dumb way
-    let colpoly = this.add.graphics();
-    let color = 0xff0000;
-    let thickness = 4;
-    let alpha = 0.5;
-    let smoothness = 64;
-    colpoly.lineStyle(thickness, color, alpha);
-
-    let poly = new Phaser.Geom.Polygon(data.polygonPoints.map(point => [data.x + point[0], data.y + point[1]]));
-
-    colpoly.strokePoints(poly.points, true);
-    colpoly.fillStyle(color, alpha);
-    colpoly.fillPoints(poly.points, true);
-
   }
 }
 
@@ -122,8 +120,8 @@ function onRemovePlayer (data) {
 // Enemy                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Enemy extends Ship {
-  constructor (scene, id, x, y, username) {
-    super();
+  constructor (scene, id, x, y, username, polygonPoints) {
+    super(scene, x, y, polygonPoints);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
     let sprite = "ship";
@@ -137,7 +135,7 @@ class Enemy extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.polygonPoints);
   else
     console.log("Failed to create enemy");
 }
