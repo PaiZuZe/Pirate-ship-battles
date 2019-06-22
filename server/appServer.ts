@@ -127,6 +127,10 @@ export class AppServer {
 
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {
+    /* We do this verification because dead players that are in login page call this function
+     * when a new player joins the game for some obscure reason, which makes the server crash.
+     * See issue #22 on Github. 
+     */
     if (!this.io.sockets.adapter.sids[socket.id]['login']) {
       try {
         this.roomManager.getPlayerRoom(socket.id).addNewPlayer(socket, data);
