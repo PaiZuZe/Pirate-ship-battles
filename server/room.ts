@@ -128,9 +128,9 @@ export class Room {
         if (value.collisionShape.type != "Player") {
           return;
         }
-        let palyer = value as Player;
-        if (palyer.inputs.primaryFire) {
-          temp = palyer.primaryFire();
+        let player = value as Player;
+        if (player.inputs.primaryFire) {
+          temp = player.primaryFire();
           if (temp != null) {
             for (let i: number = 0; i < temp.length; ++i) {
               this.createDamageArtefact(temp[i]);

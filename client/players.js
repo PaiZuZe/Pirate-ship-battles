@@ -6,6 +6,7 @@
 
 var enemies = {};
 var player = null;
+var shipscale = 0.65;
 const LABEL_DIFF = 70;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,14 +60,7 @@ class Player extends Ship {
     super(scene, x, y, polygonPoints);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-    let sprite = "";
-    if (shipname == "Blastbeat") {
-        sprite = "ship";
-    }
-    else if (shipname == "Blindside") {
-        sprite = "ship-alt";
-    }
-    this.body = scene.physics.add.sprite(x, y, sprite, 0);
+    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(shipscale);
     //this.collisionShape = scene.physics.add.graphics();
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
@@ -124,14 +118,7 @@ class Enemy extends Ship {
     super(scene, x, y, polygonPoints);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
-    let sprite = "";
-    if (shipname == "Blastbeat") {
-        sprite = "ship";
-    }
-    else if (shipname == "Blindside") {
-        sprite = "ship-alt";
-    }
-    this.body = scene.physics.add.sprite(x, y, sprite, 0);
+    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(shipscale);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
