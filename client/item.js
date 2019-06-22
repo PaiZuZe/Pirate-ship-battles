@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 //                            Pirate Ship Battles                             //
 //                                                                            //
-//                              Client - Players                              //
+//                              Client - Items                              //
 ////////////////////////////////////////////////////////////////////////////////
 
 var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
-var stoneList = {}; // Stones list
+var asteroidList = {}; // Asteroids list
 var DebrisFieldList = {};
 
 
@@ -16,7 +16,7 @@ var DebrisFieldList = {};
 ////////////////////////////////////////////////////////////////////////////////
 // Client bullet class
 class Bullet {
-  constructor (scene, id, creator, x, y, angle, speed) {
+  constructor (scene, id, creator, x, y, angle, speed, polygonPoints) {
     this.sizeX = 9;
     this.sizeY = 54;
     this.creator = creator;
@@ -26,20 +26,19 @@ class Bullet {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   update (data) {
-    this.item.x = data.x;
-    this.item.y = data.y;
+    this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-
+    this.colpoly.update(data.x, data.y);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
+    this.colpoly.destroy();
   }
 };
 
@@ -59,7 +58,6 @@ class Box {
     this.item.par_obj = this; // Just to associate this id with the image
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
   }
@@ -87,23 +85,24 @@ class Island {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Stone                                                                        //
+// Asteroid                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
-// Client Stone class
-class Stone {
-  constructor (scene, id, x, y, r) {
+// Client asteroid class
+class Asteroid {
+  constructor (scene, id, x, y, polygonPoints) {
     this.sizeX = 101;
     this.sizeY = 84;
     this.id = id;
-    this.stone = scene.add.image(x, y, "asteroid");
-    this.stone.setDisplaySize(this.sizeX, this.sizeY);
-    this.stone.setSize(this.sizeX, this.sizeY);
-    this.stone.par_obj = this; // Just to associate this id with the image
+    this.asteroid = scene.add.image(x, y, "asteroid");
+    this.asteroid.setDisplaySize(this.sizeX, this.sizeY);
+    this.asteroid.setSize(this.sizeX, this.sizeY);
+    this.asteroid.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
-    this.stone.destroy();
+    this.colpoly.destroy();
+    this.asteroid.destroy();
   }
 };
 
@@ -121,7 +120,6 @@ class DebrisField {
     this.debris_field.par_obj = this; // Just to associate this id with the image
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.debris_field.destroy();
   }
@@ -169,17 +167,11 @@ class Explosion {
     });
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.explosion.destroy();
   }
 };
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
 // Function called when new box is added at the server.
 function onCreateItem (data) {
   if (!(data.id in boxList)) {
@@ -188,7 +180,6 @@ function onCreateItem (data) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Function called when box needs to be removed at the client.
 function onItemRemove (data) {
   if (!(data.id in boxList)) {
@@ -200,53 +191,52 @@ function onItemRemove (data) {
   delete boxList[data.id];
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Function called when new island is added at the server.
 function onCreateIsland (data) {
   if (!(data.id in islandList)) {
-    console.log(`Criando ilha ${data.id}`);
+    console.log(`Creating island ${data.id}`);
     let newIsland = new Island(this, data.id, data.x, data.y, data.radius);
     islandList[data.id] = newIsland;
   }
 }
 
 function onCreatedebrisField (data) {
-  console.log(`Criando Debris Field ${data.id}`);
+  console.log(`Creating Debris Field ${data.id}`);
   let newDebrisField = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
   DebrisFieldList[data.id] = newDebrisField;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Function called when new stone is added at the server.
-function onCreateStone (data) {
-  if (!(data.id in stoneList)) {
-    console.log(`Criando pedra ${data.id}`);
-    let newStone = new Stone(this, data.id, data.x, data.y, data.radius);
-    stoneList[data.id] = newStone;
+// Function called when new asteroid is added at the server.
+function onCreateAsteroid (data) {
+  if (!(data.id in asteroidList)) {
+    console.log(`Creating asteroid ${data.id}`);
+    let newAsteroid = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints);
+    asteroidList[data.id] = newAsteroid;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Function called when stone needs to be removed at the client.
-function onStoneHit (data) {
-  let stoneExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+// Function called when asteroid needs to be removed at the client.
+function onAsteroidHit (data) {
+  let asteroidExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Function called when stone needs to be removed at the client.
-function onRemoveStone (data) {
-  let stoneExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
-  var removeStone = stoneList[data.id];
+// Function called when asteroid needs to be removed at the client.
+function onRemoveAsteroid (data) {
+  let asteroidExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+  var removeAsteroid = asteroidList[data.id];
 
-  removeStone.destroy();
-  delete stoneList[data.id];
+  removeAsteroid.destroy();
+  delete asteroidList[data.id];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function called when new bullet is added at the server.
 function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
-    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed);
+    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints);
     bulletList[data.id] = newBullet;
   }
 }

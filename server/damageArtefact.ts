@@ -29,7 +29,6 @@ export abstract class DamageArtefact extends GameObject {
   
 };
 
-
 export class PrimaryFire extends DamageArtefact {
   constructor (startX: number, startY: number, creator: string, angle: number, speed: number) {
     super(startX, startY, creator, angle, speed);
@@ -70,7 +69,8 @@ export class PrimaryFire extends DamageArtefact {
       x: this.x, 
       y: this.y, 
       angle: this.angle, 
-      speed: this.speed
+      speed: this.speed,
+      polygonPoints: this.polygonPoints
     };
     return artefactData;
   }

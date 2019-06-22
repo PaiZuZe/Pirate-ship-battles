@@ -28,4 +28,13 @@ export class Asteroid extends GameObject {
     this.collisionShape.type = 'Asteroid';
     this.collisionShape.id = this.id;
   }
+
+  public getData(): any {
+    return {
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      polygonPoints: this.polygonPoints
+    };
+  }
 }

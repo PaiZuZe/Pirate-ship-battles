@@ -30,7 +30,7 @@ function resetObjects () {
   boxList = {};
   bulletList = {};
   islandList = {};
-  stoneList = {};
+  asteroidList = {};
   botList = {};
   DebrisFieldList = {};
 }
@@ -68,11 +68,11 @@ class Main extends Phaser.Scene {
     socket.on('remove_player', onRemovePlayer.bind(this));
     socket.on('player_hit', onPlayerHit.bind(this));
     socket.on('hit', onHit.bind(this));
-    socket.on('remove_stone', onRemoveStone.bind(this));
+    socket.on('remove_stone', onRemoveAsteroid.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
-    socket.on('stone_create', onCreateStone.bind(this));
-    socket.on('stone_hit', onStoneHit.bind(this));
+    socket.on('stone_create', onCreateAsteroid.bind(this));
+    socket.on('stone_hit', onAsteroidHit.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('debris_create', onCreatedebrisField.bind(this));
     socket.on('bullet_remove', onBulletRemove);
