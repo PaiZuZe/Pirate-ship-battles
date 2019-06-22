@@ -53,6 +53,10 @@ html, body {
   margin: 32px 2px 4px 2px;
   cursor: pointer;
 }
+.signDiv-content button:hover {
+  background-color: #444444;
+  color: white;
+}
 
 #mobilecheckbox {
   transform: scale(1.5);
@@ -67,6 +71,7 @@ html, body {
   width: 100%;
   text-align: center;
   position: absolute;
+  color: #000000;
 }
 .loadoutDiv-content {
   background: #FFFFFF;
@@ -79,16 +84,6 @@ html, body {
 .loadoutDiv-content div {
     margin: 0 auto;
 }
-.loadoutDiv-content h2 {
-  color: #000000;
-}
-.loadoutDiv-content p {
-  color: #000000;
-}/*
-.loadoutDiv-content input[type=text] {
-  height: 30px;
-  padding: 2px 0 0 8px;
-}
 .loadoutDiv-content button {
   background-color: #000000;
   color: white;
@@ -99,28 +94,27 @@ html, body {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 32px 2px 4px 2px;
+  margin: 24px 2px 4px 2px;
   cursor: pointer;
 }
 .loadoutDiv-content button:hover {
-  background-color: #DDDDDD;
-  color: black;
+  background-color: #444444;
+  color: white;
 }
-
-#loadout_select {
-}
-
-.circle-button {
+.loadoutDiv-content .circle-button {
+  padding: 10px 12px;
+  margin: 12px 16px 8px 16px;
   border-radius: 50%;
 }
 
-#shipPreview {
-  display: inline;
-  padding: 10px;
-  border: 2px solid black;
-  border-radius: 10%;
+#shipName {
+  font-weight: bold;
 }
-*/
+
+#shipPreview {
+  padding: 10px;
+}
+
 #gameDiv {
   background-image: url('../assets/black.png');
   background-repeat: repeat;

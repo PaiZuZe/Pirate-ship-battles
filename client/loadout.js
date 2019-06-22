@@ -6,7 +6,7 @@
 
 let loadout_shipname = ["Blastbeat", "Blindside"];
 let loadout_shipdesc = [ //Better have this in another file (JSON?)
-  "Strong attacks and massive HP",
+  "Strong attacks and massive fuel capacity",
   "Fast boost and high fire rate"
 ]
 let loadout_shipimg = [
@@ -33,9 +33,9 @@ loadout_next.onclick = function () {
 
 ////////////////////////////////////////////////////////////////////////////////
 function changeShip () {
+  shipPreview.style.content = loadout_shipimg[loadout_count];
   shipName.innerHTML = loadout_shipname[loadout_count];
   shipDesc.innerHTML = loadout_shipdesc[loadout_count];
-  shipPreview.style.content = loadout_shipimg[loadout_count];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,10 +55,10 @@ class Loadout extends Phaser.Scene {
 
   //////////////////////////////////////////////////////////////////////////////
   create (username) {
+    changeShip();
     loadoutDiv.style.display = null;
     gameDiv.style.display = 'none';
     loadout_username = username;
-    changeShip();
   }
 }
 
