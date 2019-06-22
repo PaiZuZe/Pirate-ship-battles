@@ -127,10 +127,12 @@ export class AppServer {
 
   // Called when a new player connects to the server
   private onNewPlayer(socket: any, data: any): void {
-    try {
-      this.roomManager.getPlayerRoom(socket.id).addNewPlayer(socket, data);
-    } catch(err) {
-      console.log(err);
+    if (!this.io.sockets.adapter.sids[socket.id]['login']) {
+      try {
+        this.roomManager.getPlayerRoom(socket.id).addNewPlayer(socket, data);
+      } catch(err) {
+        console.log(err);
+      }
     }
   }
 

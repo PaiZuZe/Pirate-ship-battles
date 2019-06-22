@@ -248,7 +248,7 @@ export class Room {
       }
     });
 
-    console.log("Created new player with id " + socket.id);
+    console.log("Created new player with id " + socket.id + " with username = " + data.username);
     // Send message to every connected client except the sender
     socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
   }
@@ -259,10 +259,10 @@ export class Room {
       console.log(`${player.username} was removed`);
       this.collisionSystem.remove(player.collisionShape);
       this.scoreBoard.removePlayer(player.username);
-      this.gameObjects.delete(player.id);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
       this.io.sockets.sockets[player.id].leave(this.name);
       this.io.sockets.sockets[player.id].join('login');
+      this.gameObjects.delete(player.id);
     }
     return;
   }
