@@ -14,23 +14,16 @@ const LABEL_DIFF = 70;
 class Ship {
   constructor (scene, x, y, polygonPoints) {
     // If debug mode active
-    // Todo: Make generic function in util.js
-    let color = 0xff0000
-    let alpha = 0.5;
-    this.colpoly = scene.add.polygon(x, y, polygonPoints, color, alpha); 
-    this.colpoly.setOrigin(0, 0);
-    this.colpoly.setDepth(100000);    
+    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
   }
 
   update (data) {
-    let angle = data.angle * 180 / Math.PI;
     // Update player collision shape. (DEBUG ONLY)
-    this.colpoly.setPosition(data.x, data.y);
-    this.colpoly.setAngle(angle);
+    this.colpoly.update(data.x, data.y, radiansToDegrees(data.angle));
     // Update player sprite
     this.body.setPosition(data.x, data.y);
     this.body.setVelocity(Math.sin(data.angle) * data.speed, -(Math.cos(data.angle) * data.speed));
-    this.body.setAngle(angle);
+    this.body.setAngle(radiansToDegrees(data.angle));
     this.body.setDepth(data.y);
     this.text.setDepth(data.y);
   }
