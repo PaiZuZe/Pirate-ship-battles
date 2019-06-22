@@ -218,12 +218,6 @@ function onCreateAsteroid (data) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function called when asteroid needs to be removed at the client.
-function onAsteroidHit (data) {
-  let asteroidExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Function called when asteroid needs to be removed at the client.
 function onRemoveAsteroid (data) {
   let asteroidExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
   var removeAsteroid = asteroidList[data.id];
