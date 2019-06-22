@@ -229,7 +229,7 @@ export class Room {
         socket.emit("new_enemyPlayer", value.getData());
       }
       else if (value.collisionShape.type == "Asteroid") {
-        socket.emit("stone_create", value.getData());
+        socket.emit("asteroid_create", value.getData());
       }
       else if (value.collisionShape.type == "FuelCell") {
         socket.emit("item_create", value.getData());
@@ -285,7 +285,7 @@ export class Room {
     let newAsteroid = new Asteroid(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newAsteroid.id, newAsteroid);
     this.collisionSystem.insert(newAsteroid.collisionShape);
-    this.io.in(this.name).emit("stone_create", newAsteroid.getData());
+    this.io.in(this.name).emit("asteroid_create", newAsteroid.getData());
     this.asteroidsCount++;
     return;
   }
@@ -293,7 +293,7 @@ export class Room {
   public removeAsteroid(obj: GameObject): void {
     this.collisionSystem.remove(obj.collisionShape);
     this.gameObjects.delete(obj.id);
-    this.io.in(this.name).emit("remove_stone", obj.getData());
+    this.io.in(this.name).emit("remove_asteroid", obj.getData());
     this.asteroidsCount--;
     return;
   }
