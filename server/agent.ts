@@ -75,6 +75,7 @@ export abstract class Agent extends GameObject {
       speed: this.speed,
       angle: this.angle,
       username: this.username,
+      shipname: this.shipname,
       life: this.hp,
       fuel: this.fuel,
       anchored_timer: this.stationInfluenceTimer,

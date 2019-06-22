@@ -320,7 +320,7 @@ export class Room {
   private addBot(): void {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
-    let newBot = new Bot(x, y);
+    let newBot = new Bot(x, y, "Blindside");
     this.gameObjects.set(newBot.id, newBot);
     this.collisionSystem.insert(newBot.collisionShape);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());

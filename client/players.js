@@ -61,10 +61,10 @@ class Player extends Ship {
     this.anchored_timer = 0;
     let sprite = "";
     if (shipname == "Blastbeat") {
-        sprite = "ship"
+        sprite = "ship";
     }
     else if (shipname == "Blindside") {
-        sprite = "ship-alt"
+        sprite = "ship-alt";
     }
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
     //this.collisionShape = scene.physics.add.graphics();
@@ -120,11 +120,17 @@ function onRemovePlayer (data) {
 // Enemy                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Enemy extends Ship {
-  constructor (scene, id, x, y, username, polygonPoints) {
+  constructor (scene, id, x, y, username, shipname, polygonPoints) {
     super(scene, x, y, polygonPoints);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
-    let sprite = "ship";
+    let sprite = "";
+    if (shipname == "Blastbeat") {
+        sprite = "ship";
+    }
+    else if (shipname == "Blindside") {
+        sprite = "ship-alt";
+    }
     this.body = scene.physics.add.sprite(x, y, sprite, 0);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
@@ -135,7 +141,7 @@ class Enemy extends Ship {
 ////////////////////////////////////////////////////////////////////////////////
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.polygonPoints);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, data.polygonPoints);
   else
     console.log("Failed to create enemy");
 }

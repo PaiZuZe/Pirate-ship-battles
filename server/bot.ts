@@ -35,8 +35,8 @@ export class Bot extends Agent {
       [-13, -13]
     ];
 
-  constructor (x: number, y: number) {
-    super(x, y, "BotBlob", "ship-alt");
+  constructor (x: number, y: number, shipname: string) {
+    super(x, y, "BotBlob", "Blindside");
     this.hp = 3;
     this.invul_time = 0;
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
