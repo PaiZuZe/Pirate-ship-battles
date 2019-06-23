@@ -27,18 +27,15 @@ class PolygonShape {
 
 class CircleShape {
     constructor (scene, x, y, radius) {
-        this.shape = scene.add.circle(x, y, radius, COLOR, ALPHA);
-        this.shape.setOrigin(0, 0);
+        let circle = new Phaser.Geom.Circle(x, y, radius);
+        this.shape = scene.add.graphics();
+        this.shape.fillStyle(COLOR, ALPHA);   
+        this.shape.fillCircleShape(circle);
         this.shape.setDepth(SHAPE_DEPTH);
     }
 
-    // angles in degrees
-    update (x, y, angle) {
-        this.shape.setAngle(angle);
-        this.shape.setPosition(x, y);
-    }
-
     destroy() {
+        this.shape.clear();
         this.shape.destroy();
     }
 }
