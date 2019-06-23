@@ -48,7 +48,7 @@ class Bullet {
 ////////////////////////////////////////////////////////////////////////////////
 // Client box class
 class Box {
-  constructor (scene, id, x, y) {
+  constructor (scene, id, x, y, radius) {
     this.sizeX = 20;
     this.sizeY = 20;
     this.id = id;
@@ -56,10 +56,12 @@ class Box {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
     this.item.par_obj = this; // Just to associate this id with the image
+    this.colshape = new CircleShape(scene, x, y, radius);
   }
 
   destroy () {
     this.item.destroy();
+    this.colshape.destroy();
   }
 };
 
@@ -76,11 +78,13 @@ class Island {
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
     this.island.par_obj = this; // Just to associate this id with the image
+    this.colshape = new CircleShape(scene, x, y, r);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.island.destroy();
+    this.colshape.destroy();
   }
 };
 
@@ -175,7 +179,7 @@ class Explosion {
 // Function called when new box is added at the server.
 function onCreateItem (data) {
   if (!(data.id in boxList)) {
-    let newBox = new Box(this, data.id, data.x, data.y, data.r);
+    let newBox = new Box(this, data.id, data.x, data.y, data.radius);
     boxList[data.id] = newBox;
   }
 }

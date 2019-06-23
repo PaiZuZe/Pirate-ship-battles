@@ -10,17 +10,35 @@ const ALPHA = 0.5;
 
 class PolygonShape {
     constructor (scene, x, y, polygonPoints) {
-        this.poly = scene.add.polygon(x, y, polygonPoints, COLOR, ALPHA); 
-        this.poly.setOrigin(0, 0);
-        this.poly.setDepth(SHAPE_DEPTH);
+        this.shape = scene.add.polygon(x, y, polygonPoints, COLOR, ALPHA); 
+        this.shape.setOrigin(0, 0);
+        this.shape.setDepth(SHAPE_DEPTH);
     }
     // angles in degrees
     update (x, y, angle) {
-        this.poly.setAngle(angle);
-        this.poly.setPosition(x, y);
+        this.shape.setAngle(angle);
+        this.shape.setPosition(x, y);
     }
 
     destroy() {
-        this.poly.destroy();
+        this.shape.destroy();
+    }
+}
+
+class CircleShape {
+    constructor (scene, x, y, radius) {
+        this.shape = scene.add.circle(x, y, radius, COLOR, ALPHA);
+        this.shape.setOrigin(0, 0);
+        this.shape.setDepth(SHAPE_DEPTH);
+    }
+
+    // angles in degrees
+    update (x, y, angle) {
+        this.shape.setAngle(angle);
+        this.shape.setPosition(x, y);
+    }
+
+    destroy() {
+        this.shape.destroy();
     }
 }
