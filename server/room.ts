@@ -133,7 +133,7 @@ export class Room {
         if (palyer.inputs.primaryFire) {
           temp = palyer.primaryFire();
         }
-        else if (palyer.inputs.SecondaryFire) {
+        else if (palyer.inputs.secondaryFire) {
           temp = palyer.secondaryFire();
         }
         if (temp != null) {
