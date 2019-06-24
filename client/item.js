@@ -56,12 +56,12 @@ class Box {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colshape = new CircleShape(scene, x, y, radius);
+    this.colShape = new CircleShape(scene, x, y, radius);
   }
 
   destroy () {
     this.item.destroy();
-    this.colshape.destroy();
+    this.colShape.destroy();
   }
 };
 
@@ -78,13 +78,14 @@ class Island {
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
     this.island.par_obj = this; // Just to associate this id with the image
-    this.colshape = new CircleShape(scene, x, y, r);
+    this.colShape = new CircleShape(scene, x, y, r);
+    this.influenceShape = new CircleShape(scene, x, y, 2*r, {stroke: true, color: 0x0000b2, alpha: 1})
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.island.destroy();
-    this.colshape.destroy();
+    this.colShape.destroy();
+    this.influenceShape.destroy();
   }
 };
 
