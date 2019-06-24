@@ -30,7 +30,7 @@
             <input id="signdivupassword" type="password" placeholder="Password"/>
             <p id="errorLog"></p>
 
-            <div><input id="mobilecheckbox" type="checkbox" onclick="toggle();"><span>Mobile Mode</span></div>
+            <div><input id="debugcheckbox" type="checkbox" onclick="toggle();"><span>Debug Mode</span></div>
 
             <button id="entername" class="hidden">PLAY</button>
 
@@ -76,6 +76,14 @@
       }
       signdivupassword.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
+      }
+      function toggle() {
+        if (document.getElementById('debugcheckbox').checked){
+          DEBUG = true;
+        }
+        else {
+          DEBUG = false;
+        }
       }
     </script>
   </body>

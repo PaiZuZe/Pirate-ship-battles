@@ -62,6 +62,11 @@ html, body {
   transform: scale(1.5);
 }
 
+#debugcheckbox {
+  transform: scale(1.5);
+}
+
+
 #errorLog {
   color: #B00020
 }
