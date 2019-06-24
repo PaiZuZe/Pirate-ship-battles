@@ -89,7 +89,7 @@ export class Room {
   private updateObjects(): void {
     if(this.gameObjects) {
       this.gameObjects.forEach((value: GameObject, key: string) => {
-        value.updatePos(UPDATE_TIME);
+        value.updatePos(UPDATE_TIME, this.collisionSystem);
         const potentials = value.collisionShape.potentials();
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
@@ -105,7 +105,7 @@ export class Room {
     if (this.gameObjects) {
       this.gameObjects.forEach((value: Bot, key: string) => {
         if (value.collisionShape.type == "Bot") {
-          damageArtefacts = value.takeAction(this.gameObjects);
+          damageArtefacts = value.takeAction(this.gameObjects, this.collisionSystem);
           if (damageArtefacts != null) {
             for (let i: number = 0; i < damageArtefacts.length; ++i) {
               this.createDamageArtefact(damageArtefacts[i]);

@@ -4,7 +4,7 @@
 //                            Server - DamageArtefact                         //
 ////////////////////////////////////////////////////////////////////////////////
 
-import { Polygon } from './collisions/Collisions'
+import { Collisions, Polygon } from './collisions/Collisions'
 import { GameObject } from './gameObject';
 
 export abstract class DamageArtefact extends GameObject {
@@ -48,8 +48,11 @@ export class PrimaryFire extends DamageArtefact {
     this.collisionShape.y = this.y;
   }
 
-  public updatePos (dt: number): void {
+  public updatePos (dt: number, collisionSystem: Collisions): void {
     this.addPos(Math.sin(this.angle) * this.speed * dt, -Math.cos(this.angle) * this.speed * dt);
+    collisionSystem.remove(this.collisionShape);
+    collisionSystem.insert(this.collisionShape);
+    return;
   }
 
   public applyEffect (target: any): string {

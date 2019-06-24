@@ -4,7 +4,7 @@
 //                              Server - Player                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-import { Polygon } from './collisions/Collisions'
+import { Collisions, Polygon } from './collisions/Collisions'
 import { rotate } from './aux';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { Agent } from './agent';
@@ -65,7 +65,7 @@ export class Player extends Agent {
     this.spawnToleranceShape.y = this.y;
   }
 
-  public updatePos(dt: number): void {
+  public updatePos(dt: number, collisionSystem: Collisions): void {
     this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
     this.accel += (this.inputs.up)? MAX_ACCEL : 0;
     this.speed += this.accel*dt;
@@ -77,5 +77,8 @@ export class Player extends Agent {
     let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);
     this.addAngle((this.inputs.left)? -mod*ANGULAR_VEL*dt : 0);
+    //Acording with the docs of the Collisions, we have to do this to change the tree that it uses.
+    collisionSystem.remove(this.collisionShape);
+    collisionSystem.insert(this.collisionShape);
   }
 };

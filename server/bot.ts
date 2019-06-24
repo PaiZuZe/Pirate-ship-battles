@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import { Player } from './player';
-import { Polygon, Circle } from './collisions/Collisions'
+import { Collisions, Polygon, Circle } from './collisions/Collisions'
 import { rotate, distSq } from './aux';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { Agent } from './agent';
@@ -45,7 +45,7 @@ export class Bot extends Agent {
     this.agro = new Circle(this.x, this.y, 600);
   }
 
-  public takeAction(playerList: any): DamageArtefact[] {
+  public takeAction(playerList: any, collisionSystem: Collisions): DamageArtefact[] {
     var playersToConsider: any[] = [];
     var bullets: DamageArtefact[] = [];
     playerList.forEach((value: Player, key: string) => {
@@ -61,6 +61,8 @@ export class Bot extends Agent {
     else {
       this.random_move();
     }
+    collisionSystem.remove(this.collisionShape);
+    collisionSystem.insert(this.collisionShape);
     return bullets;
   }
 
