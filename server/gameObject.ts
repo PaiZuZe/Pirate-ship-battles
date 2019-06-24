@@ -12,7 +12,9 @@ export abstract class GameObject {
   public x: number;
   public y: number;
   public hp: number;
+  public spawnToleranceRadius: number;
   public collisionShape: any; //Could not find a abstract class from colissions to put here :(
+  public spawnToleranceShape: any;
   
   constructor (x: number, y:number) {
     this.id = v4();
