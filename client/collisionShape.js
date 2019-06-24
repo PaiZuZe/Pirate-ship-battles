@@ -7,7 +7,7 @@
 const SHAPE_DEPTH = 100000;
 const COLOR = 0xff0000;
 const ALPHA = 0.5;
-const LINE_WIDTH = 10;
+const LINE_WIDTH = 2;
 
 class PolygonShape {
   constructor (scene, x, y, polygonPoints) {
@@ -32,24 +32,21 @@ class PolygonShape {
 class CircleShape {
   constructor (scene, x, y, radius, fillStyle) {
     let fill = true;
-    let circle = new Phaser.Geom.Circle(x, y, radius);
     this.shape = scene.add.graphics();
     this.shape.setDepth(SHAPE_DEPTH);
+    
     if (fillStyle == undefined) {
       this.shape.fillStyle(COLOR, ALPHA);
-      this.shape.fillCircleShape(circle);
-      //this.shape.lineStyle(4, 0xffff00, 1);
-      //this.shape.strokeCircle(circle);
     } 
     else {
       if (fillStyle.stroke == true) {
         this.shape.lineStyle(LINE_WIDTH, fillStyle.color, fillStyle.alpha);
-        this.shape.strokeCircle(circle);
-        this.fill = false;
+        this.shape.strokeCircle(x, y, radius);
+        return;
       }
-      //this.shape.fillStyle(fillStyle.color, fillStyle.alpha);
-      //this.shape.fillCircleShape(circle);
+      this.shape.fillStyle(fillStyle.color, fillStyle.alpha);
     }
+    this.shape.fillCircleShape(new Phaser.Geom.Circle(x, y, radius));
   }
 
   destroy() {
