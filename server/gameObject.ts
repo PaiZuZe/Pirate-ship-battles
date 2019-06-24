@@ -6,6 +6,8 @@
 
 
 import {v4} from 'node-uuid'
+import { Collisions } from './collisions/Collisions'
+
 
 export abstract class GameObject {
   public id: string;
@@ -31,7 +33,7 @@ export abstract class GameObject {
     };
   }
 
-  public updatePos(dt: number = 0): void {
+  public updatePos(dt: number = 0, collisionSystem: Collisions = null): void {
     return;
   }
 }
