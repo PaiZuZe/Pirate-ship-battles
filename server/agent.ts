@@ -1,3 +1,4 @@
+import { Circle } from './collisions/Collisions'
 import { GameObject } from "./gameObject";
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { rotate } from './aux';
@@ -16,7 +17,6 @@ export abstract class Agent extends GameObject {
   public shipname: string;
   public polygonPoints: number[][];
 
-
   constructor (x: number, y: number, username: string, shipname: string) {
     super(x, y);
     this.primaryCooldown = 1500;
@@ -29,13 +29,15 @@ export abstract class Agent extends GameObject {
     this.username = username;
     this.shipname = shipname;
     this.isDead = false;
+    this.spawnToleranceRadius = 100;
+    this.spawnToleranceShape = new Circle(this.x, this.y, 100);
   }
 
   public canPrimaryFire(): boolean {
-        if (this.lastTimeShotPrimary + this.primaryCooldown  > Date.now()) {
-            return false;
-        }
-        return true;
+    if (this.lastTimeShotPrimary + this.primaryCooldown  > Date.now()) {
+      return false;
+    }
+    return true;
   }
 
   public addAngle(angle: number): void {
@@ -49,6 +51,8 @@ export abstract class Agent extends GameObject {
     this.y += y;
     this.collisionShape.x = this.x;
     this.collisionShape.y = this.y;
+    this.spawnToleranceShape.x = this.x;
+    this.spawnToleranceShape.y = this.y;
     return;
   }
 
@@ -80,6 +84,7 @@ export abstract class Agent extends GameObject {
       fuel: this.fuel,
       anchored_timer: this.stationInfluenceTimer,
       polygonPoints: this.polygonPoints,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
   }
 }

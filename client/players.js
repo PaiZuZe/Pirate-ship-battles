@@ -12,14 +12,16 @@ const LABEL_DIFF = 70;
 // Ship                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
 class Ship {
-  constructor (scene, x, y, polygonPoints) {
+  constructor (scene, x, y, polygonPoints, spawnToleranceRadius) {
     // If debug mode active
-    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.colPoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   update (data) {
     // Update player collision shape. (DEBUG ONLY)
-    this.colpoly.update(data.x, data.y, radiansToDegrees(data.angle));
+    this.colPoly.update(data.x, data.y, radiansToDegrees(data.angle));
+    this.spawnToleranceShape.update(data.x, data.y);
     // Update player sprite
     this.body.setPosition(data.x, data.y);
     this.body.setVelocity(Math.sin(data.angle) * data.speed, -(Math.cos(data.angle) * data.speed));
@@ -36,7 +38,8 @@ class Ship {
   destroy() {
     this.body.destroy();
     this.text.destroy();
-    this.colpoly.destroy();
+    this.colPoly.destroy();
+    this.spawnToleranceShape.destroy();
   }
 }
 
@@ -44,8 +47,8 @@ class Ship {
 // Player                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 class Player extends Ship {
-  constructor (scene, x, y, username, shipname, polygonPoints) {
-    super(scene, x, y, polygonPoints);
+  constructor (scene, x, y, username, shipname, polygonPoints, spawnToleranceRadius) {
+    super(scene, x, y, polygonPoints, spawnToleranceRadius);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
     let sprite = "";
@@ -72,7 +75,7 @@ class Player extends Ship {
 
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname, data.polygonPoints);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, data.polygonPoints, data.spawnToleranceRadius);
     hud = new HUD(this);
   }
 }
@@ -100,8 +103,8 @@ function onRemovePlayer (data) {
 // Enemy                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Enemy extends Ship {
-  constructor (scene, id, x, y, username, shipname, polygonPoints) {
-    super(scene, x, y, polygonPoints);
+  constructor (scene, id, x, y, username, shipname, polygonPoints, spawnToleranceRadius) {
+    super(scene, x, y, polygonPoints, spawnToleranceRadius);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
     let sprite = "";
@@ -120,7 +123,7 @@ class Enemy extends Ship {
 
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, data.polygonPoints);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, data.polygonPoints, data.spawnToleranceRadius);
   else
     console.log("Failed to create enemy");
 }

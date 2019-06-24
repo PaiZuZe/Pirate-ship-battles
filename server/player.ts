@@ -54,7 +54,6 @@ export class Player extends Agent {
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'Player';
     this.collisionShape.id = this.id;
-
   }
 
   public setPos(x: number, y: number): void {
@@ -62,6 +61,8 @@ export class Player extends Agent {
     this.y = y;
     this.collisionShape.x = this.x;
     this.collisionShape.y = this.y;
+    this.spawnToleranceShape.x = this.x;
+    this.spawnToleranceShape.y = this.y;
   }
 
   public updatePos(dt: number): void {
