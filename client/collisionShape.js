@@ -38,21 +38,34 @@ class PolygonShape {
 class CircleShape {
   constructor (scene, x, y, radius, fillStyle) {
     if (DEBUG) {
+      this.fillStyle = fillStyle;
+      this.radius = radius;
       this.shape = scene.add.graphics();
-      this.shape.setDepth(SHAPE_DEPTH);
-    
-      if (fillStyle == undefined) {
-        this.shape.fillStyle(COLOR, ALPHA);
-      } 
-      else {
-        if (fillStyle.stroke == true) {
-          this.shape.lineStyle(LINE_WIDTH, fillStyle.color, fillStyle.alpha);
-          this.shape.strokeCircle(x, y, radius);
-          return;
-        }
-        this.shape.fillStyle(fillStyle.color, fillStyle.alpha);
+      this.drawCircle(x, y, radius, fillStyle);
+    }
+  }
+
+  drawCircle(x, y, radius, fillStyle) {
+    this.shape.setDepth(SHAPE_DEPTH);
+    if (fillStyle == undefined) {
+      this.shape.fillStyle(COLOR, ALPHA);
+    } 
+    else {
+      if (fillStyle.stroke == true) {
+        this.fillStyle = fillStyle;
+        this.shape.lineStyle(LINE_WIDTH, fillStyle.color, fillStyle.alpha);
+        this.shape.strokeCircle(x, y, radius);
+        return;
       }
-      this.shape.fillCircleShape(new Phaser.Geom.Circle(x, y, radius));
+      this.shape.fillStyle(fillStyle.color, fillStyle.alpha);
+    }
+    this.shape.fillCircleShape(new Phaser.Geom.Circle(x, y, radius));
+  }
+
+  update(x, y) {
+    if (DEBUG) {
+      this.shape.clear();
+      this.drawCircle(x, y, this.radius, this.fillStyle);
     }
   }
 
