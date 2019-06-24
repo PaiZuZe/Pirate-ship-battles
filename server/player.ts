@@ -24,6 +24,7 @@ export class Player extends Agent {
     left: false,
     right: false,
     primaryFire: false,
+    secondaryFire: false,
     boost: false
   };
 

@@ -71,6 +71,10 @@ export abstract class Agent extends GameObject {
     }
   }
 
+  public secondaryFire(): any[] {
+      return null; // not sure if it works, works with []
+  }
+
   public getData(): any {
     return {
       id: this.id,

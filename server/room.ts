@@ -132,10 +132,13 @@ export class Room {
         let palyer = value as Player;
         if (palyer.inputs.primaryFire) {
           temp = palyer.primaryFire();
-          if (temp != null) {
-            for (let i: number = 0; i < temp.length; ++i) {
-              this.createDamageArtefact(temp[i]);
-            }
+        }
+        else if (palyer.inputs.SecondaryFire) {
+          temp = palyer.secondaryFire();
+        }
+        if (temp != null) {
+          for (let i: number = 0; i < temp.length; ++i) {
+            this.createDamageArtefact(temp[i]);
           }
         }
       });
