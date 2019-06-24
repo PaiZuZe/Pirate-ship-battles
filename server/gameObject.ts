@@ -14,6 +14,7 @@ export abstract class GameObject {
   public x: number;
   public y: number;
   public hp: number;
+  public killedBy: string;
   public spawnToleranceRadius: number;
   public collisionShape: any; //Could not find a abstract class from colissions to put here :(
   public spawnToleranceShape: any;
@@ -23,6 +24,7 @@ export abstract class GameObject {
     this.x = x;
     this.y = y;
     this.hp = Infinity;
+    this.killedBy = null;
   }
 
   public getData(): any {

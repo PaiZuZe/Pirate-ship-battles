@@ -10,6 +10,7 @@ import { DamageArtefact } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
 import { FuelCell } from './fuelCell';
 import { DebrisField } from './debrisField';
+import { ScoreBoard } from './scoreBoard';
 
 
 export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: string, obj2Type: string): void {
@@ -80,6 +81,9 @@ function collideDamageArtefact(room: Room, artefact: DamageArtefact, obj: any): 
   var signal: string;
   signal = artefact.applyEffect(obj);
   if (signal != null) {
+    if (obj.hp <= 0) {
+      obj.killedBy = artefact.creator;
+    }
     room.io.in(room.name).emit(signal, obj.getData());
   }
   return;

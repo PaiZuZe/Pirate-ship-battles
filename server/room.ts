@@ -17,6 +17,7 @@ import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
 import * as socketIO from 'socket.io';
 import { mapFloatToInt } from './aux';
+import { Agent } from './agent';
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
@@ -175,6 +176,10 @@ export class Room {
   public removeDeadObjects() {
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.hp <= 0) {
+        if (value.killedBy != null) {
+          let agent: Agent = this.gameObjects.get(value.killedBy) as Agent;
+          this.scoreBoard.updateScore(agent.username);  
+        }
         //Note, this can break if the object has a name field or we use minifie.
         if (value.constructor.name == "Asteroid") {
           this.removeAsteroid(value);
