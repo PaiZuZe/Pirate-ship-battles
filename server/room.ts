@@ -181,7 +181,7 @@ export class Room {
       if (value.hp <= 0) {
         if (value.killedBy != null) {
           let agent: Agent = this.gameObjects.get(value.killedBy) as Agent;
-          this.scoreBoard.updateScore(agent.username);  
+          this.scoreBoard.updateScore(agent.username);
         }
         //Note, this can break if the object has a name field or we use minifie.
         if (value.constructor.name == "Asteroid") {

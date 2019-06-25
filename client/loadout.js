@@ -4,15 +4,7 @@
 //                             Client - Loadout                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-let loadout_shipname = ["Blastbeat", "Blindside"];
-let loadout_shipdesc = [ //Better have this in another file (JSON?)
-  "Strong attacks and massive fuel capacity",
-  "Fast boost and high fire rate"
-]
-let loadout_shipimg = [
-  "url('client/assets/spaceship.png')",
-  "url('client/assets/spaceship-alt.png')"
-]
+let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
 
@@ -22,27 +14,27 @@ loadout_select.onclick = function () {
 }
 
 loadout_previous.onclick = function () {
-  if (--loadout_count < 0) loadout_count = loadout_shipname.length - 1;
+  if (--loadout_count < 0) loadout_count = ships.length - 1;
   changeShip();
 }
 
 loadout_next.onclick = function () {
-  if (++loadout_count >= loadout_shipname.length) loadout_count = 0;
+  if (++loadout_count >= ships.length) loadout_count = 0;
   changeShip();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 function changeShip () {
-  shipPreview.style.content = loadout_shipimg[loadout_count];
-  shipName.innerHTML = loadout_shipname[loadout_count];
-  shipDesc.innerHTML = loadout_shipdesc[loadout_count];
+  shipPreview.style.content = ships[loadout_count].img;
+  shipName.innerHTML = ships[loadout_count].name;
+  shipDesc.innerHTML = ships[loadout_count].desc;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 function exitLoadout () {
   loadoutDiv.style.display = 'none';
   gameDiv.style.display = null;
-  game.scene.start('Main', {username: loadout_username, shipname: loadout_shipname[loadout_count]});
+  game.scene.start('Main', {username: loadout_username, shipname: ships[loadout_count].name});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -88,8 +88,8 @@ class Main extends Phaser.Scene {
   preload () {
     //this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
     this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
-    this.load.image("ship", "client/assets/spaceship.png");
-    this.load.image("ship-alt", "client/assets/spaceship-alt.png");
+    this.load.image("Blastbeat", "client/assets/blastbeat.png");
+    this.load.image("Blindside", "client/assets/blindside.png");
     this.load.image("bullet", "client/assets/laser.png");
     this.load.image("EBall", "client/assets/EBall.png");
     this.load.image("big_bullet", "client/assets/laser.png");

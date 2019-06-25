@@ -27,8 +27,8 @@ export abstract class DamageArtefact extends GameObject {
 
   public abstract addPos (x: number, y: number): void;
 
-  public abstract applyEffect (target: any): string;
-  
+  public abstract applyEffect (target: any, mod: number): string;
+
 };
 
 export class PrimaryFire extends DamageArtefact {
@@ -44,7 +44,7 @@ export class PrimaryFire extends DamageArtefact {
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'DamageArtefact';
     this.collisionShape.id = this.id;
-  
+
   }
   public addPos (x: number, y: number): void {
     this.x += x;
@@ -60,10 +60,10 @@ export class PrimaryFire extends DamageArtefact {
     return;
   }
 
-  public applyEffect (target: any): string {
+  public applyEffect (target: any, mod: number): string {
     if (target.id != this.creator) {
-      target.hp--;
-      this.hp = 0;
+      target.hp -= mod;
+      this.hp = 0; //Why?
       return 'hit'
     }
     return null;
@@ -72,11 +72,11 @@ export class PrimaryFire extends DamageArtefact {
   public getData(): any {
     let artefactData: any;
     artefactData = {
-      id: this.id, 
-      creator: this.creator, 
-      x: this.x, 
-      y: this.y, 
-      angle: this.angle, 
+      id: this.id,
+      creator: this.creator,
+      x: this.x,
+      y: this.y,
+      angle: this.angle,
       speed: this.speed,
       polygonPoints: this.polygonPoints
     };
@@ -117,7 +117,7 @@ export class EnergyBall extends DamageArtefact {
     this.x += x;
     this.y += y;
     this.collisionShape.x = this.x;
-    this.collisionShape.y = this.y;  
+    this.collisionShape.y = this.y;
   }
 
   public applyEffect (target: GameObject): string {
@@ -130,11 +130,11 @@ export class EnergyBall extends DamageArtefact {
 
   public getData(): any {
     return {
-      id: this.id, 
-      creator: this.creator, 
-      x: this.x, 
-      y: this.y, 
-      angle: this.angle, 
+      id: this.id,
+      creator: this.creator,
+      x: this.x,
+      y: this.y,
+      angle: this.angle,
       speed: this.speed,
       radius: this.radius
     };

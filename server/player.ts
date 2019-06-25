@@ -9,6 +9,9 @@ import { rotate } from './aux';
 import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
 import { Agent } from './agent';
 
+const ships = require('./ships.json');
+//const ships = (<any>shipdata).ships;
+
 const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;
 const ANGULAR_VEL = 1;
@@ -38,7 +41,10 @@ export class Player extends Agent {
     this.username = username;
     this.shipname = shipname;
     this.hp = 5;
-    this.primaryCooldown = 500;
+    this.attack = ships[shipname].attack;
+    this.primaryCooldown = 500/ships[shipname].firerate;
+    this.fuel *= ships[shipname].fuel;
+    this.boost = ships[shipname].boost;
     this.polygonPoints = [
       [-9, -38],
       [1, -38],
@@ -55,7 +61,7 @@ export class Player extends Agent {
       [-37, 1],
       [-13, -13]
     ];
-    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
+    this.collisionShape = new Polygon(this.x, this.y, ships[shipname].poly);
     this.collisionShape.type = 'Player';
     this.collisionShape.id = this.id;
   }
@@ -102,7 +108,7 @@ export class Player extends Agent {
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
     this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
-    let mod = (this.inputs.boost && this.fuel) ? 2 : 1;
+    let mod = (this.inputs.boost && this.fuel) ? this.boost : 1;
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
     let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);

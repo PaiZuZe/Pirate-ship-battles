@@ -24,7 +24,7 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     else if (obj1Type != 'DamageArtefact' && obj2Type == 'DamageArtefact') {
       if (obj1Type == 'Player' || obj1Type == 'Asteroid' || obj1Type == 'Bot')
         collideDamageArtefact(room, obj2, obj1);
-    } 
+    }
     else if (obj1Type == 'Player' && obj2Type == 'SpaceSationRest') {
       collideRestoration(obj1, obj2);
     }
@@ -79,7 +79,7 @@ function collidePlayers(room: Room, p1: Player, p2: Player): void {
 
 function collideDamageArtefact(room: Room, artefact: DamageArtefact, obj: any): void {
   var signal: string;
-  signal = artefact.applyEffect(obj);
+  signal = artefact.applyEffect(obj, 1);
   if (signal != null) {
     if (obj.hp <= 0) {
       obj.killedBy = artefact.creator;
