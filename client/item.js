@@ -23,7 +23,7 @@ class EBall {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colpoly = new CircleShape(scene, x, y, radius, {stroke: true, color: 0x0000b2, alpha: 1})  
+    this.colpoly = new CircleShape(scene, x, y, radius, {stroke: true, color: 0x0000b2, alpha: 1})
     console.log(this);
   }
 

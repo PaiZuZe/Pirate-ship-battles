@@ -52,19 +52,8 @@ class Player extends Ship {
     super(scene, x, y, polygonPoints, spawnToleranceRadius);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-<<<<<<< HEAD
-    let sprite = "";
-    if (shipname == "Blastbeat") {
-        sprite = "ship";
-    }
-    else if (shipname == "Blindside") {
-        sprite = "ship-alt";
-    }
-    this.body = scene.physics.add.sprite(x, y, sprite, 0);
-=======
     this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(shipscale);
     //this.collisionShape = scene.physics.add.graphics();
->>>>>>> shipjson
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
