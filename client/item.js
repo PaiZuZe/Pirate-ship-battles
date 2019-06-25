@@ -10,7 +10,6 @@ var islandList = {}; // Islands list
 var asteroidList = {}; // Asteroids list
 var DebrisFieldList = {};
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +26,7 @@ class Bullet {
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
     this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
+    //this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   update (data) {
@@ -57,6 +57,7 @@ class Box {
     this.item.setSize(this.sizeX, this.sizeY);
     this.item.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, radius);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
@@ -80,6 +81,7 @@ class Island {
     this.island.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, r);
     this.influenceShape = new CircleShape(scene, x, y, 2*r, {stroke: true, color: 0x0000b2, alpha: 1})
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
@@ -103,6 +105,7 @@ class Asteroid {
     this.asteroid.setSize(this.sizeX, this.sizeY);
     this.asteroid.par_obj = this; // Just to associate this id with the image
     this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
@@ -123,6 +126,7 @@ class DebrisField {
     let a = new Phaser.Geom.Point(center_x, center_y);
     this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
     this.debris_field.par_obj = this; // Just to associate this id with the image
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
@@ -142,6 +146,7 @@ class Explosion {
     this.explosion.setDepth(5100);
     this.explosion.setDisplaySize(this.sizeX, this.sizeY);
     this.explosion.setSize(this.sizeX, this.sizeY);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
 
     this.tween = scene.tweens.add({
       targets: this.explosion,

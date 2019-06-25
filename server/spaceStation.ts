@@ -22,6 +22,8 @@ export class SpaceStation extends GameObject {
     this.type = type;
     this.resource = resource;
     this.threshold = threshold;
+    this.spawnToleranceRadius = 100;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.restorationShape = new Circle(this.x, this.y, 2 * radius);
     this.restorationShape.type = 'SpaceSationRest';
     this.restorationShape.id = this.id;
@@ -48,12 +50,24 @@ export class SpaceStation extends GameObject {
     return;
   }
 
+  public setPos(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+    this.spawnToleranceShape.x = x;
+    this.spawnToleranceShape.y = y;
+    this.collisionShape.x = x;
+    this.collisionShape.y = y;
+    this.restorationShape.x = x;
+    this.restorationShape.y = y;
+  }
+
   public getData():any {
     return {
       id: this.id,
       x: this.x,
       y: this.y,
-      radius: this.radius
+      radius: this.radius,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
   }
 };

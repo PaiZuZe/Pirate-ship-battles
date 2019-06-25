@@ -57,15 +57,6 @@ export class Player extends Agent {
     this.collisionShape.id = this.id;
   }
 
-  public setPos(x: number, y: number): void {
-    this.x = x;
-    this.y = y;
-    this.collisionShape.x = this.x;
-    this.collisionShape.y = this.y;
-    this.spawnToleranceShape.x = this.x;
-    this.spawnToleranceShape.y = this.y;
-  }
-
   public updatePos(dt: number, collisionSystem: Collisions): void {
     this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
     this.accel += (this.inputs.up)? MAX_ACCEL : 0;

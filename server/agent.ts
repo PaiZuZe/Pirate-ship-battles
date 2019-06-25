@@ -30,7 +30,7 @@ export abstract class Agent extends GameObject {
     this.shipname = shipname;
     this.isDead = false;
     this.spawnToleranceRadius = 100;
-    this.spawnToleranceShape = new Circle(this.x, this.y, 100);
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
   }
 
   public canPrimaryFire(): boolean {
