@@ -10,45 +10,31 @@ var islandList = {}; // Islands list
 var asteroidList = {}; // Asteroids list
 var DebrisFieldList = {};
 
-/*
+
 class EBall {
   constructor(scene, id, creator, x, y, angle, speed, radius) {
     this.id = id;
-    this.debris_field = scene.add.graphics();
-    let color = 0xff0000;
-    let thickness = 4;
-    let alpha = 1;
-    let smoothness = 64;
-    this.debris_field.lineStyle(thickness, color, alpha);
-    let a = new Phaser.Geom.Point(center_x, center_y);
-    this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
-    this.debris_field.par_obj = this; // Just to associate this id with the image
-    
-    
-    this.sizeX = 9;
-    this.sizeY = 54;
     this.creator = creator;
+    this.item = scene.physics.add.image(x, y, "EBall");
+    this.sizeX = 200;
+    this.sizeY = 160;
     this.speed = speed;
-    this.item = scene.physics.add.image(x, y, "bullet");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
   }
 
   update (data) {
     this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    this.colpoly.update(data.x, data.y);
   }
 
   destroy () {
     this.item.destroy();
-    this.colpoly.destroy();
   }
 }
-*/
+
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
