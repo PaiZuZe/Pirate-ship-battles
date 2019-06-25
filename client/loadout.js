@@ -4,7 +4,7 @@
 //                             Client - Loadout                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-let ships = JSON.parse(shipinfo);
+let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
 

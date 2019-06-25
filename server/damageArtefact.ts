@@ -7,8 +7,6 @@
 import { Polygon } from './collisions/Collisions'
 import { GameObject } from './gameObject';
 
-require('./ships.json');
-
 export abstract class DamageArtefact extends GameObject {
   public angle: number;
   public speed: number;

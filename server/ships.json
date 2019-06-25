@@ -1,0 +1,14 @@
+{
+  "Blastbeat": {
+    "attack": 2,
+    "firerate": 1,
+    "fuel": 3,
+    "boost": 2
+  },
+  "Blindside": {
+    "attack": 1,
+    "firerate": 2,
+    "fuel": 1,
+    "boost": 3
+  }
+}

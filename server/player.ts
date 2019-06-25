@@ -8,13 +8,14 @@ import { Polygon } from './collisions/Collisions'
 import { rotate } from './aux';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { Agent } from './agent';
-import data from './ships.json';
+
+const ships = require('./ships.json');
+//const ships = (<any>shipdata).ships;
 
 const MAX_ACCEL = 100;
 const DRAG_CONST = 0.1;
 const ANGULAR_VEL = 1;
 const DRAG_POWER = 1.5;
-const ships = (<any>data).ships;
 
 export class Player extends Agent {
   public counter: number = 0;
