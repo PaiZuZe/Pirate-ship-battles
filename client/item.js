@@ -19,19 +19,24 @@ class EBall {
     this.sizeX = 200;
     this.sizeY = 160;
     this.speed = speed;
+    this.radius = radius;
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new CircleShape(scene, x, y, radius, {stroke: true, color: 0x0000b2, alpha: 1})  
+    console.log(this);
   }
 
   update (data) {
     this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
+    this.colpoly.update(data.x, data.y);
   }
 
   destroy () {
     this.item.destroy();
+    this.colpoly.destroy();
   }
 }
 

@@ -11,7 +11,7 @@ import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
 import { Bot } from './bot';
 import { DebrisField } from './debrisField';
-import { DamageArtefact, PrimaryFire } from './damageArtefact';
+import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
 import { ScoreBoard } from './scoreBoard';
 import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
@@ -201,6 +201,12 @@ export class Room {
       if (value.constructor.name == "PrimaryFire") {
         let damageArtefact = value as PrimaryFire;
         if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
+          this.removeDamageArtefact(damageArtefact);
+        }
+      }
+      else if (value.constructor.name == "EnergyBall") {
+        let damageArtefact = value as EnergyBall;
+        if (damageArtefact.hp <= 0 || damageArtefact.vanish()) {
           this.removeDamageArtefact(damageArtefact);
         }
       }
