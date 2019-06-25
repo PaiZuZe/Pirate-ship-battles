@@ -148,7 +148,7 @@ export class Room {
   public createDamageArtefact(damageArtefact: DamageArtefact): void {
     this.gameObjects.set(damageArtefact.id, damageArtefact);
     this.collisionSystem.insert(damageArtefact.collisionShape);
-    this.io.in(this.name).emit("bullet_create", damageArtefact.getData());
+    this.io.in(this.name).emit(damageArtefact.signal, damageArtefact.getData());
   }
 
   public removeDamageArtefact(artefact: GameObject): void {
@@ -415,6 +415,7 @@ export class Room {
     player.inputs.left = data.left;
     player.inputs.right = data.right;
     player.inputs.primaryFire = data.primary_fire;
+    player.inputs.secondaryFire = data.secondary_fire;
     player.inputs.boost = data.boost;
   }
 }

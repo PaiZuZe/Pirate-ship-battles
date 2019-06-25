@@ -6,7 +6,7 @@
 
 import { Collisions, Polygon } from './collisions/Collisions'
 import { rotate } from './aux';
-import { DamageArtefact, PrimaryFire } from './damageArtefact';
+import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
 import { Agent } from './agent';
 
 const MAX_ACCEL = 100;
@@ -17,6 +17,9 @@ const DRAG_POWER = 1.5;
 export class Player extends Agent {
   public counter: number = 0;
   public counterDebri: number = 0;
+  public lastTimeShotSecondary: number = 0;
+  public secondaryCooldown: number = 1500;
+
   private invulTime: number = 0; // Invulnerability time inside debrisField
 
   public inputs = {
@@ -64,6 +67,32 @@ export class Player extends Agent {
     this.collisionShape.y = this.y;
     this.spawnToleranceShape.x = this.x;
     this.spawnToleranceShape.y = this.y;
+  }
+
+  public canSecondaryFire(): boolean {
+    if (this.lastTimeShotSecondary + this.secondaryCooldown <= Date.now()) {
+      return true;
+    }
+    return false;
+  }
+
+  public secondaryFire(): DamageArtefact[] {
+    if (this.canSecondaryFire()) {
+      console.log(`SECONDARY FIRE! fire from: ${this.username}`);
+      this.lastTimeShotSecondary = Date.now();  
+      if (this.shipname == "Blastbeat") {
+        return this.fireEnergyBall();
+      }
+      else if (this.shipname == "Blindside") {
+        return null;
+      }
+    }
+    return null;
+}
+
+  public fireEnergyBall(): DamageArtefact[] {
+      let [offx, offy] = rotate(this.angle, 20, -10); // NO TYPES
+      return [new EnergyBall(this.x + offx, this.y + offy, this.id, this.angle, 500)];
   }
 
   public updatePos(dt: number, collisionSystem: Collisions): void {

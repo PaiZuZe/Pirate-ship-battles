@@ -75,6 +75,7 @@ class Main extends Phaser.Scene {
     socket.on('debris_create', onCreatedebrisField.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
+    socket.on('create_EBall', onCreateBullet.bind(this));
     socket.on('enable_inputs', this.enableInputs.bind(this));
     socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
@@ -90,6 +91,7 @@ class Main extends Phaser.Scene {
     this.load.image("ship", "client/assets/spaceship.png");
     this.load.image("ship-alt", "client/assets/spaceship-alt.png");
     this.load.image("bullet", "client/assets/laser.png");
+    this.load.image("EBall", "client/assets/laser.png");
     this.load.image("big_bullet", "client/assets/laser.png");
     this.load.image("heart", "client/assets/heart.png");
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
@@ -132,6 +134,7 @@ class Main extends Phaser.Scene {
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.key_SHIFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.key_Q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
 
     // Mini Map
@@ -160,7 +163,9 @@ class Main extends Phaser.Scene {
         let data = {
           up: (this.key_W.isDown),
           left: (this.key_A.isDown),
+          down: (this.key_S.isDown),
           right: (this.key_D.isDown),
+          secondary_fire: (this.key_Q.isDown),
           primary_fire: (this.key_SPACE.isDown),
           boost: (this.key_SHIFT.isDown)
         }

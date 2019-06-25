@@ -15,7 +15,7 @@ export abstract class DamageArtefact extends GameObject {
   public creator: string;
   public timeCreated: number;
   public collisionShape: any;
-
+  public signal: string
 
   constructor (x: number, y: number, creator: string,  angle: number, speed: number) {
     super(x, y);
@@ -40,6 +40,7 @@ export class PrimaryFire extends DamageArtefact {
       [0, -26],
       [0, 26]
     ];
+    this.signal = "bullet_create"
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'DamageArtefact';
     this.collisionShape.id = this.id;
@@ -92,6 +93,7 @@ export class EnergyBall extends DamageArtefact {
 
   constructor(x: number, y: number, creator: string, angle: number, speed: number) {
     super(x, y, creator, angle, speed);
+    this.signal = "create_EBall";
     this.collisionShape = new Circle(this.x, this.y, this.radius);
     this.collisionShape.type = 'DamageArtefact';
     this.collisionShape.id = this.id;
