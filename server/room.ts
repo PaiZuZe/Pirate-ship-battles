@@ -25,7 +25,7 @@ const BULLET_LIFETIME = 5000; // ms
 export class Room {
   public readonly name: string;
   // Game Elements
-  private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
+  public gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
   private scoreBoard: ScoreBoard; // The list of scores form active players
   public io: socketIO.Server;
 
@@ -285,11 +285,23 @@ export class Room {
       this.removeFromCollisionSystem(player);
       this.scoreBoard.removePlayer(player.username);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
-      this.io.sockets.sockets[player.id].leave(this.name);
-      this.io.sockets.sockets[player.id].join('login');
+      if (typeof(this.io.sockets.sockets[player.id]) !== 'undefined') {
+        this.io.sockets.sockets[player.id].leave(this.name);
+        this.io.sockets.sockets[player.id].join('login');
+      }
       this.gameObjects.delete(player.id);
     }
     return;
+  }
+
+  public disconnectPlayer(playerID: string): void {
+    if (this.gameObjects.has(playerID)) {
+      this.removePlayer(this.gameObjects.get(playerID) as Player);
+      console.log("Disconnected player with ID = " + playerID);
+    }
+    else {
+      console.log("ERROR: Could not find player with ID = " + playerID + " in room to disconnect")
+    }
   }
 
   private addSpaceStation(): void {
