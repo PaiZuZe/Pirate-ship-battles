@@ -17,6 +17,8 @@ export class FuelCell extends GameObject {
   constructor(x: number, y: number, max_x: number, max_y: number) {
     super(x, y);
     this.cells = getRndInteger(10, 25);
+    this.spawnToleranceRadius = 10;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Circle(this.x, this.y, RADIUS);
     this.collisionShape.type = 'FuelCell';
     this.collisionShape.id = this.id;
@@ -32,7 +34,8 @@ export class FuelCell extends GameObject {
       id: this.id,
       x: this.x,
       y: this.y,
-      radius: RADIUS
+      radius: RADIUS,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
   }
 }

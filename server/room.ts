@@ -45,6 +45,7 @@ export class Room {
   private delta: number = 1; // Advances by one each game update cycle (related to player invulnerability)
   private mod: number = 120;  // Arbitrary integer variable, used to define invulnerability time
   private collisionSystem: Collisions;
+  private spawnCollisionSystem: Collisions;
 
   constructor(io: socketIO.Server, num: number) {
       this.io = io;
@@ -52,6 +53,8 @@ export class Room {
       this.scoreBoard = new ScoreBoard();
       this.collisionSystem = new Collisions();
       this.collisionSystem.update(); // MAYBE WE DON'T NEED THIS HERE??
+      this.spawnCollisionSystem = new Collisions();
+      this.spawnCollisionSystem.update();
       setInterval(this.updateGame.bind(this), 1000 * UPDATE_TIME);
   }
 
@@ -147,15 +150,35 @@ export class Room {
 
   public createDamageArtefact(damageArtefact: DamageArtefact): void {
     this.gameObjects.set(damageArtefact.id, damageArtefact);
-    this.collisionSystem.insert(damageArtefact.collisionShape);
+    this.insertInDefinedPosition(damageArtefact);
     this.io.in(this.name).emit(damageArtefact.signal, damageArtefact.getData());
   }
 
   public removeDamageArtefact(artefact: GameObject): void {
-    this.collisionSystem.remove(artefact.collisionShape);
+    this.removeFromCollisionSystem(artefact);
     this.io.in(this.name).emit("bullet_remove", artefact.getData());
     this.gameObjects.delete(artefact.id);
     return;
+  }
+
+  private insertInRandomPosition(gameObject: GameObject): void {
+    this.spawnCollisionSystem.insert(gameObject.spawnToleranceShape);
+    while (isColliding(gameObject.spawnToleranceShape)) {
+      gameObject.setPos(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
+              mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250));
+      this.spawnCollisionSystem.update();
+    }
+    this.collisionSystem.insert(gameObject.collisionShape);
+  }
+
+  private insertInDefinedPosition(gameObject: GameObject): void {
+    this.spawnCollisionSystem.insert(gameObject.spawnToleranceShape);
+    this.collisionSystem.insert(gameObject.collisionShape);
+  }
+
+  private removeFromCollisionSystem(gameObject: GameObject): void {
+    this.spawnCollisionSystem.remove(gameObject.spawnToleranceShape);
+    this.collisionSystem.remove(gameObject.collisionShape);
   }
 
   public updateGame(): void {
@@ -224,20 +247,8 @@ export class Room {
                    0, socket.id, data.username, data.shipname);
     this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
-    /*
-     * TODO: Probably it is better the player verify this on its constructor.
-     * Check if player is not colliding with another object.
-     * If it is, place it somewhere else it isn't colliding with anything else.
-     */
-    /*
-    while (isColliding(newPlayer.collisionShape)) {
-      newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
-               mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250));
-      this.collisionSystem.update();
-    }
-    */
     socket.emit('create_player', newPlayer);
-    this.collisionSystem.insert(newPlayer.collisionShape);
+    this.insertInRandomPosition(newPlayer);
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.collisionShape.type == "Player" && value != newPlayer) {
         socket.emit("new_enemyPlayer", value.getData());
@@ -271,7 +282,7 @@ export class Room {
     console.log(`${player.username} died!`);
     if (this.gameObjects.has(player.id)) {
       console.log(`${player.username} was removed`);
-      this.collisionSystem.remove(player.collisionShape);
+      this.removeFromCollisionSystem(player);
       this.scoreBoard.removePlayer(player.username);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
       this.io.sockets.sockets[player.id].leave(this.name);
@@ -286,8 +297,7 @@ export class Room {
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newSpaceSatition = new SpaceStation(x, y, 100, "life", 1, 180);
     this.gameObjects.set(newSpaceSatition.id, newSpaceSatition);
-    this.collisionSystem.insert(newSpaceSatition.restorationShape);
-    this.collisionSystem.insert(newSpaceSatition.collisionShape);
+    this.insertInRandomPosition(newSpaceSatition);
     this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
     this.stationsCount++;
     return;
@@ -298,14 +308,14 @@ export class Room {
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newAsteroid = new Asteroid(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newAsteroid.id, newAsteroid);
-    this.collisionSystem.insert(newAsteroid.collisionShape);
+    this.insertInRandomPosition(newAsteroid);
     this.io.in(this.name).emit("asteroid_create", newAsteroid.getData());
     this.asteroidsCount++;
     return;
   }
 
   public removeAsteroid(obj: GameObject): void {
-    this.collisionSystem.remove(obj.collisionShape);
+    this.removeFromCollisionSystem(obj);
     this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("remove_asteroid", obj.getData());
     this.asteroidsCount--;
@@ -317,14 +327,14 @@ export class Room {
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newFuelCell = new FuelCell(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newFuelCell.id, newFuelCell);
-    this.collisionSystem.insert(newFuelCell.collisionShape);
+    this.insertInRandomPosition(newFuelCell);
     this.io.in(this.name).emit("item_create", newFuelCell.getData());
     this.fuelCellsCount++;
     return;
   }
 
   public removeFuelCell(obj: GameObject): void {
-    this.collisionSystem.remove(obj.collisionShape);
+    this.removeFromCollisionSystem(obj);
     this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("item_remove", obj.getData());
     this.fuelCellsCount--;
@@ -336,14 +346,14 @@ export class Room {
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
     let newBot = new Bot(x, y, "Blindside");
     this.gameObjects.set(newBot.id, newBot);
-    this.collisionSystem.insert(newBot.collisionShape);
+    this.insertInRandomPosition(newBot);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
     this.botsCount++;
     return;
   }
 
   public removeBot(obj: GameObject): void {
-    this.collisionSystem.remove(obj.collisionShape);
+    this.removeFromCollisionSystem(obj);
     this.gameObjects.delete(obj.id);
     this.io.in(this.name).emit("remove_player", obj.getData());
     this.botsCount--;
@@ -357,7 +367,7 @@ export class Room {
 
     let newDerbisField = new DebrisField(x, y, r, r - 50);
     this.gameObjects.set(newDerbisField.id, newDerbisField);
-    this.collisionSystem.insert(newDerbisField.collisionShape);
+    this.insertInDefinedPosition(newDerbisField);
     this.io.in(this.name).emit("debris_create", newDerbisField.getData());
     this.debrisFieldsCount++;
     return;
