@@ -6,7 +6,7 @@
 
 var enemies = {};
 var player = null;
-var shipscale = 0.65;
+var shipscale = 0.675;
 const LABEL_DIFF = 70;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ class Player extends Ship {
 
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname, data.polygonPoints, data.spawnToleranceRadius);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, SHIPDEBUG[data.shipname], data.spawnToleranceRadius);
     hud = new HUD(this);
   }
 }
@@ -111,7 +111,7 @@ class Enemy extends Ship {
 
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, data.polygonPoints, data.spawnToleranceRadius);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, SHIPDEBUG[data.shipname], data.spawnToleranceRadius);
   else
     console.log("Failed to create enemy");
 }

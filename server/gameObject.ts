@@ -35,6 +35,15 @@ export abstract class GameObject {
     };
   }
 
+  public setPos(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+    this.collisionShape.x = this.x;
+    this.collisionShape.y = this.y;
+    this.spawnToleranceShape.x = this.x;
+    this.spawnToleranceShape.y = this.y;
+  }
+
   public updatePos(dt: number = 0, collisionSystem: Collisions = null): void {
     return;
   }

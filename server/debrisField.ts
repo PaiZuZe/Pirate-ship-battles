@@ -15,6 +15,8 @@ export class DebrisField extends GameObject {
     super(x, y);
     this.radius = radius;
     this.threshold = threshold;
+    this.spawnToleranceRadius = 0;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Circle(x, y, radius);
     this.collisionShape.id = this.id;
     this.collisionShape.type = "DebrisField";
@@ -41,7 +43,8 @@ export class DebrisField extends GameObject {
       center_x: this.x,
       center_y: this.y,
       id: this.id,
-      radius: this.radius
+      radius: this.radius,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
   }
 

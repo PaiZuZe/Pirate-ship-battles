@@ -45,23 +45,8 @@ export class Player extends Agent {
     this.primaryCooldown = 500/ships[shipname].firerate;
     this.fuel *= ships[shipname].fuel;
     this.boost = ships[shipname].boost;
-    this.polygonPoints = [
-      [-9, -38],
-      [1, -38],
-      [11, -13],
-      [35, 1],
-      [48, -7],
-      [43, 21],
-      [13, 26],
-      [6, 36],
-      [-8, 36],
-      [-16, 26],
-      [-45, 21],
-      [-50, -7],
-      [-37, 1],
-      [-13, -13]
-    ];
-    this.collisionShape = new Polygon(this.x, this.y, ships[shipname].poly);
+    this.polygonPoints = ships[shipname].poly;
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'Player';
     this.collisionShape.id = this.id;
   }
@@ -85,7 +70,7 @@ export class Player extends Agent {
   public secondaryFire(): DamageArtefact[] {
     if (this.canSecondaryFire()) {
       console.log(`SECONDARY FIRE! fire from: ${this.username}`);
-      this.lastTimeShotSecondary = Date.now();  
+      this.lastTimeShotSecondary = Date.now();
       if (this.shipname == "Blastbeat") {
         return this.fireEnergyBall();
       }
@@ -107,8 +92,8 @@ export class Player extends Agent {
     this.speed += this.accel*dt;
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
-    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
-    let mod = (this.inputs.boost && this.fuel) ? this.boost : 1;
+    this.fuel = (this.inputs.up && this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
+    let mod = (this.inputs.up && this.inputs.boost && this.fuel) ? this.boost : 1;
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
     let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);
@@ -116,5 +101,15 @@ export class Player extends Agent {
     //Acording with the docs of the Collisions, we have to do this to change the tree that it uses.
     collisionSystem.remove(this.collisionShape);
     collisionSystem.insert(this.collisionShape);
+  }
+
+  public getDrawData(): any {
+    return {
+      x: this.x,
+      y: this.y,
+      username: this.username,
+      shipname: this.shipname,
+      spawnToleranceRadius: this.spawnToleranceRadius
+    };
   }
 };

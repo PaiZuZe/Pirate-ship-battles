@@ -86,16 +86,13 @@ class Main extends Phaser.Scene {
 
   //////////////////////////////////////////////////////////////////////////////
   preload () {
-    //this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
     this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
     this.load.image("Blastbeat", "client/assets/blastbeat.png");
     this.load.image("Blindside", "client/assets/blindside.png");
     this.load.image("bullet", "client/assets/laser.png");
     this.load.image("EBall", "client/assets/EBall.png");
     this.load.image("big_bullet", "client/assets/laser.png");
-    this.load.image("heart", "client/assets/heart.png");
-    this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
-    this.load.image("barrel", "client/assets/barrel.png");
+    this.load.image("barrel", "client/assets/fuelcell.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
@@ -136,10 +133,20 @@ class Main extends Phaser.Scene {
     this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.key_Q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
+    this.add.tileSprite(gameProperties.gameWidth/2, gameProperties.gameHeight/2, gameProperties.gameWidth, gameProperties.gameHeight, 'stars');
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        for (let k = 0; k < 3; ++k) {
+          let star = new Phaser.Geom.Circle((Math.random() + i)*gameProperties.gameWidth/6, (Math.random() + j)*gameProperties.gameHeight/4, Math.random()*3);
+          this.add.graphics({ fillStyle: { color: 0xffffff } }).fillCircleShape(star);
+        }
+      }
+    }
 
     // Mini Map
     if (!this.mobileMode) {
-      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.15).setName('mini');
+      this.minimap.setBounds(0, 0, gameProperties.gameWidth, gameProperties.gameHeight);
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
@@ -148,7 +155,6 @@ class Main extends Phaser.Scene {
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
     }
-    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100).setAlpha(0);
   }
 
   //////////////////////////////////////////////////////////////////////////////

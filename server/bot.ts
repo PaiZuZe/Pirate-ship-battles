@@ -39,6 +39,8 @@ export class Bot extends Agent {
     super(x, y, "BotBlob", "Blindside");
     this.hp = 3;
     this.invul_time = 0;
+    this.spawnToleranceRadius = 100;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.id = this.id;
     this.collisionShape.type = 'Bot';
