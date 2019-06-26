@@ -70,7 +70,7 @@ export class Player extends Agent {
   public secondaryFire(): DamageArtefact[] {
     if (this.canSecondaryFire()) {
       console.log(`SECONDARY FIRE! fire from: ${this.username}`);
-      this.lastTimeShotSecondary = Date.now();  
+      this.lastTimeShotSecondary = Date.now();
       if (this.shipname == "Blastbeat") {
         return this.fireEnergyBall();
       }
@@ -101,5 +101,15 @@ export class Player extends Agent {
     //Acording with the docs of the Collisions, we have to do this to change the tree that it uses.
     collisionSystem.remove(this.collisionShape);
     collisionSystem.insert(this.collisionShape);
+  }
+
+  public getDrawData(): any {
+    return {
+      x: this.x,
+      y: this.y,
+      username: this.username,
+      shipname: this.shipname,
+      spawnToleranceRadius: this.spawnToleranceRadius
+    };
   }
 };

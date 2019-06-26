@@ -247,11 +247,11 @@ export class Room {
                    0, socket.id, data.username, data.shipname);
     this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
-    socket.emit('create_player', newPlayer);
+    socket.emit('create_player', newPlayer.getDrawData());
     this.insertInRandomPosition(newPlayer);
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.collisionShape.type == "Player" && value != newPlayer) {
-        socket.emit("new_enemyPlayer", value.getData());
+        socket.emit("new_enemyPlayer", (<Player>value).getDrawData());
       }
       else if (value.collisionShape.type == "Asteroid") {
         socket.emit("asteroid_create", value.getData());
