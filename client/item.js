@@ -15,7 +15,7 @@ var DebrisFieldList = {};
 ////////////////////////////////////////////////////////////////////////////////
 // Client bullet class
 class Bullet {
-  constructor (scene, id, creator, x, y, angle, speed, polygonPoints) {
+  constructor (scene, id, creator, x, y, angle, speed, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 9;
     this.sizeY = 54;
     this.creator = creator;
@@ -26,7 +26,7 @@ class Bullet {
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
     this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
-    //this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   update (data) {
@@ -34,11 +34,13 @@ class Bullet {
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
     this.colpoly.update(data.x, data.y);
+    this.spawnToleranceShape.update(data.x, data.y);
   }
 
   destroy () {
     this.item.destroy();
     this.colpoly.destroy();
+    this.spawnToleranceShape.destroy();
   }
 };
 
@@ -48,7 +50,7 @@ class Bullet {
 ////////////////////////////////////////////////////////////////////////////////
 // Client box class
 class Box {
-  constructor (scene, id, x, y, radius) {
+  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
     this.sizeX = 20;
     this.sizeY = 20;
     this.id = id;
@@ -62,6 +64,7 @@ class Box {
 
   destroy () {
     this.item.destroy();
+    this.spawnToleranceShape.destroy();
     this.colShape.destroy();
   }
 };
@@ -71,7 +74,7 @@ class Box {
 ////////////////////////////////////////////////////////////////////////////////
 // Client Island class
 class Island {
-  constructor (scene, id, x, y, r) {
+  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
     this.sizeX = 172;
     this.sizeY = 172;
     this.id = id;
@@ -79,8 +82,8 @@ class Island {
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
     this.island.par_obj = this; // Just to associate this id with the image
-    this.colShape = new CircleShape(scene, x, y, r);
-    this.influenceShape = new CircleShape(scene, x, y, 2*r, {stroke: true, color: 0x0000b2, alpha: 1})
+    this.colShape = new CircleShape(scene, x, y, radius);
+    this.influenceShape = new CircleShape(scene, x, y, 2*radius, {stroke: true, color: 0x0000b2, alpha: 1})
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
@@ -88,6 +91,7 @@ class Island {
     this.island.destroy();
     this.colShape.destroy();
     this.influenceShape.destroy();
+    this.spawnToleranceRadius.destroy();
   }
 };
 
@@ -96,7 +100,7 @@ class Island {
 ////////////////////////////////////////////////////////////////////////////////
 // Client asteroid class
 class Asteroid {
-  constructor (scene, id, x, y, polygonPoints) {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 101;
     this.sizeY = 84;
     this.id = id;
@@ -111,6 +115,7 @@ class Asteroid {
   destroy () {
     this.colpoly.destroy();
     this.asteroid.destroy();
+    this.spawnToleranceShape.destroy();
   }
 };
 
@@ -126,7 +131,6 @@ class DebrisField {
     let a = new Phaser.Geom.Point(center_x, center_y);
     this.debris_field.strokeEllipse(a.x, a.y, radius*2, radius*2, smoothness);
     this.debris_field.par_obj = this; // Just to associate this id with the image
-    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
@@ -146,7 +150,6 @@ class Explosion {
     this.explosion.setDepth(5100);
     this.explosion.setDisplaySize(this.sizeX, this.sizeY);
     this.explosion.setSize(this.sizeX, this.sizeY);
-    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
 
     this.tween = scene.tweens.add({
       targets: this.explosion,
@@ -185,7 +188,7 @@ class Explosion {
 // Function called when new box is added at the server.
 function onCreateItem (data) {
   if (!(data.id in boxList)) {
-    let newBox = new Box(this, data.id, data.x, data.y, data.radius);
+    let newBox = new Box(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
     boxList[data.id] = newBox;
   }
 }
@@ -205,7 +208,7 @@ function onItemRemove (data) {
 function onCreateIsland (data) {
   if (!(data.id in islandList)) {
     console.log(`Creating island ${data.id}`);
-    let newIsland = new Island(this, data.id, data.x, data.y, data.radius);
+    let newIsland = new Island(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
     islandList[data.id] = newIsland;
   }
 }
@@ -221,7 +224,7 @@ function onCreatedebrisField (data) {
 function onCreateAsteroid (data) {
   if (!(data.id in asteroidList)) {
     console.log(`Creating asteroid ${data.id}`);
-    let newAsteroid = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints);
+    let newAsteroid = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
     asteroidList[data.id] = newAsteroid;
   }
 }
@@ -240,7 +243,7 @@ function onRemoveAsteroid (data) {
 // Function called when new bullet is added at the server.
 function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
-    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints);
+    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints, data.spawnToleranceRadius);
     bulletList[data.id] = newBullet;
   }
 }
