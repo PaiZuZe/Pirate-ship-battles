@@ -134,6 +134,14 @@ class Main extends Phaser.Scene {
     this.key_Q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
     this.add.tileSprite(gameProperties.gameWidth/2, gameProperties.gameHeight/2, gameProperties.gameWidth, gameProperties.gameHeight, 'stars');
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        for (let k = 0; k < 3; ++k) {
+          let star = new Phaser.Geom.Circle((Math.random() + i)*gameProperties.gameWidth/6, (Math.random() + j)*gameProperties.gameHeight/4, Math.random()*3);
+          this.add.graphics({ fillStyle: { color: 0xffffff } }).fillCircleShape(star).setDepth(5148);
+        }
+      }
+    }
 
     // Mini Map
     if (!this.mobileMode) {
