@@ -45,23 +45,8 @@ export class Player extends Agent {
     this.primaryCooldown = 500/ships[shipname].firerate;
     this.fuel *= ships[shipname].fuel;
     this.boost = ships[shipname].boost;
-    this.polygonPoints = [
-      [-9, -38],
-      [1, -38],
-      [11, -13],
-      [35, 1],
-      [48, -7],
-      [43, 21],
-      [13, 26],
-      [6, 36],
-      [-8, 36],
-      [-16, 26],
-      [-45, 21],
-      [-50, -7],
-      [-37, 1],
-      [-13, -13]
-    ];
-    this.collisionShape = new Polygon(this.x, this.y, ships[shipname].poly);
+    this.polygonPoints = ships[shipname].poly;
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'Player';
     this.collisionShape.id = this.id;
   }
