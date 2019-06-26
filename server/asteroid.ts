@@ -24,7 +24,7 @@ export class Asteroid extends GameObject {
   constructor (x: number, y: number, max_x: number, max_y: number) {
     super(x, y);
     this.hp = 7;
-    this.spawnToleranceRadius = 200;
+    this.spawnToleranceRadius = 55;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
     this.collisionShape.type = 'Asteroid';
