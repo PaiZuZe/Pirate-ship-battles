@@ -5,7 +5,7 @@ services:
     networks:
       front:
         ipv4_address: 
-          192.168.240.51
+          192.168.241.51
     container_name: psb-app
     depends_on: 
       - postgres
@@ -17,7 +17,7 @@ services:
     networks:
       front:
         ipv4_address: 
-          192.168.240.52
+          192.168.241.52
     image: postgres:11-alpine
     container_name: psb-postgres
     environment:
@@ -40,4 +40,4 @@ networks:
             driver: default
             config:
               - subnet: 
-                    192.168.240.0/24
+                    192.168.241.0/24
