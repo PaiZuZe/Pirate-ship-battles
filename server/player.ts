@@ -93,7 +93,7 @@ export class Player extends Agent {
     if (this.speed < 2 && this.accel < 2)
       this.speed = 0;
     this.fuel = (this.inputs.up && this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
-    let mod = (this.inputs.boost && this.fuel) ? this.boost : 1;
+    let mod = (this.inputs.up && this.inputs.boost && this.fuel) ? this.boost : 1;
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
     let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
     this.addAngle((this.inputs.right)? mod*ANGULAR_VEL*dt : 0);

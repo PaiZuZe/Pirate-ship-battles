@@ -37,10 +37,12 @@ class HUD {
 
     this.health.setScrollFactor(0).setDepth(5000);
     this.fuel.setScrollFactor(0).setDepth(5000);
+    /*
     this.bulletImage = this.scene.add.image(70, 150, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
     this.bullets = this.scene.add.text(100, 135, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
     this.bullets.setScrollFactor(0).setDepth(5000);
+    */
 
     // Score Board
     this.scoreBoard = this.scene.add.text(32, 250, 'ScoreBoard', {
@@ -123,7 +125,8 @@ class HUD {
   //////////////////////////////////////////////////////////////////////////////
   getGameObjects () {
     let objs = [];
-    objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
+    //objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
+    objs.push(this.health, this.fuel, this.scoreBoard);
     return objs;
   }
 
@@ -131,8 +134,8 @@ class HUD {
   destroy () {
     this.health.destroy();
     this.fuel.destroy();
-    this.bulletImage.destroy();
-    this.bullets.destroy();
+    //this.bulletImage.destroy();
+    //this.bullets.destroy();
     if (this.mobileMode) {
       this.baseController.destroy();
       this.topController.destroy();

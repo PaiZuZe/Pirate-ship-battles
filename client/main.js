@@ -92,7 +92,7 @@ class Main extends Phaser.Scene {
     this.load.image("bullet", "client/assets/laser.png");
     this.load.image("EBall", "client/assets/EBall.png");
     this.load.image("big_bullet", "client/assets/laser.png");
-    this.load.image("barrel", "client/assets/barrel.png");
+    this.load.image("barrel", "client/assets/fuelcell.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("enemy", "client/assets/enemy.png");
@@ -138,14 +138,14 @@ class Main extends Phaser.Scene {
       for (let j = 0; j < 4; j++) {
         for (let k = 0; k < 3; ++k) {
           let star = new Phaser.Geom.Circle((Math.random() + i)*gameProperties.gameWidth/6, (Math.random() + j)*gameProperties.gameHeight/4, Math.random()*3);
-          this.add.graphics({ fillStyle: { color: 0xffffff } }).fillCircleShape(star).setDepth(5148);
+          this.add.graphics({ fillStyle: { color: 0xffffff } }).fillCircleShape(star);
         }
       }
     }
 
     // Mini Map
     if (!this.mobileMode) {
-      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.15).setName('mini');
       this.minimap.setBounds(0, 0, gameProperties.gameWidth, gameProperties.gameHeight);
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;

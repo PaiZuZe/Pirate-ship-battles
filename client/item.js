@@ -82,12 +82,13 @@ class Bullet {
 // Client box class
 class Box {
   constructor (scene, id, x, y, radius, spawnToleranceRadius) {
-    this.sizeX = 20;
-    this.sizeY = 20;
+    this.sizeX = 32;
+    this.sizeY = 40;
     this.id = id;
     this.item = scene.add.image(x, y, "barrel");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
+    this.item.setScale(0.75);
     this.item.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, radius);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
@@ -106,12 +107,13 @@ class Box {
 // Client Island class
 class Island {
   constructor (scene, id, x, y, radius, spawnToleranceRadius) {
-    this.sizeX = 172;
-    this.sizeY = 172;
+    this.sizeX = 159;
+    this.sizeY = 159;
     this.id = id;
     this.island = scene.add.image(x, y, "station");
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
+    this.island.setScale(0.95);
     this.island.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, radius);
     this.influenceShape = new CircleShape(scene, x, y, 2*radius, {stroke: true, color: 0x0000b2, alpha: 1})
@@ -132,12 +134,13 @@ class Island {
 // Client asteroid class
 class Asteroid {
   constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
-    this.sizeX = 101;
-    this.sizeY = 84;
+    this.sizeX = 151;
+    this.sizeY = 127;
     this.id = id;
     this.asteroid = scene.add.image(x, y, "asteroid");
     this.asteroid.setDisplaySize(this.sizeX, this.sizeY);
     this.asteroid.setSize(this.sizeX, this.sizeY);
+    this.asteroid.setScale(0.7);
     this.asteroid.par_obj = this; // Just to associate this id with the image
     this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});

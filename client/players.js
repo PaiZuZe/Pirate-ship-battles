@@ -6,7 +6,7 @@
 
 var enemies = {};
 var player = null;
-var shipscale = 0.65;
+var shipscale = 0.675;
 const LABEL_DIFF = 70;
 
 ////////////////////////////////////////////////////////////////////////////////

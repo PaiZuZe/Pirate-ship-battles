@@ -4,6 +4,8 @@
 
 html, body {
   background: #000000;
+  background-image: url('../assets/black.png');
+  background-repeat: repeat;
   margin: 0px;
   overflow: hidden;
   font-family: "Roboto","Helvetica","Arial",sans-serif;
@@ -22,6 +24,8 @@ html, body {
 #signDiv {
   height: 100%;
   width: 100%;
+  background-image: url('../assets/black.png');
+  background-repeat: repeat;
   text-align: center;
   position: absolute;
   z-index: 2;
@@ -91,6 +95,8 @@ html, body {
 #loadoutDiv {
   height: 100%;
   width: 100%;
+  background-image: url('../assets/black.png');
+  background-repeat: repeat;
   text-align: center;
   position: absolute;
   color: #000000;
