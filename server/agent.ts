@@ -7,7 +7,6 @@ import { rotate } from './aux';
 export abstract class Agent extends GameObject {
   public primaryCooldown: number;
   public lastTimeShotPrimary: number;
-  public angle: number;
   public attack: number;
   public speed: number;
   public accel: number;
@@ -62,7 +61,7 @@ export abstract class Agent extends GameObject {
     if (this.canPrimaryFire()) {
       console.log(`FIRE! fire from: ${this.username}`);
       this.lastTimeShotPrimary = Date.now();
-      let [offx, offy] = rotate(this.angle, 20, -10); // NO TYPES
+      let [offx, offy] = rotate(this.angle, 20, -10); // Why 20 and -10?
       let [offx1, offy1] = rotate(this.angle, -20, -10); // NO TYPES
       let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle, 1000),
                                             new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000)];

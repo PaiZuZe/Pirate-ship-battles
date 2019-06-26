@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import { Circle } from './collisions/Collisions';
+import { Polygon, Circle } from './collisions/Collisions';
 import { Player } from './player';
 import { GameObject } from './gameObject';
 
@@ -15,6 +15,13 @@ export class SpaceStation extends GameObject {
   public resource: number;
   public threshold: number;
   public restorationShape: Circle;
+
+  public readonly polygonPoints: number[][] = [
+    [-79, -79],
+    [80, -79],
+    [80, 80],
+    [-79, 80]
+  ];
 
   constructor (x: number, y: number, radius: number, type: string, resource: number, threshold: number) {
     super(x, y);
@@ -27,7 +34,7 @@ export class SpaceStation extends GameObject {
     this.restorationShape = new Circle(this.x, this.y, 2 * radius);
     this.restorationShape.type = 'SpaceSationRest';
     this.restorationShape.id = this.id;
-    this.collisionShape = new Circle(this.x, this.y, radius);
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.95, 0.95);
     this.collisionShape.type = 'SpaceSationCol';
     this.collisionShape.id = this.id;
   }

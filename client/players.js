@@ -6,7 +6,6 @@
 
 var enemies = {};
 var player = null;
-var shipscale = 0.675;
 const LABEL_DIFF = 70;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +51,7 @@ class Player extends Ship {
     super(scene, x, y, polygonPoints, spawnToleranceRadius);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
-    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(shipscale);
+    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(SHIPDATA[shipname].scale);
     //this.collisionShape = scene.physics.add.graphics();
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
@@ -70,7 +69,7 @@ class Player extends Ship {
 
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname, SHIPDEBUG[data.shipname], data.spawnToleranceRadius);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, SHIPDATA[data.shipname].poly, data.spawnToleranceRadius);
     hud = new HUD(this);
   }
 }
@@ -102,7 +101,7 @@ class Enemy extends Ship {
     super(scene, x, y, polygonPoints, spawnToleranceRadius);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
-    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(shipscale);
+    this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(SHIPDATA[shipname].scale);
     this.text.setOrigin(0.5);
     this.body.setOrigin(0.5);
     this.body.setCircle(1, 16, 32);
@@ -111,7 +110,7 @@ class Enemy extends Ship {
 
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, SHIPDEBUG[data.shipname], data.spawnToleranceRadius);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, SHIPDATA[data.shipname].poly, data.spawnToleranceRadius);
   else
     console.log("Failed to create enemy");
 }

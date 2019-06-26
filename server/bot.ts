@@ -19,21 +19,11 @@ export class Bot extends Agent {
   public agro: Circle;
 
   public readonly polygonPoints: number[][] = [
-      [-9, -38],
-      [1, -38],
-      [11, -13],
-      [35, 1],
-      [48, -7],
-      [43, 21],
-      [13, 26],
-      [6, 36],
-      [-8, 36],
-      [-16, 26],
-      [-45, 21],
-      [-50, -7],
-      [-37, 1],
-      [-13, -13]
-    ];
+    [-64, -89],
+    [64, -89],
+    [64, 90],
+    [-64, 90]
+  ];
 
   constructor (x: number, y: number, shipname: string) {
     super(x, y, "BotBlob", "Blindside");
@@ -41,7 +31,7 @@ export class Bot extends Agent {
     this.invul_time = 0;
     this.spawnToleranceRadius = 100;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
-    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.675, 0.675);
     this.collisionShape.id = this.id;
     this.collisionShape.type = 'Bot';
     this.agro = new Circle(this.x, this.y, 600);
