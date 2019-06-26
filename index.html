@@ -30,7 +30,7 @@
             <input id="signdivupassword" type="password" placeholder="Password"/>
             <p id="errorLog"></p>
 
-            <div><input id="mobilecheckbox" type="checkbox" onclick="toggle();"><span>Mobile Mode</span></div>
+            <div><input id="debugcheckbox" type="checkbox" onclick="toggle();"><span>Debug Mode</span></div>
 
             <button id="entername" class="hidden">PLAY</button>
 
@@ -66,6 +66,7 @@
     <script src="client/players.js"></script>
     <script src="client/hud.js"></script>
     <script src="client/item.js"></script>
+    <script src="client/shipinfo.js"></script>
     <script src="client/login.js"></script>
     <script src="client/loadout.js"></script>
     <script src="client/main.js"></script>
@@ -76,6 +77,14 @@
       }
       signdivupassword.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
+      }
+      function toggle() {
+        if (document.getElementById('debugcheckbox').checked){
+          DEBUG = true;
+        }
+        else {
+          DEBUG = false;
+        }
       }
     </script>
   </body>

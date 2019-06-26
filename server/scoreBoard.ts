@@ -11,15 +11,21 @@ export class ScoreBoard {
     }
   
     public addPlayer(username: string) {
-      this.scores.set(username, 0);
+      if (this.scores.get(username) == undefined) {
+        this.scores.set(username, 0);
+      }
     }
   
     public removePlayer(username) {
-      this.scores.delete(username);
+      if (this.scores.get(username) != undefined) {
+        this.scores.delete(username);
+      }
     }
   
     public updateScore(username) {
-      this.scores.set(username, this.scores.get(username) + 1);
+      if (this.scores.get(username) != undefined) {
+        this.scores.set(username, this.scores.get(username) + 1);
+      }
     }
 
     public asObj() {

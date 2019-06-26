@@ -11,12 +11,13 @@ import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
 import { Bot } from './bot';
 import { DebrisField } from './debrisField';
-import { DamageArtefact, PrimaryFire } from './damageArtefact';
+import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
 import { ScoreBoard } from './scoreBoard';
 import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
 import * as socketIO from 'socket.io';
 import { mapFloatToInt } from './aux';
+import { Agent } from './agent';
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 5000; // ms
@@ -89,7 +90,7 @@ export class Room {
   private updateObjects(): void {
     if(this.gameObjects) {
       this.gameObjects.forEach((value: GameObject, key: string) => {
-        value.updatePos(UPDATE_TIME);
+        value.updatePos(UPDATE_TIME, this.collisionSystem);
         const potentials = value.collisionShape.potentials();
         for (const body of potentials) {
           if (value.collisionShape.collides(body)) {
@@ -105,7 +106,7 @@ export class Room {
     if (this.gameObjects) {
       this.gameObjects.forEach((value: Bot, key: string) => {
         if (value.collisionShape.type == "Bot") {
-          damageArtefacts = value.takeAction(this.gameObjects);
+          damageArtefacts = value.takeAction(this.gameObjects, this.collisionSystem);
           if (damageArtefacts != null) {
             for (let i: number = 0; i < damageArtefacts.length; ++i) {
               this.createDamageArtefact(damageArtefacts[i]);
@@ -131,10 +132,13 @@ export class Room {
         let palyer = value as Player;
         if (palyer.inputs.primaryFire) {
           temp = palyer.primaryFire();
-          if (temp != null) {
-            for (let i: number = 0; i < temp.length; ++i) {
-              this.createDamageArtefact(temp[i]);
-            }
+        }
+        else if (palyer.inputs.secondaryFire) {
+          temp = palyer.secondaryFire();
+        }
+        if (temp != null) {
+          for (let i: number = 0; i < temp.length; ++i) {
+            this.createDamageArtefact(temp[i]);
           }
         }
       });
@@ -144,7 +148,7 @@ export class Room {
   public createDamageArtefact(damageArtefact: DamageArtefact): void {
     this.gameObjects.set(damageArtefact.id, damageArtefact);
     this.collisionSystem.insert(damageArtefact.collisionShape);
-    this.io.in(this.name).emit("bullet_create", damageArtefact.getData());
+    this.io.in(this.name).emit(damageArtefact.signal, damageArtefact.getData());
   }
 
   public removeDamageArtefact(artefact: GameObject): void {
@@ -175,6 +179,10 @@ export class Room {
   public removeDeadObjects() {
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.hp <= 0) {
+        if (value.killedBy != null) {
+          let agent: Agent = this.gameObjects.get(value.killedBy) as Agent;
+          this.scoreBoard.updateScore(agent.username);
+        }
         //Note, this can break if the object has a name field or we use minifie.
         if (value.constructor.name == "Asteroid") {
           this.removeAsteroid(value);
@@ -193,6 +201,12 @@ export class Room {
       if (value.constructor.name == "PrimaryFire") {
         let damageArtefact = value as PrimaryFire;
         if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
+          this.removeDamageArtefact(damageArtefact);
+        }
+      }
+      else if (value.constructor.name == "EnergyBall") {
+        let damageArtefact = value as EnergyBall;
+        if (damageArtefact.hp <= 0 || damageArtefact.vanish()) {
           this.removeDamageArtefact(damageArtefact);
         }
       }
@@ -407,6 +421,7 @@ export class Room {
     player.inputs.left = data.left;
     player.inputs.right = data.right;
     player.inputs.primaryFire = data.primary_fire;
+    player.inputs.secondaryFire = data.secondary_fire;
     player.inputs.boost = data.boost;
   }
 }

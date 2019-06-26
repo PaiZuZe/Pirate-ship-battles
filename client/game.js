@@ -23,7 +23,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-const DEBUG = true;
+var DEBUG = false;
 const SPAWN_INFLUENCE_COLOR = 0xffff00;
 
 const HALF_FRAME = Math.PI/16;

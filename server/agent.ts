@@ -8,9 +8,11 @@ export abstract class Agent extends GameObject {
   public primaryCooldown: number;
   public lastTimeShotPrimary: number;
   public angle: number;
+  public attack: number;
   public speed: number;
   public accel: number;
   public fuel: number;
+  public boost: number;
   public isDead: boolean;
   public stationInfluenceTimer: number;
   public username: string;
