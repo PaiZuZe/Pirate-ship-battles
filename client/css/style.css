@@ -72,6 +72,22 @@ html, body {
   color: #B00020
 }
 
+.howto {
+  background: #FFFFFF;
+  max-width: 512px;
+  margin: 32px auto 0 auto;
+  padding: 8px 32px 8px 32px;
+  font-family: monospace;
+  text-align: left;
+  font-size: 24px;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+}
+.howto span {
+  background: #E0F7FA;
+  color: #000000;
+}
+
 #loadoutDiv {
   height: 100%;
   width: 100%;
@@ -129,22 +145,6 @@ html, body {
   position: absolute;
   top: 0px;
   z-index: 0;
-}
-
-.howto {
-  background: #FFFFFF;
-  max-width: 512px;
-  margin: 32px auto 0 auto;
-  padding: 8px 32px 8px 32px;
-  font-family: monospace;
-  text-align: left;
-  font-size: 24px;
-  border-radius: 2px;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
-}
-.howto span {
-  background: #E0F7FA;
-  color: #000000;
 }
 
 /******************************************************************************/
