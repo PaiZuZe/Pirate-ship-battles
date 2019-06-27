@@ -47,12 +47,12 @@ export class SpaceStation extends GameObject {
   }
 
   public updateCounter(player: Player): void {
-    if (player.counter >= this.threshold) {
+    if (player.stationInfluenceTimer >= this.threshold) {
       this.giveResource(player);
-      player.counter = 0;
+      player.stationInfluenceTimer = 0;
     }
     else {
-      player.counter++;
+      player.stationInfluenceTimer++;
     }
     return;
   }

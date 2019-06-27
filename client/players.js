@@ -63,7 +63,7 @@ class Player extends Ship {
     super.update(data);
     this.life = data.life;
     this.fuel = data.fuel;
-    this.anchored_timer = data.anchored_timer;
+    this.anchored_timer = data.stationInfluenceTimer;
   }
 };
 
