@@ -12,9 +12,9 @@ const LABEL_DIFF = 70;
 // Ship                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
 class Ship {
-  constructor (scene, x, y, polygonPoints, spawnToleranceRadius) {
+  constructor (scene, x, y, scale, polygonPoints, spawnToleranceRadius) {
     // If debug mode active
-    this.colPoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.colPoly = new PolygonShape(scene, x, y, scale, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
@@ -47,8 +47,8 @@ class Ship {
 // Player                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 class Player extends Ship {
-  constructor (scene, x, y, username, shipname, polygonPoints, spawnToleranceRadius) {
-    super(scene, x, y, polygonPoints, spawnToleranceRadius);
+  constructor (scene, x, y, username, shipname, spawnToleranceRadius) {
+    super(scene, x, y, SHIPDATA[shipname].scale, SHIPDATA[shipname].poly, spawnToleranceRadius);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
     this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(SHIPDATA[shipname].scale);
@@ -69,7 +69,7 @@ class Player extends Ship {
 
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname, SHIPDATA[data.shipname].poly, data.spawnToleranceRadius);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, data.spawnToleranceRadius);
     hud = new HUD(this);
   }
 }
@@ -97,8 +97,8 @@ function onRemovePlayer (data) {
 // Enemy                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Enemy extends Ship {
-  constructor (scene, id, x, y, username, shipname, polygonPoints, spawnToleranceRadius) {
-    super(scene, x, y, polygonPoints, spawnToleranceRadius);
+  constructor (scene, id, x, y, username, shipname, spawnToleranceRadius) {
+    super(scene, x, y, SHIPDATA[shipname].scale, SHIPDATA[shipname].poly, spawnToleranceRadius);
     this.id = id;
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "darkGray"});
     this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(SHIPDATA[shipname].scale);
@@ -110,7 +110,7 @@ class Enemy extends Ship {
 
 function createEnemy (data) {
   if (!(data.id in enemies))
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, SHIPDATA[data.shipname].poly, data.spawnToleranceRadius);
+    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username, data.shipname, data.spawnToleranceRadius);
   else
     console.log("Failed to create enemy");
 }

@@ -27,11 +27,11 @@ class EBall {
   }
 
   update (data) {
+    this.colpoly.update(data.x, data.y);
+    this.spawnToleranceShape.update(data.x, data.y);
     this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    this.colpoly.update(data.x, data.y);
-    this.spawnToleranceShape.update(data.x, data.y);
   }
 
   destroy () {
@@ -61,11 +61,11 @@ class Bullet {
   }
 
   update (data) {
+    this.colpoly.update(data.x, data.y);
+    this.spawnToleranceShape.update(data.x, data.y);
     this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-    this.colpoly.update(data.x, data.y);
-    this.spawnToleranceShape.update(data.x, data.y);
   }
 
   destroy () {
@@ -136,13 +136,14 @@ class Asteroid {
   constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 151;
     this.sizeY = 127;
+    this.scale = 0.7;
     this.id = id;
     this.asteroid = scene.add.image(x, y, "asteroid");
     this.asteroid.setDisplaySize(this.sizeX, this.sizeY);
     this.asteroid.setSize(this.sizeX, this.sizeY);
-    this.asteroid.setScale(0.7);
+    this.asteroid.setScale(this.scale);
     this.asteroid.par_obj = this; // Just to associate this id with the image
-    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 

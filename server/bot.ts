@@ -12,8 +12,6 @@ import { Agent } from './agent';
 
 const BULLET_COOLDOWN = 1500; // ms
 
-
-
 export class Bot extends Agent {
   public invul_time: number;
   public agro: Circle;

@@ -10,10 +10,11 @@ const ALPHA = 0.5;
 const LINE_WIDTH = 2;
 
 class PolygonShape {
-  constructor (scene, x, y, polygonPoints) {
+  constructor (scene, x, y, scale, polygonPoints) {
     if (DEBUG) {
-      this.shape = scene.add.polygon(x, y, polygonPoints, COLOR, ALPHA); 
+      this.shape = scene.add.polygon(x, y, polygonPoints, COLOR, ALPHA);
       this.shape.setOrigin(0, 0);
+      this.shape.setScale(scale);
       this.shape.setDepth(SHAPE_DEPTH);
     }
   }
@@ -49,7 +50,7 @@ class CircleShape {
     this.shape.setDepth(SHAPE_DEPTH);
     if (fillStyle == undefined) {
       this.shape.fillStyle(COLOR, ALPHA);
-    } 
+    }
     else {
       if (fillStyle.stroke == true) {
         this.fillStyle = fillStyle;

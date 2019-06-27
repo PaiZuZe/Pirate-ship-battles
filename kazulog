@@ -28,6 +28,9 @@ Reduce data sent to client
 Fix loadout
 Add background
 
+07:40
+09:30
+
 TODO:
 Write devlog (0)
 Write and print banner (0)
@@ -35,8 +38,9 @@ Game over screen (1)
 Add bullet animation (5)
     Scalable and rotating asteroids and islands (4)
     Change collision shapes (1)
-    Fix Debug
-    Fix Debug energy ball
+	    Fix Debug
+	    Fix Debug energy ball
+		generalizar tamnho
 Improve scoreboard (2)
     Explosion shader effect (2)
     Boost shader effect (2)
