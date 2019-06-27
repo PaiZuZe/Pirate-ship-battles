@@ -7,10 +7,15 @@
 let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
+let loadout_room_id = Math.floor(Math.random()*2) + 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {
   exitLoadout();
+}
+
+loadout_room.onchange = function () {
+  loadout_room_id = loadout_room.options[loadout_room.selectedIndex].value;
 }
 
 loadout_previous.onclick = function () {

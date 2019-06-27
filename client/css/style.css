@@ -45,6 +45,10 @@ html, body {
   height: 30px;
   padding: 2px 0 0 8px;
 }
+.signDiv-content input[type=password] {
+  height: 30px;
+  padding: 2px 0 0 8px;
+}
 .signDiv-content button {
   background-color: #000000;
   color: white;
@@ -134,6 +138,14 @@ html, body {
   padding: 10px 12px;
   margin: 12px 16px 8px 16px;
   border-radius: 50%;
+}
+.loadoutDiv-content select {
+  padding: 9px 32px;
+  text-align: center;
+  /* display: inline-block; */
+  font-size: 16px;
+  margin: 24px 2px 4px 2px;
+  cursor: pointer;
 }
 
 #shipName {
