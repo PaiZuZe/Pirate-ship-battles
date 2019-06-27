@@ -140,7 +140,10 @@ export class AppServer {
 
   public onClientDisconnect(socket: any): void {
     let playerRoom = this.roomManager.getPlayerRoom(socket.id);
-    playerRoom.disconnectPlayer(socket.id); 
+    if (playerRoom != null) {
+      playerRoom.disconnectPlayer(socket.id); 
+  
+    }
   }
 
   private playerInGame(username: string): boolean {

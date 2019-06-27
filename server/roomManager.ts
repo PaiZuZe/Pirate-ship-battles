@@ -36,8 +36,8 @@ export class RoomManager {
   public getPlayerRoom(playerID: string): Room {
     let playerRoomName: string = this.roomMap.get(playerID);
     if (playerRoomName == null) {
-			throw new Error("could not locate player");
-			return;
+			console.log("could not locate player");
+			return null;
     }
      
     return this.searchRoom(playerRoomName);
