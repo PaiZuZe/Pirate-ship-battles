@@ -203,8 +203,12 @@ export class Room {
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.hp <= 0) {
         if (value.killedBy != null) {
-          let agent: Agent = this.gameObjects.get(value.killedBy) as Agent;
-          this.scoreBoard.updateScore(agent.username);
+          let temp: GameObject = this.gameObjects.get(value.killedBy);
+          let player: Player;
+          if (temp != null && temp != undefined && temp.constructor.name == "Player") {
+            player = temp as Player;
+            this.scoreBoard.updateScore(player.username);
+          }
         }
         //Note, this can break if the object has a name field or we use minifie.
         if (value.constructor.name == "Asteroid") {
