@@ -36,9 +36,8 @@ function resetObjects () {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/**
+/*
  * Process data received from the server
- * @param {{playerList: {}, bulletList: {}}} data
  */
 function onUpdate (data) {
 	for (const k in data.playerList) {
@@ -76,8 +75,6 @@ class Main extends Phaser.Scene {
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('create_EBall', onCreateEBall.bind(this));
-    socket.on('enable_inputs', this.enableInputs.bind(this));
-    socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
 
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
@@ -86,7 +83,6 @@ class Main extends Phaser.Scene {
 
   //////////////////////////////////////////////////////////////////////////////
   preload () {
-    this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
     this.load.image("Blastbeat", "client/assets/blastbeat.png");
     this.load.image("Blindside", "client/assets/blindside.png");
     this.load.image("bullet", "client/assets/laser.png");
@@ -95,11 +91,7 @@ class Main extends Phaser.Scene {
     this.load.image("barrel", "client/assets/fuelcell.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
-    this.load.image("enemy", "client/assets/enemy.png");
     this.load.image("stars", "client/assets/black.png")
-    this.load.image('base_controller', 'client/assets/base_controller.png');
-    this.load.image('top_controller', 'client/assets/top_controller.png');
-    this.load.image('shot_controller', 'client/assets/shot_controller.png');
     this.load.image('explosion', 'client/assets/explosion.png');
   }
 
@@ -197,16 +189,6 @@ class Main extends Phaser.Scene {
         this.minimap.scrollY = player.body.y;
       }
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  enableInputs () {
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
   }
 
   disableInputs () {
