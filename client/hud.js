@@ -5,9 +5,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 var hud = null;
-const DBHT = 500; // ms  // Double bullet hold time
-const TBHT = 1000; // ms  // Triple bullet hold time
-const BULLET_COOLDOWN = 1000; // ms
 var scoreBoard;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,10 +34,12 @@ class HUD {
 
     this.health.setScrollFactor(0).setDepth(5000);
     this.fuel.setScrollFactor(0).setDepth(5000);
+    /*
     this.bulletImage = this.scene.add.image(70, 150, "big_bullet");
     this.bulletImage.setScrollFactor(0).setDepth(5000);
     this.bullets = this.scene.add.text(100, 135, `Infinity`, {color: "white", fontSize: 25, strokeThickness: 2});
     this.bullets.setScrollFactor(0).setDepth(5000);
+    */
 
     // Score Board
     this.scoreBoard = this.scene.add.text(32, 250, 'ScoreBoard', {
@@ -76,7 +75,7 @@ class HUD {
       this.scoreBoard.setText(text);
     }
 
-    // Update timer
+    // Update timer, not working at this moment :(
     if (0 < player.anchored_timer && player.anchored_timer < 180) {
       this.timer.visible = true;
       this.timer.x = player.body.x;
@@ -88,42 +87,10 @@ class HUD {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  getJSFeatures () {
-    if (!this.mobileMode)
-      return [false, false, false, false, false];
-    let shootLeft = false;
-    let shootRight = false;
-    let nearest = argMax(this.pointers, (p) => -normSq(p.x - this.JS_SHOT_RIGHT_X, p.y - this.JS_SHOT_Y));
-    if (nearest.isDown) {
-      let dist = norm(nearest.x - this.JS_SHOT_RIGHT_X, nearest.y - this.JS_SHOT_Y);
-      shootRight = (dist < this.JS_SHOT_RAD);
-    }
-    nearest = argMax(this.pointers, (p) => -normSq(p.x - this.JS_SHOT_LEFT_X, p.y - this.JS_SHOT_Y));
-    if (nearest.isDown) {
-      let dist = norm(nearest.x - this.JS_SHOT_LEFT_X, nearest.y - this.JS_SHOT_Y);
-      shootLeft = (dist < this.JS_SHOT_RAD);
-    }
-    let x = this.topController.x - this.JS_X;
-    let y = this.topController.y - this.JS_Y;
-    if (x == 0 && y == 0)
-      return [false, false, false, shootLeft, shootRight];
-    let angle = fmod(Math.atan2(y, x), 2*Math.PI);
-    let pAngle = fmod(player.body.body.angle, 2*Math.PI);
-    let left = false;
-    let right = false;
-    if ((angle > pAngle && angle - pAngle < Math.PI && angle - pAngle > 0.05) ||
-        (angle < pAngle && pAngle - angle > Math.PI && pAngle - angle < 2*Math.PI - 0.05))
-      left = true;
-    if ((angle > pAngle && angle - pAngle > Math.PI && angle - pAngle > 0.05) ||
-        (angle < pAngle && pAngle - angle < Math.PI && pAngle - angle < 2*Math.PI - 0.05))
-      right = true;
-    return [true, right, left, shootLeft, shootRight];
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   getGameObjects () {
     let objs = [];
-    objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
+    //objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
+    objs.push(this.health, this.fuel, this.scoreBoard);
     return objs;
   }
 
@@ -131,8 +98,8 @@ class HUD {
   destroy () {
     this.health.destroy();
     this.fuel.destroy();
-    this.bulletImage.destroy();
-    this.bullets.destroy();
+    //this.bulletImage.destroy();
+    //this.bullets.destroy();
     if (this.mobileMode) {
       this.baseController.destroy();
       this.topController.destroy();

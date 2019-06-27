@@ -32,19 +32,23 @@ export abstract class DamageArtefact extends GameObject {
 };
 
 export class PrimaryFire extends DamageArtefact {
-  public polygonPoints: number[][];
+  public readonly polygonPoints: number[][] = [
+    [-4, -27],
+    [5, -27],
+    [5, 27],
+    [-4, 27]
+  ];
 
   constructor (startX: number, startY: number, creator: string, angle: number, speed: number) {
     super(startX, startY, creator, angle, speed);
-    this.polygonPoints = [
-      [0, -26],
-      [0, 26]
-    ];
-    this.signal = "bullet_create"
+    this.signal = "bullet_create";
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
+
+    this.spawnToleranceRadius = 20;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, angle);
     this.collisionShape.type = 'DamageArtefact';
     this.collisionShape.id = this.id;
-
   }
   public addPos (x: number, y: number): void {
     this.x += x;
@@ -63,7 +67,7 @@ export class PrimaryFire extends DamageArtefact {
   public applyEffect (target: any, mod: number): string {
     if (target.id != this.creator) {
       target.hp -= mod;
-      this.hp = 0; //Why?
+      this.hp = 0;
       return 'hit'
     }
     return null;
@@ -78,14 +82,15 @@ export class PrimaryFire extends DamageArtefact {
       y: this.y,
       angle: this.angle,
       speed: this.speed,
-      polygonPoints: this.polygonPoints
+      polygonPoints: this.polygonPoints,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
     return artefactData;
   }
 };
 
 export class EnergyBall extends DamageArtefact {
-  public radius: number = 75;
+  public radius: number = 32;
   public baseDamage: number = 1;
   public initX: number;
   public initY: number;
@@ -94,6 +99,8 @@ export class EnergyBall extends DamageArtefact {
   constructor(x: number, y: number, creator: string, angle: number, speed: number) {
     super(x, y, creator, angle, speed);
     this.signal = "create_EBall";
+    this.spawnToleranceRadius = 350;
+    this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Circle(this.x, this.y, this.radius);
     this.collisionShape.type = 'DamageArtefact';
     this.collisionShape.id = this.id;
@@ -136,7 +143,8 @@ export class EnergyBall extends DamageArtefact {
       y: this.y,
       angle: this.angle,
       speed: this.speed,
-      radius: this.radius
+      radius: this.radius,
+      spawnToleranceRadius: this.spawnToleranceRadius
     };
   }
 

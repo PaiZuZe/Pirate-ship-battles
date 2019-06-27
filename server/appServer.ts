@@ -75,9 +75,7 @@ export class AppServer {
       //socket.on("selected_ship", this.onSelectedShip.bind(this, socket))
       socket.on("new_player", this.onNewPlayer.bind(this, socket));
       socket.on("input_fired", this.onInputFired.bind(this, socket));
-      socket.on('disconnect', () => {
-        console.log('Client disconnected');
-      });
+      socket.on('disconnect', this.onClientDisconnect.bind(this, socket));
     });
   }
 
@@ -137,6 +135,14 @@ export class AppServer {
       } catch(err) {
         console.log(err);
       }
+    }
+  }
+
+  public onClientDisconnect(socket: any): void {
+    let playerRoom = this.roomManager.getPlayerRoom(socket.id);
+    if (playerRoom != null) {
+      playerRoom.disconnectPlayer(socket.id); 
+  
     }
   }
 

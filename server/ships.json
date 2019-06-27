@@ -3,12 +3,26 @@
     "attack": 2,
     "firerate": 1,
     "fuel": 3,
-    "boost": 2
+    "boost": 2,
+    "scale": 0.675,
+    "poly": [
+      [-64, -89],
+      [64, -89],
+      [64, 90],
+      [-64, 90]
+    ]
   },
   "Blindside": {
     "attack": 1,
     "firerate": 2,
     "fuel": 1,
-    "boost": 3
+    "boost": 3,
+    "scale": 0.675,
+    "poly": [
+      [-64, -89],
+      [64, -89],
+      [64, 90],
+      [-64, 90]
+    ]
   }
 }
