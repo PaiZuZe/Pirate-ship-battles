@@ -77,16 +77,29 @@ export class Player extends Agent {
         return this.fireEnergyBall();
       }
       else if (this.shipname == "Blindside") {
-        return null;
+        return this.fireShotgun();
       }
     }
     return null;
 }
 
   public fireEnergyBall(): DamageArtefact[] {
-      //let [offx, offy] = rotate(this.angle, 20, -10); // NO TYPES
-      //return [new EnergyBall(this.x + offx, this.y + offy, this.id, this.angle, 500)];
       return [new EnergyBall(this.x, this.y, this.id, this.angle, 500)];
+  }
+
+  public fireShotgun(): DamageArtefact[] {
+    console.log(`FIRE! fire from: ${this.username}`);
+    this.lastTimeShotPrimary = Date.now();
+    let [offx, offy] = rotate(this.angle, 20, -10); // Why 20 and -10?
+    let [offx1, offy1] = rotate(this.angle, 0, -10); // NO TYPES
+    let [offx2, offy2] = rotate(this.angle, -20, -10); // NO TYPES
+    let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle + Math.PI/4, 1000),
+                                          new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle + Math.PI/8, 1000),
+                                          new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000),
+                                          new PrimaryFire(this.x + offx2, this.y + offy2, this.id, this.angle - Math.PI/8, 1000),
+                                          new PrimaryFire(this.x + offx2, this.y + offy2, this.id, this.angle - Math.PI/4, 1000)];
+
+    return damageArtefacts;    
   }
 
   public updatePos(dt: number, collisionSystem: Collisions): void {
