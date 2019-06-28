@@ -82,7 +82,7 @@ export class Room {
 
   private getDamageArtefactsInfo(): any {
     let artefactData: any = {};
-    this.gameObjects.forEach((value: DamageArtefact, key: string) => {
+    this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.collisionShape.type == "DamageArtefact") {
         artefactData[key] = value.getData();
       }
@@ -123,7 +123,7 @@ export class Room {
 
   /*Beware here there be gambis*/
   private createDamageArtefacts(): void {
-    let temp: DamageArtefact[];
+    let temp: DamageArtefact[] = null;
     if (this.gameObjects) {
       this.gameObjects.forEach((value: GameObject, key: string) => {
         if (!this.gameObjects.has(key)) {
@@ -132,26 +132,33 @@ export class Room {
         if (value.collisionShape.type != "Player") {
           return;
         }
-        let palyer = value as Player;
-        if (palyer.inputs.primaryFire) {
-          temp = palyer.primaryFire();
+        let player = value as Player;
+        if (player.inputs.primaryFire) {
+          temp = player.primaryFire();
         }
-        else if (palyer.inputs.secondaryFire) {
-          temp = palyer.secondaryFire();
+        else if (player.inputs.secondaryFire) {
+          temp = player.secondaryFire();
         }
-        if (temp != null) {
-          for (let i: number = 0; i < temp.length; ++i) {
-            this.createDamageArtefact(temp[i]);
-          }
+        if (temp == null) {
+          return;
+        }
+        for (let i: number = 0; i < temp.length; ++i) {
+          console.log(temp[i].id);
+          this.createDamageArtefact(temp[i]);
         }
       });
     }
+    return;
   }
 
   public createDamageArtefact(damageArtefact: DamageArtefact): void {
+    if (this.gameObjects.has(damageArtefact.id)) {
+      return;
+    }
     this.gameObjects.set(damageArtefact.id, damageArtefact);
     this.insertInDefinedPosition(damageArtefact);
     this.io.in(this.name).emit(damageArtefact.signal, damageArtefact.getData());
+    return;
   }
 
   public removeDamageArtefact(artefact: GameObject): void {
@@ -169,16 +176,19 @@ export class Room {
       this.spawnCollisionSystem.update();
     }
     this.collisionSystem.insert(gameObject.collisionShape);
+    return;
   }
 
   private insertInDefinedPosition(gameObject: GameObject): void {
     this.spawnCollisionSystem.insert(gameObject.spawnToleranceShape);
     this.collisionSystem.insert(gameObject.collisionShape);
+    return;
   }
 
   private removeFromCollisionSystem(gameObject: GameObject): void {
     this.spawnCollisionSystem.remove(gameObject.spawnToleranceShape);
     this.collisionSystem.remove(gameObject.collisionShape);
+    return;
   }
 
   public updateGame(): void {
@@ -251,11 +261,11 @@ export class Room {
                    0, socket.id, data.username, data.shipname);
     this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
-    socket.emit('create_player', newPlayer.getDrawData());
+    socket.emit('create_player', newPlayer.getData());
     this.insertInRandomPosition(newPlayer);
     this.gameObjects.forEach((value: GameObject, key: string) => {
       if (value.collisionShape.type == "Player" && value != newPlayer) {
-        socket.emit("new_enemyPlayer", (<Player>value).getDrawData());
+        socket.emit("new_enemyPlayer", value.getData());
       }
       else if (value.collisionShape.type == "Asteroid") {
         socket.emit("asteroid_create", value.getData());

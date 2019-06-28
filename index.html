@@ -73,6 +73,12 @@
     <script src="client/main.js"></script>
     <script src="client/game.js"></script>
     <script>
+      if (document.getElementById('debugcheckbox').checked){
+        DEBUG = true;
+      }
+      else {
+        DEBUG = false;
+      }
       signdivusername.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
       }
