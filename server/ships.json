@@ -1,6 +1,8 @@
 {
   "Blastbeat": {
     "hp": 50,
+    "secondaryAmmo": 10,
+    "secondaryCooldown": 1500,
     "attack": 2,
     "firerate": 1,
     "fuel": 300,
@@ -15,6 +17,8 @@
   },
   "Blindside": {
     "hp": 25,
+    "secondaryAmmo": 30,
+    "secondaryCooldown": 1000,
     "attack": 1,
     "firerate": 2,
     "fuel": 100,

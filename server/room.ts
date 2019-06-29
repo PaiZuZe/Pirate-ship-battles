@@ -20,7 +20,6 @@ import { mapFloatToInt } from './aux';
 import { Agent } from './agent';
 
 const UPDATE_TIME = 0.06; // sec
-const BULLET_LIFETIME = 5000; // ms
 
 export class Room {
   public readonly name: string;
@@ -237,7 +236,7 @@ export class Room {
       //Only works for Primary Fire
       if (value.constructor.name == "PrimaryFire") {
         let damageArtefact = value as PrimaryFire;
-        if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
+        if (damageArtefact.hp <= 0 || damageArtefact.vanish()) {
           this.removeDamageArtefact(damageArtefact);
         }
       }

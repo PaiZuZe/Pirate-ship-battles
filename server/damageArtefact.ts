@@ -12,14 +12,19 @@ import { distSq } from './aux';
 export abstract class DamageArtefact extends GameObject {
   public angle: number;
   public speed: number;
-  public creator: string;
+  public initX: number;
+  public initY: number;
+  public range: number;
   public timeCreated: number;
-  public collisionShape: any;
+  public creator: string;
   public signal: string
+  public collisionShape: any;
 
   constructor (x: number, y: number, creator: string,  angle: number, speed: number) {
     super(x, y);
     this.creator = creator;
+    this.initX = this.x;
+    this.initY = this.y;
     this.angle = angle;
     this.speed = speed;
     this.timeCreated = Date.now();
@@ -29,6 +34,7 @@ export abstract class DamageArtefact extends GameObject {
 
   public abstract applyEffect (target: any, mod: number): string;
 
+  public abstract vanish (): boolean;
 };
 
 export class PrimaryFire extends DamageArtefact {
@@ -43,7 +49,7 @@ export class PrimaryFire extends DamageArtefact {
     super(startX, startY, creator, angle, speed);
     this.signal = "bullet_create";
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints);
-
+    this.range = 1000;
     this.spawnToleranceRadius = 20;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, angle);
@@ -73,6 +79,13 @@ export class PrimaryFire extends DamageArtefact {
     return null;
   }
 
+  public vanish(): boolean {
+    if (distSq({x: this.initX, y: this.initY}, {x: this.x, y: this.y}) >= Math.pow(this.range, 2)) {
+      return true;
+    }
+    return false
+  }
+
   public getData(): any {
     let artefactData: any;
     artefactData = {
@@ -92,9 +105,7 @@ export class PrimaryFire extends DamageArtefact {
 export class EnergyBall extends DamageArtefact {
   public radius: number = 32;
   public baseDamage: number = 1;
-  public initX: number;
-  public initY: number;
-  public range: number = 1000;
+  public range: number = 500;
 
   constructor(x: number, y: number, creator: string, angle: number, speed: number) {
     super(x, y, creator, angle, speed);
