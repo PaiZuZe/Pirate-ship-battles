@@ -116,7 +116,7 @@ class Island {
     this.island.setScale(0.95);
     this.island.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, radius);
-    this.influenceShape = new CircleShape(scene, x, y, 2*radius, {stroke: true, color: 0x0000b2, alpha: 1})
+    this.influenceShape = new CircleShape(scene, x, y, 5*radius, {stroke: true, color: 0x0000b2, alpha: 1})
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 

@@ -31,7 +31,7 @@ export class SpaceStation extends GameObject {
     this.threshold = threshold;
     this.spawnToleranceRadius = 100;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
-    this.restorationShape = new Circle(this.x, this.y, 2 * radius);
+    this.restorationShape = new Circle(this.x, this.y, 3 * radius);
     this.restorationShape.type = 'SpaceSationRest';
     this.restorationShape.id = this.id;
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.95, 0.95);
@@ -40,9 +40,9 @@ export class SpaceStation extends GameObject {
   }
 
   private giveResource (player: Player): void {
-    if (this.type == "life") {
-      player.hp+=this.resource;
-    }
+    player.hp+=this.resource;
+    player.secondaryAmmo+=Math.floor(this.resource / 2);
+    player.fuel+=this.resource * 3;
     return;
   }
 

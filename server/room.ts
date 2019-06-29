@@ -224,7 +224,7 @@ export class Room {
           this.removeAsteroid(value);
         }
         else if (value.constructor.name == "Bot") {
-          this.removeBot(value);
+          this.removeBot(value as Bot);
         }
         else if (value.constructor.name == "Player") {
           this.removePlayer(value);
@@ -320,9 +320,12 @@ export class Room {
   private addSpaceStation(): void {
     let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
     let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
-    let newSpaceSatition = new SpaceStation(x, y, 100, "life", 1, 180);
+    let newSpaceSatition = new SpaceStation(x, y, 100, "life", 5, 180);
     this.gameObjects.set(newSpaceSatition.id, newSpaceSatition);
     this.insertInRandomPosition(newSpaceSatition);
+    newSpaceSatition.restorationShape.x = newSpaceSatition.x;
+    newSpaceSatition.restorationShape.y = newSpaceSatition.y;
+    this.collisionSystem.insert(newSpaceSatition.restorationShape);
     this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
     this.stationsCount++;
     return;
@@ -372,15 +375,19 @@ export class Room {
     let newBot = new Bot(x, y, "Blindside");
     this.gameObjects.set(newBot.id, newBot);
     this.insertInRandomPosition(newBot);
+    newBot.agro.x = newBot.x;
+    newBot.agro.y = newBot.y;
+    this.collisionSystem.insert(newBot.agro);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
     this.botsCount++;
     return;
   }
 
-  public removeBot(obj: GameObject): void {
-    this.removeFromCollisionSystem(obj);
-    this.gameObjects.delete(obj.id);
-    this.io.in(this.name).emit("remove_player", obj.getData());
+  public removeBot(bot: Bot): void {
+    this.removeFromCollisionSystem(bot);
+    this.collisionSystem.remove(bot.agro);
+    this.gameObjects.delete(bot.id);
+    this.io.in(this.name).emit("remove_player", bot.getData());
     this.botsCount--;
     return;
   }
