@@ -103,7 +103,7 @@ export class PrimaryFire extends DamageArtefact {
 };
 
 export class EnergyBall extends DamageArtefact {
-  public radius: number = 32;
+  public radius: number = 60;
   public baseDamage: number = 1;
   public range: number = 500;
 

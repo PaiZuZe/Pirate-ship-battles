@@ -15,8 +15,8 @@ class EBall {
     this.id = id;
     this.creator = creator;
     this.item = scene.physics.add.image(x, y, "EBall");
-    this.sizeX = 64;
-    this.sizeY = 64;
+    this.sizeX = 120;
+    this.sizeY = 120;
     this.speed = speed;
     this.radius = radius;
     this.item.setDisplaySize(this.sizeX, this.sizeY);

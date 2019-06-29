@@ -86,7 +86,7 @@ export class Player extends Agent {
 }
 
   public fireEnergyBall(): DamageArtefact[] {
-      return [new EnergyBall(this.x, this.y, this.id, this.angle, 500)];
+    return [new EnergyBall(this.x, this.y, this.id, this.angle, 500)];
   }
 
   public fireShotgun(): DamageArtefact[] {
