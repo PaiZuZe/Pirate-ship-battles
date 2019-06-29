@@ -25,7 +25,7 @@ export class Bot extends Agent {
 
   constructor (x: number, y: number, shipname: string) {
     super(x, y, "BotBlob", "Blindside");
-    this.hp = 3;
+    this.hp = 7;
     this.invul_time = 0;
     this.spawnToleranceRadius = 100;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);

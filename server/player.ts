@@ -42,10 +42,10 @@ export class Player extends Agent {
     this.accelAngle = angle; // Could be used for Asteroids-like movement
     this.username = username;
     this.shipname = shipname;
-    this.hp = 5;
+    this.hp = ships[shipname].hp;
     this.attack = ships[shipname].attack;
     this.primaryCooldown = 500/ships[shipname].firerate;
-    this.fuel *= ships[shipname].fuel;
+    this.fuel = ships[shipname].fuel;
     this.boost = ships[shipname].boost;
     this.polygonPoints = ships[shipname].poly;
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, this.angle, ships[shipname].scale, ships[shipname].scale);
@@ -95,7 +95,9 @@ export class Player extends Agent {
     let [offx2, offy2] = rotate(this.angle, -20, -10); // NO TYPES
     let damageArtefacts: PrimaryFire[] = [new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle + Math.PI/4, 1000),
                                           new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle + Math.PI/8, 1000),
+                                          new PrimaryFire(this.x + offx, this.y + offy, this.id, this.angle + Math.PI/16, 1000),
                                           new PrimaryFire(this.x + offx1, this.y + offy1, this.id, this.angle, 1000),
+                                          new PrimaryFire(this.x + offx2, this.y + offy2, this.id, this.angle - Math.PI/16, 1000),
                                           new PrimaryFire(this.x + offx2, this.y + offy2, this.id, this.angle - Math.PI/8, 1000),
                                           new PrimaryFire(this.x + offx2, this.y + offy2, this.id, this.angle - Math.PI/4, 1000)];
 
