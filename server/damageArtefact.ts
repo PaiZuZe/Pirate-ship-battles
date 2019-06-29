@@ -110,7 +110,7 @@ export class EnergyBall extends DamageArtefact {
   constructor(x: number, y: number, creator: string, angle: number, speed: number) {
     super(x, y, creator, angle, speed);
     this.signal = "create_EBall";
-    this.spawnToleranceRadius = 350;
+    this.spawnToleranceRadius = 90;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Circle(this.x, this.y, this.radius);
     this.collisionShape.type = 'DamageArtefact';
