@@ -7,7 +7,7 @@
 let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
-let loadout_room_id = Math.floor(Math.random()*2) + 1;
+let loadout_room_id = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {
@@ -39,7 +39,7 @@ function changeShip () {
 function exitLoadout () {
   loadoutDiv.style.display = 'none';
   gameDiv.style.display = null;
-  game.scene.start('Main', {username: loadout_username, shipname: ships[loadout_count].name});
+  game.scene.start('Main', {username: loadout_username, shipname: ships[loadout_count].name, room: loadout_room_id});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

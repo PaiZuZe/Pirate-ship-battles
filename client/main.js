@@ -100,8 +100,8 @@ class Main extends Phaser.Scene {
     let camera = this.cameras.main;
 
     console.log("client started");
-
-    socket.emit('logged_in', {username: data.username, shipname: data.shipname});
+    data = {username: data.username, shipname: data.shipname, room: data.room};
+    socket.emit('logged_in', data);
     this.player_life = 3;
     this.blink_timer = 2;
 

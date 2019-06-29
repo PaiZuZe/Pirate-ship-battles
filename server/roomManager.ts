@@ -14,7 +14,7 @@ export class RoomManager {
  
   constructor(io: socketIO.Server) {
     this.io = io;
-    this.rooms = [new Room(this.io, 0)];
+    this.rooms = [new Room(this.io, 0), new Room(this.io, 1)];
   }
 
   private searchRoom(roomName: string): Room {
@@ -47,5 +47,11 @@ export class RoomManager {
     this.roomMap.set(playerId, this.rooms[0].name);
     // TODO: Improve this algorithm
     return this.rooms[0].name;
+  }
+
+  public pickRoom(playerId: string, roomId: number): string {
+    console.log(roomId);
+    this.roomMap.set(playerId, this.rooms[roomId -1].name);
+    return this.rooms[roomId -1].name;
   }
 }
