@@ -20,8 +20,6 @@ const DRAG_POWER = 1.5;
 export class Player extends Agent {
   public counter: number = 0;
   public counterDebri: number = 0;
-  public secondaryAmmo: number;
-  public secondaryCooldown: number;
   public lastTimeShotSecondary: number = 0;
   public accelAngle: number;
   private invulTime: number = 0; // Invulnerability time inside debrisField

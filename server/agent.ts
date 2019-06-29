@@ -6,12 +6,15 @@ import { rotate } from './aux';
 
 export abstract class Agent extends GameObject {
   public primaryCooldown: number;
-  public lastTimeShotPrimary: number;
+  public lastTimeShotPrimary: number = 0;
   public attack: number;
-  public speed: number;
-  public accel: number;
-  public fuel: number;
+  public speed: number = 0;
+  public accel: number = 0;
+  public fuel: number = 0;
   public boost: number;
+  public secondaryAmmo: number = 0;
+  public secondaryCooldown: number;
+
   public isDead: boolean;
   public stationInfluenceTimer: number;
   public username: string;
@@ -20,12 +23,7 @@ export abstract class Agent extends GameObject {
 
   constructor (x: number, y: number, username: string, shipname: string) {
     super(x, y);
-    this.primaryCooldown = 1500;
-    this.lastTimeShotPrimary = 0;
-    this.speed = 0;
-    this.accel = 0;
     this.angle = 0;
-    this.fuel = 100;
     this.stationInfluenceTimer = 0;
     this.username = username;
     this.shipname = shipname;
@@ -85,7 +83,8 @@ export abstract class Agent extends GameObject {
       fuel: this.fuel,
       anchored_timer: this.stationInfluenceTimer,
       polygonPoints: this.polygonPoints,
-      spawnToleranceRadius: this.spawnToleranceRadius
+      spawnToleranceRadius: this.spawnToleranceRadius,
+      secondaryAmmo: this.secondaryAmmo,
     };
   }
 }
