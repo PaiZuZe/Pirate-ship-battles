@@ -31,7 +31,7 @@ class HUD {
     this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
     this.health = this.scene.add.text(56, 36, `🛠`, {color: "white", fontSize: 32, strokeThickness: 2});
     this.fuel = this.scene.add.text(56, 79, `⛽`, {color: "white", fontSize: 32, strokeThickness: 2});
-    this.sAmmo = this.scene.add.text(56, 120, `⛽`, {color: "white", fontSize: 32, strokeThickness: 2});
+    this.sAmmo = this.scene.add.text(56, 120, `Secondary ammo: `, {color: "white", fontSize: 32, strokeThickness: 2});
 
     this.health.setScrollFactor(0).setDepth(5000);
     this.fuel.setScrollFactor(0).setDepth(5000);
@@ -68,7 +68,7 @@ class HUD {
     // Update life bar
     this.health.setText(`🛠 ${player.life}`);
     this.fuel.setText(`⛽ ${player.fuel}`);
-    this.sAmmo.setText(`⛽ ${player.secondaryAmmo}`);
+    this.sAmmo.setText(`Secondary ammo: ${player.secondaryAmmo}`);
 
     // Update score board
     if (scoreBoard) {
@@ -94,7 +94,7 @@ class HUD {
   getGameObjects () {
     let objs = [];
     //objs.push(this.health, this.fuel, this.bulletImage, this.bullets, this.scoreBoard);
-    objs.push(this.health, this.fuel, this.scoreBoard);
+    objs.push(this.health, this.fuel, this.sAmmo, this.scoreBoard);
     return objs;
   }
 
@@ -102,14 +102,10 @@ class HUD {
   destroy () {
     this.health.destroy();
     this.fuel.destroy();
+    this.sAmmo.destroy();
+
     //this.bulletImage.destroy();
     //this.bullets.destroy();
-    if (this.mobileMode) {
-      this.baseController.destroy();
-      this.topController.destroy();
-      this.rightShotController.destroy();
-      this.leftShotController.destroy();
-    }
   }
 }
 

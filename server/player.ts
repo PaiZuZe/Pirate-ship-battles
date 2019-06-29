@@ -64,7 +64,7 @@ export class Player extends Agent {
   }
 
   public canSecondaryFire(): boolean {
-    if (this.lastTimeShotSecondary + this.secondaryCooldown <= Date.now() && this.secondaryAmmo >= 0) {
+    if (this.lastTimeShotSecondary + this.secondaryCooldown <= Date.now() && this.secondaryAmmo > 0) {
       return true;
     }
     return false;
