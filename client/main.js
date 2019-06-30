@@ -48,8 +48,9 @@ function onUpdate (data) {
     }
 	}
 	for (const bk in data.bulletList) {
-    if (bk in data.bulletList)
+    if (bk in bulletList) {
       bulletList[bk].update(data.bulletList[bk]);
+    }
   }
   scoreBoard = data.score_board;
 }

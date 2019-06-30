@@ -47,10 +47,11 @@ class Ship {
 // Player                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 class Player extends Ship {
-  constructor (scene, x, y, username, shipname, spawnToleranceRadius) {
+  constructor (scene, x, y, username, shipname, spawnToleranceRadius, secondaryAmmo) {
     super(scene, x, y, SHIPDATA[shipname].scale, SHIPDATA[shipname].poly, spawnToleranceRadius);
     this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "white"});
     this.anchored_timer = 0;
+    this.secondaryAmmo = secondaryAmmo;
     this.body = scene.physics.add.sprite(x, y, shipname, 0).setScale(SHIPDATA[shipname].scale);
     //this.collisionShape = scene.physics.add.graphics();
     this.text.setOrigin(0.5);
@@ -63,13 +64,15 @@ class Player extends Ship {
     super.update(data);
     this.life = data.life;
     this.fuel = data.fuel;
-    this.anchored_timer = data.stationInfluenceTimer;
+    this.anchored_timer = data.anchored_timer;
+    this.secondaryAmmo = data.secondaryAmmo;
+    return;
   }
 };
 
 function createPlayer (data) {
   if (!player) {
-    player = new Player(this, data.x, data.y, data.username, data.shipname, data.spawnToleranceRadius);
+    player = new Player(this, data.x, data.y, data.username, data.shipname, data.spawnToleranceRadius, data.secondaryAmmo);
     hud = new HUD(this);
   }
 }

@@ -1,8 +1,11 @@
 {
   "Blastbeat": {
+    "hp": 50,
+    "secondaryAmmo": 10,
+    "secondaryCooldown": 1500,
     "attack": 2,
     "firerate": 1,
-    "fuel": 3,
+    "fuel": 300,
     "boost": 2,
     "scale": 0.675,
     "poly": [
@@ -13,9 +16,12 @@
     ]
   },
   "Blindside": {
+    "hp": 25,
+    "secondaryAmmo": 30,
+    "secondaryCooldown": 1000,
     "attack": 1,
     "firerate": 2,
-    "fuel": 1,
+    "fuel": 100,
     "boost": 3,
     "scale": 0.675,
     "poly": [
