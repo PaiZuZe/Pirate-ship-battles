@@ -4,7 +4,8 @@
 //                              Client - Items                              //
 ////////////////////////////////////////////////////////////////////////////////
 
-var boxList = {}; // The box list
+var cellList = {}; // The fuel cell list
+var ammoList = {}; // The ammo pack list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
 var asteroidList = {}; // Asteroids list
@@ -77,27 +78,52 @@ class Bullet {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Box                                                                        //
+// Cell                                                                        //
 ////////////////////////////////////////////////////////////////////////////////
-// Client box class
-class Box {
-  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
+// Client fuel cell class
+class Cell {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 32;
     this.sizeY = 40;
     this.id = id;
-    this.item = scene.add.image(x, y, "barrel");
+    this.item = scene.add.image(x, y, "fuelcell");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
-    this.item.setScale(0.75);
+    this.item.setScale(0.9);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colShape = new CircleShape(scene, x, y, radius);
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
     this.item.destroy();
     this.spawnToleranceShape.destroy();
-    this.colShape.destroy();
+    this.colpoly.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Ammo                                                                        //
+////////////////////////////////////////////////////////////////////////////////
+// Client ammo pack class
+class Ammo {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
+    this.sizeX = 32;
+    this.sizeY = 40;
+    this.id = id;
+    this.item = scene.add.image(x, y, "ammopack");
+    this.item.setDisplaySize(this.sizeX, this.sizeY);
+    this.item.setSize(this.sizeX, this.sizeY);
+    this.item.setScale(0.9);
+    this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
+  }
+
+  destroy () {
+    this.item.destroy();
+    this.spawnToleranceShape.destroy();
+    this.colpoly.destroy();
   }
 };
 
@@ -220,22 +246,40 @@ class Explosion {
   }
 };
 
-// Function called when new box is added at the server.
-function onCreateItem (data) {
-  if (!(data.id in boxList)) {
-    boxList[data.id] = new Box(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
+// Function called when new fuel cell is added at the server.
+function onCreateCell (data) {
+  if (!(data.id in cellList)) {
+    cellList[data.id] = new Cell(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 
-// Function called when box needs to be removed at the client.
-function onItemRemove (data) {
-  if (!(data.id in boxList)) {
-    console.log("Could not find box to remove");
+// Function called when fuel needs to be removed at the client.
+function onCellRemove (data) {
+  if (!(data.id in cellList)) {
+    console.log("Could not find fuel cell to remove");
     return;
   }
   //destroy the phaser object
-  boxList[data.id].destroy();
-  delete boxList[data.id];
+  cellList[data.id].destroy();
+  delete cellList[data.id];
+}
+
+// Function called when new fuel cell is added at the server.
+function onCreateAmmo (data) {
+  if (!(data.id in ammoList)) {
+    ammoList[data.id] = new Ammo(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
+  }
+}
+
+// Function called when fuel needs to be removed at the client.
+function onAmmoRemove (data) {
+  if (!(data.id in ammoList)) {
+    console.log("Could not find fuel cell to remove");
+    return;
+  }
+  //destroy the phaser object
+  ammoList[data.id].destroy();
+  delete ammoList[data.id];
 }
 
 // Function called when new island is added at the server.

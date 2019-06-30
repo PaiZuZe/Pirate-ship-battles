@@ -9,6 +9,7 @@ import { Player } from './player';
 import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
+import { AmmoPack } from './ammoPack';
 import { Bot } from './bot';
 import { DebrisField } from './debrisField';
 import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
@@ -31,6 +32,8 @@ export class Room {
   // Game Properties
   private fuelCellsMax: number = 15;
   private fuelCellsCount: number = 0;
+  private ammoPacksMax: number = 8;
+  private ammoPacksCount: number = 0;
   private botsMax: number = 1;
   private botsCount: number = 0;
   private debrisFieldsMax: number = 3;
@@ -192,6 +195,7 @@ export class Room {
     this.fillWStations();
     this.fillWAsteroids();
     this.fillWFuelCells();
+    this.fillWAmmoPacks();
     this.fillWBots();
     this.fillWDebrisFields();
     this.updateBots();
@@ -230,6 +234,9 @@ export class Room {
         else if (value.constructor.name == "FuelCell") {
           this.removeFuelCell(value);
         }
+        else if (value.constructor.name == "AmmoPack") {
+          this.removeAmmoPack(value);
+        }
       }
       //Only works for Primary Fire
       if (value.constructor.name == "PrimaryFire") {
@@ -267,7 +274,10 @@ export class Room {
         socket.emit("asteroid_create", value.getData());
       }
       else if (value.collisionShape.type == "FuelCell") {
-        socket.emit("item_create", value.getData());
+        socket.emit("cell_create", value.getData());
+      }
+      else if (value.collisionShape.type == "AmmoPack") {
+        socket.emit("ammo_create", value.getData());
       }
       else if (value.collisionShape.type == "SpaceSationCol") {
         socket.emit("island_create", value.getData());
@@ -353,7 +363,7 @@ export class Room {
     let newFuelCell = new FuelCell(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newFuelCell.id, newFuelCell);
     this.insertInRandomPosition(newFuelCell);
-    this.io.in(this.name).emit("item_create", newFuelCell.getData());
+    this.io.in(this.name).emit("cell_create", newFuelCell.getData());
     this.fuelCellsCount++;
     return;
   }
@@ -361,8 +371,27 @@ export class Room {
   public removeFuelCell(obj: GameObject): void {
     this.removeFromCollisionSystem(obj);
     this.gameObjects.delete(obj.id);
-    this.io.in(this.name).emit("item_remove", obj.getData());
+    this.io.in(this.name).emit("cell_remove", obj.getData());
     this.fuelCellsCount--;
+    return;
+  }
+
+  private addAmmoPack(): void {
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
+    let newAmmoPack = new AmmoPack(x, y, this.canvasWidth, this.canvasHeight);
+    this.gameObjects.set(newAmmoPack.id, newAmmoPack);
+    this.insertInRandomPosition(newAmmoPack);
+    this.io.in(this.name).emit("ammo_create", newAmmoPack.getData());
+    this.ammoPacksCount++;
+    return;
+  }
+
+  public removeAmmoPack(obj: GameObject): void {
+    this.removeFromCollisionSystem(obj);
+    this.gameObjects.delete(obj.id);
+    this.io.in(this.name).emit("ammo_remove", obj.getData());
+    this.ammoPacksCount--;
     return;
   }
 
@@ -419,6 +448,13 @@ export class Room {
   private fillWFuelCells(): void {
     for (let i:number = this.fuelCellsCount; i < this.fuelCellsMax; i++) {
       this.addFuelCell();
+    }
+    return;
+  }
+
+  private fillWAmmoPacks(): void {
+    for (let i:number = this.ammoPacksCount; i < this.ammoPacksMax; i++) {
+      this.addAmmoPack();
     }
     return;
   }

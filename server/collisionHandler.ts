@@ -9,6 +9,7 @@ import { Player } from './player';
 import { DamageArtefact } from './damageArtefact';
 import { SpaceStation } from './spaceStation';
 import { FuelCell } from './fuelCell';
+import { AmmoPack } from './ammoPack';
 import { DebrisField } from './debrisField';
 import { ScoreBoard } from './scoreBoard';
 
@@ -48,6 +49,12 @@ export function collisionHandler(room: Room, obj1: any, obj2: any, obj1Type: str
     }
     else if (obj1Type == 'FuelCell' && obj2Type == 'Player') {
       collideFuelCell(room, obj2, obj1);
+    }
+    else if (obj1Type == 'Player' && obj2Type == 'AmmoPack') {
+      collideAmmoPack(room, obj1, obj2);
+    }
+    else if (obj1Type == 'AmmoPack' && obj2Type == 'Player') {
+      collideAmmoPack(room, obj2, obj1);
     }
     else if (obj1Type == 'Player' && obj2Type == 'DebrisField') {
       collideDebrisField(obj1, obj2);
@@ -107,6 +114,12 @@ function collideAsteroid(room: Room, player: Player): void {
 function collideFuelCell(room: Room, player: Player, cell: FuelCell): void {
   cell.giveResource(player);
   cell.hp = 0;
+  return;
+}
+
+function collideAmmoPack(room: Room, player: Player, pack: AmmoPack): void {
+  pack.giveResource(player);
+  pack.hp = 0;
   return;
 }
 
