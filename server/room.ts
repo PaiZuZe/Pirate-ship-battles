@@ -142,7 +142,6 @@ export class Room {
           return;
         }
         for (let i: number = 0; i < temp.length; ++i) {
-          console.log(temp[i].id);
           this.createDamageArtefact(temp[i]);
         }
       });
@@ -250,7 +249,7 @@ export class Room {
 
   public addNewPlayer(socket: any, data: any): void {
     if (this.gameObjects.get(socket.id)) {
-      console.log(`Player with id ${socket.id} already exists`);
+      console.log(this.name + " : " + `Player with id ${socket.id} already exists`);
       return;
     }
 
@@ -284,15 +283,15 @@ export class Room {
       }
     });
 
-    console.log("Created new player with id " + socket.id + " with username = " + data.username);
+    console.log(this.name + " : " + "Created new player with id " + socket.id + " with username = " + data.username);
     // Send message to every connected client except the sender
     socket.broadcast.to(this.name).emit('new_enemyPlayer', newPlayer.getData());
   }
 
   public removePlayer(player: any) {
-    console.log(`${player.username} died!`);
+    console.log(this.name + " : " + `${player.username} died!`);
     if (this.gameObjects.has(player.id)) {
-      console.log(`${player.username} was removed`);
+      console.log(this.name + " : " + `${player.username} was removed`);
       this.removeFromCollisionSystem(player);
       this.scoreBoard.removePlayer(player.username);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
@@ -308,10 +307,10 @@ export class Room {
   public disconnectPlayer(playerID: string): void {
     if (this.gameObjects.has(playerID)) {
       this.removePlayer(this.gameObjects.get(playerID) as Player);
-      console.log("Disconnected player with ID = " + playerID);
+      console.log(this.name + " : " + "Disconnected player with ID = " + playerID);
     }
     else {
-      console.log("ERROR: Could not find player with ID = " + playerID + " in room to disconnect")
+      console.log(this.name + " : " + "ERROR: Could not find player with ID = " + playerID + " in room to disconnect")
     }
   }
 

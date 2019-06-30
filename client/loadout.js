@@ -7,7 +7,7 @@
 let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
-let loadout_room_id = 1;
+let loadout_room_id = loadout_room.options[loadout_room.selectedIndex].value;
 
 ////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {

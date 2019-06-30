@@ -50,7 +50,6 @@ export class RoomManager {
   }
 
   public pickRoom(playerId: string, roomId: number): string {
-    console.log(roomId);
     this.roomMap.set(playerId, this.rooms[roomId -1].name);
     return this.rooms[roomId -1].name;
   }
