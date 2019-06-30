@@ -457,6 +457,7 @@ export class Room {
       return;
 
     player.inputs.up = data.up;
+    player.inputs.down = data.down;
     player.inputs.left = data.left;
     player.inputs.right = data.right;
     player.inputs.primaryFire = data.primary_fire;
