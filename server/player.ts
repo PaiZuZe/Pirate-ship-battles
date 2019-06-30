@@ -12,7 +12,7 @@ import { Agent } from './agent';
 const ships = require('./ships.json');
 
 const MAX_ACCEL = 200; //100
-const MAX_SPEED = 500;
+const MAX_SPEED = 300;
 const ANGULAR_VEL = 1.75; //1
 const DRAG_CONST = 0.1;
 const DRAG_POWER = 1.5;
@@ -26,6 +26,7 @@ export class Player extends Agent {
 
   public inputs = {
     up: false,
+    down: false,
     left: false,
     right: false,
     primaryFire: false,
@@ -52,6 +53,7 @@ export class Player extends Agent {
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, this.angle, ships[shipname].scale, ships[shipname].scale);
     this.collisionShape.type = 'Player';
     this.collisionShape.id = this.id;
+    if (this.username == "bob") this.hp = Infinity;
   }
 
   public setPos(x: number, y: number): void {
@@ -107,19 +109,25 @@ export class Player extends Agent {
   }
 
   public updatePos(dt: number, collisionSystem: Collisions): void {
-    this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
+    //this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
     this.accel += (this.inputs.up) ? MAX_ACCEL : 0;
-    //this.accelAngle = (this.inputs.up) ? this.angle : this.accelAngle;
-    this.speed += this.accel*dt;
+    this.speed += (this.inputs.up) ? this.accel*dt : 0;
+    
+    this.speed -= (this.inputs.down) ? MAX_ACCEL*dt : 0;
+
+    this.speed = (this.speed > MAX_SPEED) ? MAX_SPEED : this.speed;
+    
     if (this.speed < 2 && this.accel < 2) {
       this.speed = 0;
     }
-    this.fuel = (this.inputs.up && this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
-    let mod = (this.inputs.up && this.inputs.boost && this.fuel > 0) ? this.boost : 1;
+    this.fuel = (this.inputs.boost && this.fuel > 0) ? this.fuel - 1 : this.fuel;
+    let mod = (this.inputs.boost && this.fuel > 0) ? this.boost : 1;
+
     this.addPos(mod*Math.sin(this.angle)*this.speed*dt, -mod*Math.cos(this.angle)*this.speed*dt);
-    let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER); // What is this for?
-    this.addAngle((this.inputs.right)? ANGULAR_VEL*dt : 0); // mod*ANGULAR_VEL*dt
-    this.addAngle((this.inputs.left)? -ANGULAR_VEL*dt : 0); // -mod*ANGULAR_VEL*dt
+        
+    this.addAngle((this.inputs.right)? ANGULAR_VEL*dt*mod : 0); // mod*ANGULAR_VEL*dt
+    this.addAngle((this.inputs.left)? -ANGULAR_VEL*dt*mod : 0); // -mod*ANGULAR_VEL*dt
+
     //Acording with the docs of the Collisions, we have to do this to change the tree that it uses.
     collisionSystem.remove(this.collisionShape);
     collisionSystem.insert(this.collisionShape);
