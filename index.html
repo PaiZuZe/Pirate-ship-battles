@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Title -->
-    <title>Pirate Ship Battles</title>
+    <title>Spaceship Battles</title>
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
@@ -19,30 +19,44 @@
   </head>
 
   <body>
-    <!-- Form -->
-    <div id="signDiv">
-      <div class="signDiv-content">
-        <h1>Pirate Ship Battles</h1>
+    <div>
+      <div id="signDiv">
+          <div class="signDiv-content">
+            <h1>Space Ship Battles</h1>
 
-        <p>Enter your name</p>
-        <input id="signdivusername" type="text" placeholder="Username"/>
-        <p>Password</p>
-        <input id="signdivupassword" type="password" placeholder="Password"/>
-        <p id="errorLog"></p>
+            <p>Enter your name</p>
+            <input id="signdivusername" type="text" placeholder="Username"/>
+            <p>Password</p>
+            <input id="signdivupassword" type="password" placeholder="Password"/>
+            <p id="errorLog"></p>
 
-        <button id="entername" class="hidden">PLAY</button>
+            <div><input id="debugcheckbox" type="checkbox" onclick="toggle();"><span>Debug Mode</span></div>
 
-        <br><small>Spacestation by <a href="http://millionthvector.blogspot.de">MillionthVector</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
+            <button id="entername" class="hidden">PLAY</button>
 
-      </div>
+            <br><small>Spacestation by <a href="https://opengameart.org/users/technozomians">Technozomians</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
+            <br><small>Asteroid by <a href="https://opengameart.org/users/funwithpixels">FunWithPixels</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
+          </div>
+        </div>
+    </div>
 
-      <div id="howto" class="howto">
-        <p><span>W</span>: Up</p>
-        <p><span>A</span>: Left</p>
-        <p><span>S</span>: Down</p>
-        <p><span>D</span>: Right</p>
-        <p><span>Space</span>: Shoot</p>
-        <p><span>Shift</span>: Boost</p>
+    <div id="loadoutDiv" display="none">
+      <div class="loadoutDiv-content">
+          <h2>Select your ship</h2>
+
+          <div id="shipPreview"></div>
+
+          <button id="loadout_previous" class="circle-button">◄</button>
+          <button id="loadout_next" class="circle-button">►</button>
+
+          <p id="shipName"></p>
+          <p id="shipDesc"></p>
+
+          <select id="loadout_room">
+            <option value="1">Room 1</option>
+            <option value="2">Room 2</option>
+          </select>
+          <button id="loadout_select">Engage</button>
       </div>
     </div>
 
@@ -53,15 +67,35 @@
     <script src="client/lib/phaser.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client/util.js"></script>
+    <script src="client/collisionShape.js"></script>
     <script src="client/players.js"></script>
     <script src="client/hud.js"></script>
     <script src="client/item.js"></script>
+    <script src="client/shipinfo.js"></script>
     <script src="client/login.js"></script>
+    <script src="client/loadout.js"></script>
     <script src="client/main.js"></script>
     <script src="client/game.js"></script>
     <script>
+      if (document.getElementById('debugcheckbox').checked){
+        DEBUG = true;
+      }
+      else {
+        DEBUG = false;
+      }
       signdivusername.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
+      }
+      signdivupassword.onkeypress = function(e) {
+        if (e.keyCode == 13) entername.click();
+      }
+      function toggle() {
+        if (document.getElementById('debugcheckbox').checked){
+          DEBUG = true;
+        }
+        else {
+          DEBUG = false;
+        }
       }
     </script>
   </body>

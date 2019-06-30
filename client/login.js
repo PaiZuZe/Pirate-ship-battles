@@ -20,9 +20,9 @@ function throwError (data) {
 function joinGame (data) {
   console.log(`Player ${socket.id} joined the game`);
   signDiv.style.display = 'none';
-  gameDiv.style.display = null;
+  loadoutDiv.style.display = null;
   errorLog.textContent = "";
-  game.scene.start('Main', data.username);
+  game.scene.start('Loadout', data.username);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +39,8 @@ class Login extends Phaser.Scene {
   //////////////////////////////////////////////////////////////////////////////
   create () {
     signDiv.style.display = null;
+    loadoutDiv.style.display = 'none';
     gameDiv.style.display = 'none';
-    game.backgroundColor = "#AFF7F0";
     gameProperties.inGame = false;
     if (isTouchDevice()) {
       howto.style.display = "none";

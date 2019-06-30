@@ -1,22 +1,52 @@
 ////////////////////////////////////////////////////////////////////////////////
 //                            Pirate Ship Battles                             //
 //                                                                            //
-//                              Client - Players                              //
+//                              Client - Items                              //
 ////////////////////////////////////////////////////////////////////////////////
 
 var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
-var stoneList = {}; // Stones list
+var asteroidList = {}; // Asteroids list
 var DebrisFieldList = {};
 
+class EBall {
+  constructor(scene, id, creator, x, y, angle, speed, radius, spawnToleranceRadius) {
+    this.id = id;
+    this.creator = creator;
+    this.item = scene.physics.add.image(x, y, "EBall");
+    this.sizeX = 120;
+    this.sizeY = 120;
+    this.speed = speed;
+    this.radius = radius;
+    this.item.setDisplaySize(this.sizeX, this.sizeY);
+    this.item.setAngle(angle * 180 / Math.PI);
+    this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new CircleShape(scene, x, y, radius);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
+  }
+
+  update (data) {
+    this.colpoly.update(data.x, data.y);
+    this.spawnToleranceShape.update(data.x, data.y);
+    this.item.setPosition(data.x, data.y);
+    this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
+    this.item.setDepth(data.y);
+  }
+
+  destroy () {
+    this.item.destroy();
+    this.colpoly.destroy();
+    this.spawnToleranceShape.destroy();
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 // Client bullet class
 class Bullet {
-  constructor (scene, id, creator, x, y, angle, speed) {
+  constructor (scene, id, creator, x, y, angle, speed, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 9;
     this.sizeY = 54;
     this.creator = creator;
@@ -26,20 +56,22 @@ class Bullet {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, 1, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   update (data) {
-    this.item.x = data.x;
-    this.item.y = data.y;
+    this.colpoly.update(data.x, data.y);
+    this.spawnToleranceShape.update(data.x, data.y);
+    this.item.setPosition(data.x, data.y);
     this.item.setVelocity(Math.sin(data.angle)*this.speed, -(Math.cos(data.angle)*this.speed));
     this.item.setDepth(data.y);
-
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
+    this.colpoly.destroy();
+    this.spawnToleranceShape.destroy();
   }
 };
 
@@ -49,19 +81,23 @@ class Bullet {
 ////////////////////////////////////////////////////////////////////////////////
 // Client box class
 class Box {
-  constructor (scene, id, x, y) {
-    this.sizeX = 20;
-    this.sizeY = 20;
+  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
+    this.sizeX = 32;
+    this.sizeY = 40;
     this.id = id;
     this.item = scene.add.image(x, y, "barrel");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
+    this.item.setScale(0.75);
     this.item.par_obj = this; // Just to associate this id with the image
+    this.colShape = new CircleShape(scene, x, y, radius);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.item.destroy();
+    this.spawnToleranceShape.destroy();
+    this.colShape.destroy();
   }
 };
 
@@ -70,40 +106,51 @@ class Box {
 ////////////////////////////////////////////////////////////////////////////////
 // Client Island class
 class Island {
-  constructor (scene, id, x, y, r) {
-    this.sizeX = 172;
-    this.sizeY = 172;
+  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
+    this.sizeX = 159;
+    this.sizeY = 159;
     this.id = id;
     this.island = scene.add.image(x, y, "station");
     this.island.setDisplaySize(this.sizeX, this.sizeY);
     this.island.setSize(this.sizeX, this.sizeY);
+    this.island.setScale(0.95);
     this.island.par_obj = this; // Just to associate this id with the image
+    this.colShape = new CircleShape(scene, x, y, radius);
+    this.influenceShape = new CircleShape(scene, x, y, 3*radius, {stroke: true, color: 0x0000b2, alpha: 1})
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.island.destroy();
+    this.colShape.destroy();
+    this.influenceShape.destroy();
+    this.spawnToleranceRadius.destroy();
   }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Stone                                                                        //
+// Asteroid                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
-// Client Stone class
-class Stone {
-  constructor (scene, id, x, y, r) {
-    this.sizeX = 101;
-    this.sizeY = 84;
+// Client asteroid class
+class Asteroid {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
+    this.sizeX = 151;
+    this.sizeY = 127;
+    this.scale = 0.7;
     this.id = id;
-    this.stone = scene.add.image(x, y, "asteroid");
-    this.stone.setDisplaySize(this.sizeX, this.sizeY);
-    this.stone.setSize(this.sizeX, this.sizeY);
-    this.stone.par_obj = this; // Just to associate this id with the image
+    this.asteroid = scene.add.image(x, y, "asteroid");
+    this.asteroid.setDisplaySize(this.sizeX, this.sizeY);
+    this.asteroid.setSize(this.sizeX, this.sizeY);
+    this.asteroid.setScale(this.scale);
+    this.asteroid.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
-    this.stone.destroy();
+    this.colpoly.destroy();
+    this.asteroid.destroy();
+    this.spawnToleranceShape.destroy();
   }
 };
 
@@ -121,7 +168,6 @@ class DebrisField {
     this.debris_field.par_obj = this; // Just to associate this id with the image
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.debris_field.destroy();
   }
@@ -169,26 +215,18 @@ class Explosion {
     });
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   destroy () {
     this.explosion.destroy();
   }
 };
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
 // Function called when new box is added at the server.
 function onCreateItem (data) {
   if (!(data.id in boxList)) {
-    let newBox = new Box(this, data.id, data.x, data.y, data.r);
-    boxList[data.id] = newBox;
+    boxList[data.id] = new Box(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Function called when box needs to be removed at the client.
 function onItemRemove (data) {
   if (!(data.id in boxList)) {
@@ -200,54 +238,49 @@ function onItemRemove (data) {
   delete boxList[data.id];
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Function called when new island is added at the server.
 function onCreateIsland (data) {
   if (!(data.id in islandList)) {
-    console.log(`Criando ilha ${data.id}`);
-    let newIsland = new Island(this, data.id, data.x, data.y, data.radius);
-    islandList[data.id] = newIsland;
+    console.log(`Creating island ${data.id}`);
+    islandList[data.id] = new Island(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
   }
 }
 
 function onCreatedebrisField (data) {
-  console.log(`Criando Debris Field ${data.id}`);
-  let newDebrisField = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
-  DebrisFieldList[data.id] = newDebrisField;
+  console.log(`Creating Debris Field ${data.id}`);
+  DebrisFieldList[data.id] = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Function called when new stone is added at the server.
-function onCreateStone (data) {
-  if (!(data.id in stoneList)) {
-    console.log(`Criando pedra ${data.id}`);
-    let newStone = new Stone(this, data.id, data.x, data.y, data.radius);
-    stoneList[data.id] = newStone;
+// Function called when new asteroid is added at the server.
+function onCreateAsteroid (data) {
+  if (!(data.id in asteroidList)) {
+    console.log(`Creating asteroid ${data.id}`);
+    asteroidList[data.id] = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Function called when stone needs to be removed at the client.
-function onStoneHit (data) {
-  let stoneExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
+// Function called when asteroid needs to be removed at the client.
+function onRemoveAsteroid (data) {
+  let asteroidExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
+  var removeAsteroid = asteroidList[data.id];
+
+  removeAsteroid.destroy();
+  delete asteroidList[data.id];
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Function called when stone needs to be removed at the client.
-function onRemoveStone (data) {
-  let stoneExplosion = new Explosion(this, data.x, data.y, 1.2, 50, 450);
-  var removeStone = stoneList[data.id];
-
-  removeStone.destroy();
-  delete stoneList[data.id];
+function onCreateEBall (data) {
+  if (!(data.id in bulletList)) {
+    bulletList[data.id] = new EBall(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.radius, data.spawnToleranceRadius);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function called when new bullet is added at the server.
 function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
-    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed);
-    bulletList[data.id] = newBullet;
+    bulletList[data.id] = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 
@@ -261,6 +294,10 @@ function onBulletRemove (data) {
   //destroy the phaser object
   bulletList[data.id].destroy();
   delete bulletList[data.id];
+}
+
+function onHit (data) {
+  let playerExplosion = new Explosion(this, data.x, data.y, 0.8, 30, 380);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ let signalExplosion = 1;
 function onSocketConnected (data) {
   console.log("connected to server");
   if (!gameProperties.inGame) {
-    socket.emit('new_player', {username: data.username});
+    socket.emit('new_player', {username: data.username, shipname: data.shipname});
     gameProperties.inGame = true;
   }
 }
@@ -30,26 +30,27 @@ function resetObjects () {
   boxList = {};
   bulletList = {};
   islandList = {};
-  stoneList = {};
+  asteroidList = {};
   botList = {};
   DebrisFieldList = {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/**
+/*
  * Process data received from the server
- * @param {{playerList: {}, bulletList: {}}} data
  */
 function onUpdate (data) {
 	for (const k in data.playerList) {
 		if (k in enemies)
 			enemies[k].update(data.playerList[k]);
-		else if (player)
-			player.update(data.playerList[k]);
+		else if (player){
+      player.update(data.playerList[k]);
+    }
 	}
 	for (const bk in data.bulletList) {
-    if (bk in data.bulletList)
+    if (bk in bulletList) {
       bulletList[bk].update(data.bulletList[bk]);
+    }
   }
   scoreBoard = data.score_board;
 }
@@ -65,18 +66,16 @@ class Main extends Phaser.Scene {
     socket.on("create_player", createPlayer.bind(this));
     socket.on("new_enemyPlayer", createEnemy.bind(this));
     socket.on('remove_player', onRemovePlayer.bind(this));
-    socket.on('player_hit', onPlayerHit.bind(this));
-    socket.on('remove_stone', onRemoveStone.bind(this));
+    socket.on('hit', onHit.bind(this));
+    socket.on('remove_asteroid', onRemoveAsteroid.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
-    socket.on('stone_create', onCreateStone.bind(this));
-    socket.on('stone_hit', onStoneHit.bind(this));
+    socket.on('asteroid_create', onCreateAsteroid.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('debris_create', onCreatedebrisField.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
-    socket.on('enable_inputs', this.enableInputs.bind(this));
-    socket.on('disable_inputs', this.disableInputs.bind(this));
+    socket.on('create_EBall', onCreateEBall.bind(this));
     socket.on('update_game', onUpdate);
 
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
@@ -85,32 +84,25 @@ class Main extends Phaser.Scene {
 
   //////////////////////////////////////////////////////////////////////////////
   preload () {
-    //this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
-    this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
-    this.load.image("ship", "client/assets/spaceship.png");
-    this.load.image("ship-alt", "client/assets/spaceship-alt.png");
+    this.load.image("Blastbeat", "client/assets/blastbeat.png");
+    this.load.image("Blindside", "client/assets/blindside.png");
     this.load.image("bullet", "client/assets/laser.png");
+    this.load.image("EBall", "client/assets/EBall.png");
     this.load.image("big_bullet", "client/assets/laser.png");
-    this.load.image("heart", "client/assets/heart.png");
-    this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
-    this.load.image("barrel", "client/assets/barrel.png");
+    this.load.image("barrel", "client/assets/fuelcell.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
-    this.load.image("enemy", "client/assets/enemy.png");
     this.load.image("stars", "client/assets/black.png")
-    this.load.image('base_controller', 'client/assets/base_controller.png');
-    this.load.image('top_controller', 'client/assets/top_controller.png');
-    this.load.image('shot_controller', 'client/assets/shot_controller.png');
     this.load.image('explosion', 'client/assets/explosion.png');
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  create (username) {
+  create (data) {
     let camera = this.cameras.main;
 
     console.log("client started");
-
-    socket.emit('logged_in', {username: username});
+    data = {username: data.username, shipname: data.shipname, room: data.room};
+    socket.emit('logged_in', data);
     this.player_life = 3;
     this.blink_timer = 2;
 
@@ -132,11 +124,22 @@ class Main extends Phaser.Scene {
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.key_SHIFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.key_SPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.key_Q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
+    this.add.tileSprite(gameProperties.gameWidth/2, gameProperties.gameHeight/2, gameProperties.gameWidth, gameProperties.gameHeight, 'stars');
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        for (let k = 0; k < 3; ++k) {
+          let star = new Phaser.Geom.Circle((Math.random() + i)*gameProperties.gameWidth/6, (Math.random() + j)*gameProperties.gameHeight/4, Math.random()*3);
+          this.add.graphics({ fillStyle: { color: 0xffffff } }).fillCircleShape(star);
+        }
+      }
+    }
 
     // Mini Map
     if (!this.mobileMode) {
-      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.15).setName('mini');
+      this.minimap.setBounds(0, 0, gameProperties.gameWidth, gameProperties.gameHeight);
       this.minimap.setBackgroundColor(0x000000);
       this.minimap.scrollX = 0;
       this.minimap.scrollY = 0;
@@ -145,13 +148,11 @@ class Main extends Phaser.Scene {
       border_graphics.fillRectShape(border);
       border_graphics.setScrollFactor(0);
     }
-    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100).setAlpha(0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   update (dt) {
     if (gameProperties.inGame) {
-
       if (hud) {
         // Update inputs
         if (!this.mobileMode) {
@@ -160,7 +161,9 @@ class Main extends Phaser.Scene {
         let data = {
           up: (this.key_W.isDown),
           left: (this.key_A.isDown),
+          down: (this.key_S.isDown),
           right: (this.key_D.isDown),
+          secondary_fire: (this.key_Q.isDown),
           primary_fire: (this.key_SPACE.isDown),
           boost: (this.key_SHIFT.isDown)
         }
@@ -186,16 +189,6 @@ class Main extends Phaser.Scene {
         this.minimap.scrollY = player.body.y;
       }
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  enableInputs () {
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
   }
 
   disableInputs () {

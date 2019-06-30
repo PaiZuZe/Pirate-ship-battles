@@ -1,7 +1,7 @@
 {
-  "name": "PirateShipBattle",
+  "name": "space-ship-battles",
   "version": "0.1.0",
-  "description": "Online multiplayer game about pirates for USPGameDev",
+  "description": "A space themed multiplayer online game.",
   "main": "index.js",
   "author": "USPGameDev",
   "license": "ISC",
@@ -11,19 +11,22 @@
     "nodemon": "^1.17.5",
     "p2": "^0.7.1",
     "pg": "^7.10.0",
-    "socket.io": "^2.0.3"
+    "sat": "^0.7.0",
+    "socket.io": "^2.0.3",
+    "typescript": "^3.4.5"
   },
   "scripts": {
-    "start": "node --experimental-modules app.js",
+    "start": "node app.js",
     "serve": "bash concat.sh client/target.js && npx nodemon app.js",
-    "up": "npx nodemon app.js",
-    "clienttest": "npx nodemon client_test.js",
+    "up": "tsc app.ts && npx nodemon app.js",
+    "clean": "rm *.js ./server/*.js",
     "test": "jest"
   },
   "engines": {
-    "node": ">=8.x"
+    "node": ">=12.x"
   },
   "devDependencies": {
+    "@types/socket.io": "^2.1.2",
     "jest": "^23.5.0"
   }
 }
