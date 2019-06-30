@@ -289,7 +289,7 @@ export class Room {
 
     console.log("Created new player with id " + socket.id + " with username = " + data.username);
     // Send message to every connected client except the sender
-    socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
+    socket.broadcast.to(this.name).emit('new_enemyPlayer', newPlayer.getData());
   }
 
   public removePlayer(player: any) {
