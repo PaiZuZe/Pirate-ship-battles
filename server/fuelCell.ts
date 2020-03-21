@@ -26,7 +26,7 @@ export class FuelCell extends GameObject {
     this.cells = getRndInteger(10, 25);
     this.spawnToleranceRadius = 10;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
-    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.75, 0.75);
+    this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.9, 0.9);
     this.collisionShape.type = 'FuelCell';
     this.collisionShape.id = this.id;
   }
@@ -41,7 +41,7 @@ export class FuelCell extends GameObject {
       id: this.id,
       x: this.x,
       y: this.y,
-      radius: RADIUS,
+      polygonPoints: this.polygonPoints,
       spawnToleranceRadius: this.spawnToleranceRadius
     };
   }

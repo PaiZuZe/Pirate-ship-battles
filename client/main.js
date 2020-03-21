@@ -27,7 +27,8 @@ function resetObjects () {
   enemies = {};
   hud = null;
   player = null;
-  boxList = {};
+  cellList = {};
+  ammoList = {};
   bulletList = {};
   islandList = {};
   asteroidList = {};
@@ -48,8 +49,9 @@ function onUpdate (data) {
     }
 	}
 	for (const bk in data.bulletList) {
-    if (bk in data.bulletList)
+    if (bk in bulletList) {
       bulletList[bk].update(data.bulletList[bk]);
+    }
   }
   scoreBoard = data.score_board;
 }
@@ -67,8 +69,10 @@ class Main extends Phaser.Scene {
     socket.on('remove_player', onRemovePlayer.bind(this));
     socket.on('hit', onHit.bind(this));
     socket.on('remove_asteroid', onRemoveAsteroid.bind(this));
-    socket.on('item_remove', onItemRemove);
-    socket.on('item_create', onCreateItem.bind(this));
+    socket.on('cell_remove', onCellRemove);
+    socket.on('cell_create', onCreateCell.bind(this));
+    socket.on('ammo_remove', onAmmoRemove);
+    socket.on('ammo_create', onCreateAmmo.bind(this));
     socket.on('asteroid_create', onCreateAsteroid.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('debris_create', onCreatedebrisField.bind(this));
@@ -88,7 +92,8 @@ class Main extends Phaser.Scene {
     this.load.image("bullet", "client/assets/laser.png");
     this.load.image("EBall", "client/assets/EBall.png");
     this.load.image("big_bullet", "client/assets/laser.png");
-    this.load.image("barrel", "client/assets/fuelcell.png");
+    this.load.image("fuelcell", "client/assets/fuelcell.png");
+    this.load.image("ammopack", "client/assets/ammopack.png");
     this.load.image("station", "client/assets/station.png");
     this.load.image("asteroid", "client/assets/asteroid.png");
     this.load.image("stars", "client/assets/black.png")
@@ -100,8 +105,8 @@ class Main extends Phaser.Scene {
     let camera = this.cameras.main;
 
     console.log("client started");
-
-    socket.emit('logged_in', {username: data.username, shipname: data.shipname});
+    data = {username: data.username, shipname: data.shipname, room: data.room};
+    socket.emit('logged_in', data);
     this.player_life = 3;
     this.blink_timer = 2;
 

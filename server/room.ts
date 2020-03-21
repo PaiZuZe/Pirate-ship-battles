@@ -9,6 +9,7 @@ import { Player } from './player';
 import { SpaceStation } from './spaceStation';
 import { Asteroid } from './asteroid';
 import { FuelCell } from './fuelCell';
+import { AmmoPack } from './ammoPack';
 import { Bot } from './bot';
 import { DebrisField } from './debrisField';
 import { DamageArtefact, PrimaryFire, EnergyBall } from './damageArtefact';
@@ -16,11 +17,10 @@ import { ScoreBoard } from './scoreBoard';
 import { Collisions, Polygon } from './collisions/Collisions'
 import { collisionHandler, isColliding }  from './collisionHandler';
 import * as socketIO from 'socket.io';
-import { mapFloatToInt } from './aux';
+import { mapFloatToInt, getRndInteger } from './aux';
 import { Agent } from './agent';
 
 const UPDATE_TIME = 0.06; // sec
-const BULLET_LIFETIME = 5000; // ms
 
 export class Room {
   public readonly name: string;
@@ -32,6 +32,8 @@ export class Room {
   // Game Properties
   private fuelCellsMax: number = 15;
   private fuelCellsCount: number = 0;
+  private ammoPacksMax: number = 8;
+  private ammoPacksCount: number = 0;
   private botsMax: number = 1;
   private botsCount: number = 0;
   private debrisFieldsMax: number = 3;
@@ -143,7 +145,6 @@ export class Room {
           return;
         }
         for (let i: number = 0; i < temp.length; ++i) {
-          console.log(temp[i].id);
           this.createDamageArtefact(temp[i]);
         }
       });
@@ -171,8 +172,7 @@ export class Room {
   private insertInRandomPosition(gameObject: GameObject): void {
     this.spawnCollisionSystem.insert(gameObject.spawnToleranceShape);
     while (isColliding(gameObject.spawnToleranceShape)) {
-      gameObject.setPos(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
-              mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250));
+      gameObject.setPos(getRndInteger(0, this.canvasWidth), getRndInteger(0, this.canvasHeight));
       this.spawnCollisionSystem.update();
     }
     this.collisionSystem.insert(gameObject.collisionShape);
@@ -195,6 +195,7 @@ export class Room {
     this.fillWStations();
     this.fillWAsteroids();
     this.fillWFuelCells();
+    this.fillWAmmoPacks();
     this.fillWBots();
     this.fillWDebrisFields();
     this.updateBots();
@@ -225,7 +226,7 @@ export class Room {
           this.removeAsteroid(value);
         }
         else if (value.constructor.name == "Bot") {
-          this.removeBot(value);
+          this.removeBot(value as Bot);
         }
         else if (value.constructor.name == "Player") {
           this.removePlayer(value);
@@ -233,11 +234,14 @@ export class Room {
         else if (value.constructor.name == "FuelCell") {
           this.removeFuelCell(value);
         }
+        else if (value.constructor.name == "AmmoPack") {
+          this.removeAmmoPack(value);
+        }
       }
       //Only works for Primary Fire
       if (value.constructor.name == "PrimaryFire") {
         let damageArtefact = value as PrimaryFire;
-        if (damageArtefact.hp <= 0 || damageArtefact.timeCreated + BULLET_LIFETIME <= Date.now()) {
+        if (damageArtefact.hp <= 0 || damageArtefact.vanish()) {
           this.removeDamageArtefact(damageArtefact);
         }
       }
@@ -252,12 +256,11 @@ export class Room {
 
   public addNewPlayer(socket: any, data: any): void {
     if (this.gameObjects.get(socket.id)) {
-      console.log(`Player with id ${socket.id} already exists`);
+      console.log(this.name + " : " + `Player with id ${socket.id} already exists`);
       return;
     }
 
-    let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250),
-                   mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250),
+    let newPlayer = new Player(getRndInteger(0, this.canvasWidth), getRndInteger(0, this.canvasHeight),
                    0, socket.id, data.username, data.shipname);
     this.gameObjects.set(socket.id, newPlayer);
     this.scoreBoard.addPlayer(data.username);
@@ -271,7 +274,10 @@ export class Room {
         socket.emit("asteroid_create", value.getData());
       }
       else if (value.collisionShape.type == "FuelCell") {
-        socket.emit("item_create", value.getData());
+        socket.emit("cell_create", value.getData());
+      }
+      else if (value.collisionShape.type == "AmmoPack") {
+        socket.emit("ammo_create", value.getData());
       }
       else if (value.collisionShape.type == "SpaceSationCol") {
         socket.emit("island_create", value.getData());
@@ -287,15 +293,15 @@ export class Room {
       }
     });
 
-    console.log("Created new player with id " + socket.id + " with username = " + data.username);
+    console.log(this.name + " : " + "Created new player with id " + socket.id + " with username = " + data.username);
     // Send message to every connected client except the sender
-    socket.broadcast.emit('new_enemyPlayer', newPlayer.getData());
+    socket.broadcast.to(this.name).emit('new_enemyPlayer', newPlayer.getData());
   }
 
   public removePlayer(player: any) {
-    console.log(`${player.username} died!`);
+    console.log(this.name + " : " + `${player.username} died!`);
     if (this.gameObjects.has(player.id)) {
-      console.log(`${player.username} was removed`);
+      console.log(this.name + " : " + `${player.username} was removed`);
       this.removeFromCollisionSystem(player);
       this.scoreBoard.removePlayer(player.username);
       this.io.in(this.name).emit('remove_player', {id :player.id, x: player.x, y : player.y});
@@ -311,27 +317,30 @@ export class Room {
   public disconnectPlayer(playerID: string): void {
     if (this.gameObjects.has(playerID)) {
       this.removePlayer(this.gameObjects.get(playerID) as Player);
-      console.log("Disconnected player with ID = " + playerID);
+      console.log(this.name + " : " + "Disconnected player with ID = " + playerID);
     }
     else {
-      console.log("ERROR: Could not find player with ID = " + playerID + " in room to disconnect")
+      console.log(this.name + " : " + "ERROR: Could not find player with ID = " + playerID + " in room to disconnect")
     }
   }
 
   private addSpaceStation(): void {
-    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
-    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
-    let newSpaceSatition = new SpaceStation(x, y, 100, "life", 1, 180);
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
+    let newSpaceSatition = new SpaceStation(x, y, 100, "life", 5, 180);
     this.gameObjects.set(newSpaceSatition.id, newSpaceSatition);
     this.insertInRandomPosition(newSpaceSatition);
+    newSpaceSatition.restorationShape.x = newSpaceSatition.x;
+    newSpaceSatition.restorationShape.y = newSpaceSatition.y;
+    this.collisionSystem.insert(newSpaceSatition.restorationShape);
     this.io.in(this.name).emit("island_create", newSpaceSatition.getData());
     this.stationsCount++;
     return;
   }
 
   private addAsteroid(): void {
-    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
-    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
     let newAsteroid = new Asteroid(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newAsteroid.id, newAsteroid);
     this.insertInRandomPosition(newAsteroid);
@@ -349,12 +358,12 @@ export class Room {
   }
 
   private addFuelCell(): void {
-    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
-    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
     let newFuelCell = new FuelCell(x, y, this.canvasWidth, this.canvasHeight);
     this.gameObjects.set(newFuelCell.id, newFuelCell);
     this.insertInRandomPosition(newFuelCell);
-    this.io.in(this.name).emit("item_create", newFuelCell.getData());
+    this.io.in(this.name).emit("cell_create", newFuelCell.getData());
     this.fuelCellsCount++;
     return;
   }
@@ -362,33 +371,56 @@ export class Room {
   public removeFuelCell(obj: GameObject): void {
     this.removeFromCollisionSystem(obj);
     this.gameObjects.delete(obj.id);
-    this.io.in(this.name).emit("item_remove", obj.getData());
+    this.io.in(this.name).emit("cell_remove", obj.getData());
     this.fuelCellsCount--;
     return;
   }
 
+  private addAmmoPack(): void {
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
+    let newAmmoPack = new AmmoPack(x, y, this.canvasWidth, this.canvasHeight);
+    this.gameObjects.set(newAmmoPack.id, newAmmoPack);
+    this.insertInRandomPosition(newAmmoPack);
+    this.io.in(this.name).emit("ammo_create", newAmmoPack.getData());
+    this.ammoPacksCount++;
+    return;
+  }
+
+  public removeAmmoPack(obj: GameObject): void {
+    this.removeFromCollisionSystem(obj);
+    this.gameObjects.delete(obj.id);
+    this.io.in(this.name).emit("ammo_remove", obj.getData());
+    this.ammoPacksCount--;
+    return;
+  }
+
   private addBot(): void {
-    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
-    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
     let newBot = new Bot(x, y, "Blindside");
     this.gameObjects.set(newBot.id, newBot);
     this.insertInRandomPosition(newBot);
+    newBot.agro.x = newBot.x;
+    newBot.agro.y = newBot.y;
+    this.collisionSystem.insert(newBot.agro);
     this.io.in(this.name).emit("new_enemyPlayer", newBot.getData());
     this.botsCount++;
     return;
   }
 
-  public removeBot(obj: GameObject): void {
-    this.removeFromCollisionSystem(obj);
-    this.gameObjects.delete(obj.id);
-    this.io.in(this.name).emit("remove_player", obj.getData());
+  public removeBot(bot: Bot): void {
+    this.removeFromCollisionSystem(bot);
+    this.collisionSystem.remove(bot.agro);
+    this.gameObjects.delete(bot.id);
+    this.io.in(this.name).emit("remove_player", bot.getData());
     this.botsCount--;
     return;
   }
 
   private addDerbisField(): void {
-    let x = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasWidth - 250);
-    let y = mapFloatToInt(Math.random(), 0, 1, 250, this.canvasHeight - 250);
+    let x = getRndInteger(0, this.canvasWidth);
+    let y = getRndInteger(0, this.canvasHeight);
     let r = 100 + Math.ceil(Math.random()*250);
 
     let newDerbisField = new DebrisField(x, y, r, r - 50);
@@ -416,6 +448,13 @@ export class Room {
   private fillWFuelCells(): void {
     for (let i:number = this.fuelCellsCount; i < this.fuelCellsMax; i++) {
       this.addFuelCell();
+    }
+    return;
+  }
+
+  private fillWAmmoPacks(): void {
+    for (let i:number = this.ammoPacksCount; i < this.ammoPacksMax; i++) {
+      this.addAmmoPack();
     }
     return;
   }
@@ -454,6 +493,7 @@ export class Room {
       return;
 
     player.inputs.up = data.up;
+    player.inputs.down = data.down;
     player.inputs.left = data.left;
     player.inputs.right = data.right;
     player.inputs.primaryFire = data.primary_fire;

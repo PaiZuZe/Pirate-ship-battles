@@ -10,8 +10,6 @@ import { rotate, distSq } from './aux';
 import { DamageArtefact, PrimaryFire } from './damageArtefact';
 import { Agent } from './agent';
 
-const BULLET_COOLDOWN = 1500; // ms
-
 export class Bot extends Agent {
   public invul_time: number;
   public agro: Circle;
@@ -25,8 +23,9 @@ export class Bot extends Agent {
 
   constructor (x: number, y: number, shipname: string) {
     super(x, y, "BotBlob", "Blindside");
-    this.hp = 3;
+    this.hp = 10;
     this.invul_time = 0;
+    this.primaryCooldown = 1000;
     this.spawnToleranceRadius = 100;
     this.spawnToleranceShape = new Circle(this.x, this.y, this.spawnToleranceRadius);
     this.collisionShape = new Polygon(this.x, this.y, this.polygonPoints, 0, 0.675, 0.675);

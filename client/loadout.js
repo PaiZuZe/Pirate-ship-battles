@@ -7,10 +7,15 @@
 let ships = SHIPINFO;
 let loadout_count = 0;
 let loadout_username = "";
+let loadout_room_id = loadout_room.options[loadout_room.selectedIndex].value;
 
 ////////////////////////////////////////////////////////////////////////////////
 loadout_select.onclick = function () {
   exitLoadout();
+}
+
+loadout_room.onchange = function () {
+  loadout_room_id = loadout_room.options[loadout_room.selectedIndex].value;
 }
 
 loadout_previous.onclick = function () {
@@ -34,7 +39,7 @@ function changeShip () {
 function exitLoadout () {
   loadoutDiv.style.display = 'none';
   gameDiv.style.display = null;
-  game.scene.start('Main', {username: loadout_username, shipname: ships[loadout_count].name});
+  game.scene.start('Main', {username: loadout_username, shipname: ships[loadout_count].name, room: loadout_room_id});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

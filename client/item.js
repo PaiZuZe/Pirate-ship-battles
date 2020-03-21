@@ -4,7 +4,8 @@
 //                              Client - Items                              //
 ////////////////////////////////////////////////////////////////////////////////
 
-var boxList = {}; // The box list
+var cellList = {}; // The fuel cell list
+var ammoList = {}; // The ammo pack list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
 var asteroidList = {}; // Asteroids list
@@ -15,8 +16,8 @@ class EBall {
     this.id = id;
     this.creator = creator;
     this.item = scene.physics.add.image(x, y, "EBall");
-    this.sizeX = 64;
-    this.sizeY = 64;
+    this.sizeX = 120;
+    this.sizeY = 120;
     this.speed = speed;
     this.radius = radius;
     this.item.setDisplaySize(this.sizeX, this.sizeY);
@@ -56,7 +57,7 @@ class Bullet {
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setAngle(angle * 180 / Math.PI);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colpoly = new PolygonShape(scene, x, y, polygonPoints);
+    this.colpoly = new PolygonShape(scene, x, y, 1, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
@@ -77,27 +78,52 @@ class Bullet {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Box                                                                        //
+// Cell                                                                        //
 ////////////////////////////////////////////////////////////////////////////////
-// Client box class
-class Box {
-  constructor (scene, id, x, y, radius, spawnToleranceRadius) {
+// Client fuel cell class
+class Cell {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
     this.sizeX = 32;
     this.sizeY = 40;
     this.id = id;
-    this.item = scene.add.image(x, y, "barrel");
+    this.item = scene.add.image(x, y, "fuelcell");
     this.item.setDisplaySize(this.sizeX, this.sizeY);
     this.item.setSize(this.sizeX, this.sizeY);
-    this.item.setScale(0.75);
+    this.item.setScale(0.9);
     this.item.par_obj = this; // Just to associate this id with the image
-    this.colShape = new CircleShape(scene, x, y, radius);
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
   destroy () {
     this.item.destroy();
     this.spawnToleranceShape.destroy();
-    this.colShape.destroy();
+    this.colpoly.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Ammo                                                                        //
+////////////////////////////////////////////////////////////////////////////////
+// Client ammo pack class
+class Ammo {
+  constructor (scene, id, x, y, polygonPoints, spawnToleranceRadius) {
+    this.sizeX = 32;
+    this.sizeY = 40;
+    this.id = id;
+    this.item = scene.add.image(x, y, "ammopack");
+    this.item.setDisplaySize(this.sizeX, this.sizeY);
+    this.item.setSize(this.sizeX, this.sizeY);
+    this.item.setScale(0.9);
+    this.item.par_obj = this; // Just to associate this id with the image
+    this.colpoly = new PolygonShape(scene, x, y, this.scale, polygonPoints);
+    this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
+  }
+
+  destroy () {
+    this.item.destroy();
+    this.spawnToleranceShape.destroy();
+    this.colpoly.destroy();
   }
 };
 
@@ -116,7 +142,7 @@ class Island {
     this.island.setScale(0.95);
     this.island.par_obj = this; // Just to associate this id with the image
     this.colShape = new CircleShape(scene, x, y, radius);
-    this.influenceShape = new CircleShape(scene, x, y, 2*radius, {stroke: true, color: 0x0000b2, alpha: 1})
+    this.influenceShape = new CircleShape(scene, x, y, 3*radius, {stroke: true, color: 0x0000b2, alpha: 1})
     this.spawnToleranceShape = new CircleShape(scene, x, y, spawnToleranceRadius, {stroke: true, color: SPAWN_INFLUENCE_COLOR, alpha: 1});
   }
 
@@ -220,38 +246,53 @@ class Explosion {
   }
 };
 
-// Function called when new box is added at the server.
-function onCreateItem (data) {
-  if (!(data.id in boxList)) {
-    let newBox = new Box(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
-    boxList[data.id] = newBox;
+// Function called when new fuel cell is added at the server.
+function onCreateCell (data) {
+  if (!(data.id in cellList)) {
+    cellList[data.id] = new Cell(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 
-// Function called when box needs to be removed at the client.
-function onItemRemove (data) {
-  if (!(data.id in boxList)) {
-    console.log("Could not find box to remove");
+// Function called when fuel needs to be removed at the client.
+function onCellRemove (data) {
+  if (!(data.id in cellList)) {
+    console.log("Could not find fuel cell to remove");
     return;
   }
   //destroy the phaser object
-  boxList[data.id].destroy();
-  delete boxList[data.id];
+  cellList[data.id].destroy();
+  delete cellList[data.id];
+}
+
+// Function called when new fuel cell is added at the server.
+function onCreateAmmo (data) {
+  if (!(data.id in ammoList)) {
+    ammoList[data.id] = new Ammo(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
+  }
+}
+
+// Function called when fuel needs to be removed at the client.
+function onAmmoRemove (data) {
+  if (!(data.id in ammoList)) {
+    console.log("Could not find fuel cell to remove");
+    return;
+  }
+  //destroy the phaser object
+  ammoList[data.id].destroy();
+  delete ammoList[data.id];
 }
 
 // Function called when new island is added at the server.
 function onCreateIsland (data) {
   if (!(data.id in islandList)) {
     console.log(`Creating island ${data.id}`);
-    let newIsland = new Island(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
-    islandList[data.id] = newIsland;
+    islandList[data.id] = new Island(this, data.id, data.x, data.y, data.radius, data.spawnToleranceRadius);
   }
 }
 
 function onCreatedebrisField (data) {
   console.log(`Creating Debris Field ${data.id}`);
-  let newDebrisField = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
-  DebrisFieldList[data.id] = newDebrisField;
+  DebrisFieldList[data.id] = new DebrisField(this, data.center_x, data.center_y, data.radius, data.id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,8 +300,7 @@ function onCreatedebrisField (data) {
 function onCreateAsteroid (data) {
   if (!(data.id in asteroidList)) {
     console.log(`Creating asteroid ${data.id}`);
-    let newAsteroid = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
-    asteroidList[data.id] = newAsteroid;
+    asteroidList[data.id] = new Asteroid(this, data.id, data.x, data.y, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 
@@ -276,8 +316,7 @@ function onRemoveAsteroid (data) {
 
 function onCreateEBall (data) {
   if (!(data.id in bulletList)) {
-    let newBall = new EBall(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.radius, data.spawnToleranceRadius);
-    bulletList[data.id] = newBall; //nem sei se isso é bom
+    bulletList[data.id] = new EBall(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.radius, data.spawnToleranceRadius);
   }
 }
 
@@ -285,8 +324,7 @@ function onCreateEBall (data) {
 // Function called when new bullet is added at the server.
 function onCreateBullet (data) {
   if (!(data.id in bulletList)) {
-    let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints, data.spawnToleranceRadius);
-    bulletList[data.id] = newBullet;
+    bulletList[data.id] = new Bullet(this, data.id, data.creator, data.x, data.y, data.angle, data.speed, data.polygonPoints, data.spawnToleranceRadius);
   }
 }
 

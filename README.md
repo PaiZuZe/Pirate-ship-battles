@@ -1,25 +1,23 @@
-# Code name: PSB2: Eletric Boogaloo
+# SSB: Space Ship Battles
 
 We will take Pirate Ship Battles to space!!!!
-The orignal game was a project from USPgameDev, that later went be a project from one class, and now in it's third development cycle, alot of changes will happen. 
+The orignal game started as a project from USPgameDev, that later went to be one of the projects for a agile methods class.
+
+Now in it's third development cycle, alot of changes happend. This include, the theme change from the open seas to space and the use of Type Script.
 
 ## Summary
 
 1. [Install dependencies](#install-dependencies)
 2. [Run server](#run-server)
-3. [Server on the cloud](#server-on-the-cloud)
-4. [Playing the game](#playing-the-game)
-5. [Unit testing](#unit-testing)
+3. [Playing the game](#playing-the-game)
 
 ## 1. Install dependencies <a name="install-dependencies"></a>
 
-To run PSB you only need to install [docker](https://docs.docker.com/install/).
+To run SSB you only need to install [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/). And everything else will be done for you, like magic.
 
-Or you can install [node.js](https://nodejs.org/en/download/package-manager/) and [yarn](https://yarnpkg.com/lang/en/docs/install/#debian-stable). Note that this is not recommended.
+## 2. Run local server <a name="run-server"></a>
 
-## 2. Run server <a name="run-server"></a>
-
-1. Install docker and docker-compose:
+1. Install all depencies:
 
 2. Build an run:
 
@@ -28,71 +26,26 @@ Or you can install [node.js](https://nodejs.org/en/download/package-manager/) an
     sudo docker-compose up
     ```
 
-    Use the flag -d when putting the containers up so they are in background.
+    You can run the game server on background by using the flag -d.
 
-    Be sure that postgres is not running on the host machine.
+    Notice: Be sure that postgres is not running on the host machine.
 
     ```sh
     sudo service postgresql stop
     ```
 
-    Remember to end the containers and remove their images.
+    Note: A folder named pgdata will be create the first time you build the images, deleting this folder is a quick and dirty way of purging your database.
 
-    ```sh
-    sudo docker-compose kill
-    sudo docker-compose rm
-    ```
-
-    Note: A folder named pgdata will be create the first time you build the images, remember to delete it if you want to reset your database.
+3. Remember to stop the containers and remove the images if you wish to not host a server anymore.
 
 
-## 3. Server on the cloud <a name="server-on-the-cloud"></a>
+## 3. Playing the game offline <a name="playing-the-game"></a>
 
-If you are gonna use some webservice to run the server, run :
-
-```sh
-sudo nano /lib/systemd/system/pirates_game.service
-```
-
-Now, add
-
-```
-[Unit]
-Description=pirates
-After=network.target
-
-[Service]
-Environment=NODE_PORT=80
-Type=simple
-User=root
-ExecStart=/usr/bin/yarn --cwd /home/ubuntu/pirates serve
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-```
-
-to the file and run :
-
-```sh
-sudo systemctl start pirates_game
-```
-
-## 4. Playing the game <a name="playing-the-game"></a>
-
-* Open http://localhost:2000 in a modern browser
+* Open http://localhost:2000 on your browser of choice.
 * Enjoy!
 
-## 5. Unit testing <a name="unit-testing"></a>
+## 4. Seting up a server
 
-We have tests!! Just run :
-
-```sh
-yarn test
-```
-
-And all our automated unit tests should run and help you see if something broke. We use [Jest](https://jestjs.io/) as our test API.
-
-Note: This may not work with docker.
+All you have to do is change the docker-compose.yml file and some other voodoo.
 
 Any questions, please contact -[@GuilhermeVieira](https://github.com/GuilhermeVieira).
