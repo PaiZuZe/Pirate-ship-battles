@@ -4,40 +4,18 @@ services:
     build: .
     networks:
       front:
-        ipv4_address: 
-          192.168.241.51
-    container_name: psb-app
-    depends_on: 
-      - postgres
+        ipv4_address: 192.168.241.51
+    container_name: ssb-app
     ports:
       - "2000:2000"
-    command: sh -c 'while ! nc -z postgres 5432; do sleep 1; done; yarn up'
-
-  postgres:
-    networks:
-      front:
-        ipv4_address: 
-          192.168.241.52
-    image: postgres:11-alpine
-    container_name: psb-postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgress
-      - POSTGRES_DB=ssb
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-      - ./create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
 
 networks:
-    front:
-        # use the bridge driver, but enable IPv4
-        driver: bridge
-        driver_opts:
-            com.docker.network.enable_ipv4: "true"
-        ipam:
-            driver: default
-            config:
-              - subnet: 
-                    192.168.241.0/24
+  front:
+    # use the bridge driver, but enable IPv4
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv4: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.241.0/24

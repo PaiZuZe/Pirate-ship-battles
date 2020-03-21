@@ -4,43 +4,47 @@
 //                               Client - Login                               //
 ////////////////////////////////////////////////////////////////////////////////
 
-entername.onclick = function () {
+entername.onclick = function() {
   if (!gameProperties.inGame) {
     console.log(`Player ${socket.id} entered name`);
-    socket.emit('enter_name', {username: signdivusername.value, config: config, password: signdivupassword.value});
+    socket.emit("enter_name", {
+      username: signdivusername.value,
+      config: config
+    });
   }
-}
+  0;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
-function throwError (data) {
+function throwError(data) {
   errorLog.textContent = data.message;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function joinGame (data) {
+function joinGame(data) {
   console.log(`Player ${socket.id} joined the game`);
-  signDiv.style.display = 'none';
+  signDiv.style.display = "none";
   loadoutDiv.style.display = null;
   errorLog.textContent = "";
-  game.scene.start('Loadout', data.username);
+  game.scene.start("Loadout", data.username);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Login                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 class Login extends Phaser.Scene {
-  constructor () {
-    super({key: "Login"});
+  constructor() {
+    super({ key: "Login" });
     // Everything here will execute just one time per client session
-    socket.on('join_game', joinGame);
-    socket.on('throw_error', throwError);
+    socket.on("join_game", joinGame);
+    socket.on("throw_error", throwError);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  create () {
+  create() {
     signDiv.style.display = null;
-    loadoutDiv.style.display = 'none';
-    gameDiv.style.display = 'none';
+    loadoutDiv.style.display = "none";
+    gameDiv.style.display = "none";
     gameProperties.inGame = false;
     if (isTouchDevice()) {
       howto.style.display = "none";

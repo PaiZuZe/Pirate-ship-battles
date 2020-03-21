@@ -1,7 +1,7 @@
 {
   "name": "space-ship-battles",
   "version": "0.1.0",
-  "description": "A space themed multiplayer online game.",
+  "description": "A space themed online multiplayer game.",
   "main": "index.js",
   "author": "USPGameDev",
   "license": "ISC",

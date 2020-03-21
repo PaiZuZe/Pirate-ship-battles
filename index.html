@@ -1,62 +1,88 @@
 <!--=========================================================================-->
-<!--=                          Pirate Ship Battles                          =-->
+<!--=                            Spaceship Battles                          =-->
 <!--=========================================================================-->
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Title -->
     <title>Spaceship Battles</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
     <link rel="stylesheet" type="text/css" href="client/css/style.css" />
   </head>
 
   <body>
     <div>
       <div id="signDiv">
-          <div class="signDiv-content">
-            <h1>Space Ship Battles</h1>
+        <div class="signDiv-content">
+          <h1>Space Ship Battles</h1>
 
-            <p>Enter your name</p>
-            <input id="signdivusername" type="text" placeholder="Username"/>
-            <p>Password</p>
-            <input id="signdivupassword" type="password" placeholder="Password"/>
-            <p id="errorLog"></p>
+          <p>Enter your name</p>
+          <input id="signdivusername" type="text" placeholder="Username" />
+          <p id="errorLog"></p>
 
-            <div><input id="debugcheckbox" type="checkbox" onclick="toggle();"><span>Debug Mode</span></div>
-
-            <button id="entername" class="hidden">PLAY</button>
-
-            <br><small>Spacestation by <a href="https://opengameart.org/users/technozomians">Technozomians</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
-            <br><small>Asteroid by <a href="https://opengameart.org/users/funwithpixels">FunWithPixels</a> (<a href="https://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>)</small>
+          <div>
+            <input
+              id="debugcheckbox"
+              type="checkbox"
+              onclick="toggle();"
+            /><span>Debug Mode</span>
           </div>
+
+          <button id="entername" class="hidden">PLAY</button>
+
+          <br /><small
+            >Spacestation by
+            <a href="https://opengameart.org/users/technozomians"
+              >Technozomians</a
+            >
+            (<a href="https://creativecommons.org/licenses/by/3.0/legalcode"
+              >CC-BY 3.0</a
+            >)</small
+          >
+          <br /><small
+            >Asteroid by
+            <a href="https://opengameart.org/users/funwithpixels"
+              >FunWithPixels</a
+            >
+            (<a href="https://creativecommons.org/licenses/by/3.0/legalcode"
+              >CC-BY 3.0</a
+            >)</small
+          >
         </div>
+      </div>
     </div>
 
     <div id="loadoutDiv" display="none">
       <div class="loadoutDiv-content">
-          <h2>Select your ship</h2>
+        <h2>Select your ship</h2>
 
-          <div id="shipPreview"></div>
+        <div id="shipPreview"></div>
 
-          <button id="loadout_previous" class="circle-button">◄</button>
-          <button id="loadout_next" class="circle-button">►</button>
+        <button id="loadout_previous" class="circle-button">◄</button>
+        <button id="loadout_next" class="circle-button">►</button>
 
-          <p id="shipName"></p>
-          <p id="shipDesc"></p>
+        <p id="shipName"></p>
+        <p id="shipDesc"></p>
 
-          <select id="loadout_room">
-            <option value="1">Room 1</option>
-            <option value="2">Room 2</option>
-          </select>
-          <button id="loadout_select">Engage</button>
+        <select id="loadout_room">
+          <option value="1">Room 1</option>
+          <option value="2">Room 2</option>
+        </select>
+        <button id="loadout_select">Engage</button>
       </div>
     </div>
 
@@ -77,23 +103,19 @@
     <script src="client/main.js"></script>
     <script src="client/game.js"></script>
     <script>
-      if (document.getElementById('debugcheckbox').checked){
+      if (document.getElementById("debugcheckbox").checked) {
         DEBUG = true;
-      }
-      else {
+      } else {
         DEBUG = false;
       }
       signdivusername.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
-      }
-      signdivupassword.onkeypress = function(e) {
-        if (e.keyCode == 13) entername.click();
-      }
+      };
+
       function toggle() {
-        if (document.getElementById('debugcheckbox').checked){
+        if (document.getElementById("debugcheckbox").checked) {
           DEBUG = true;
-        }
-        else {
+        } else {
           DEBUG = false;
         }
       }
