@@ -104,7 +104,7 @@ export class AppServer {
     } else if (this.playerInGame(data.username)) {
       this.io.emit("throw_error", { message: "Player in game" });
     } else if (data.username.length > 0 && data.username.length < 15) {
-      this.io.emit("join_game", {
+      socket.emit("join_game", {
         username: data.username,
         id: socket.id,
         password: data.password
